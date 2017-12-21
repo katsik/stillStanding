@@ -1,16 +1,28 @@
 package com.sleepycookie.stillstanding;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-public class ReadDataFromAccelerometer extends AppCompatActivity implements SensorEventListener{
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.ActivityRecognitionClient;
+import com.google.android.gms.tasks.Task;
+
+public class ReadDataFromAccelerometer extends AppCompatActivity implements SensorEventListener,
+                                                            GoogleApiClient.ConnectionCallbacks,
+                                                            GoogleApiClient.OnConnectionFailedListener{
 
     private SensorManager mSensorManager;
 
@@ -24,6 +36,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     public static String currentState, previousState;
     double sigma = 0.5,th =10, th1 = 5, th2 = 2;
+
+    public GoogleApiClient mApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +56,14 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         }
         previousState = "none";
         currentState = "none";
+
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(ActivityRecognition.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mApiClient.connect();
     }
 
     @Override
@@ -63,11 +85,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 //last place of buffer cleared
                 samples[i] = samples[i+1];
             }
-            mAccelerationLabel.setText(Double.toString(svTotalAcceleration));
+//            mAccelerationLabel.setText(Double.toString(svTotalAcceleration));
             samples[BUFFER_SIZE-1] = svTotalAcceleration;
-            if(fallDetected()){
-                checkPosture();
-            }
+//            if(fallDetected()){
+//                checkPosture();
+//            }
         }
     }
 
@@ -81,9 +103,10 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
 
-        //setting as the lowest threshold acceptable the 0.7*9.81 [m/s^2]
+        //setting as the highest threshold acceptable the 2.5*9.81 [m/s^2]
         if (samples[BUFFER_SIZE-1] >= 2.5 * GRAVITY_ACCELERATION){
             for (int i =0; i<=BUFFER_SIZE-2;i++){
+                //lowest threshold acceptable is 0.6 * 9.81 [m/s^2]
                 if (samples[i] <= 0.6 * GRAVITY_ACCELERATION){
                     // Fall detected because currently acceleration hit high threshold
                     // and previously had hit the low threshold.
@@ -99,4 +122,25 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mAccelerationLabel.setVisibility(View.INVISIBLE);
     }
 
+    public static void setUsersState(String setState){
+        currentState = setState;
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Intent intent = new Intent(this, ActivityRecognizedService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(this);
+        Task task = activityRecognitionClient.requestActivityUpdates(3000L,pendingIntent);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 }
