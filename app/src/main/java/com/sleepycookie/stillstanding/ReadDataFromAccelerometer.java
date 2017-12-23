@@ -134,6 +134,16 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //check from the state array to see if the "fall" state became "still"
         //if so the user fell and is laid down
         //else the user fell and stood up so no need to worry.
+        boolean flag = false;
+        for (String state : states ){
+            if(!flag){
+                if(state == "fell"){flag = true;}
+            }else{
+                if(state == "still"){
+//                    triggerEmergency();
+                }
+            }
+        }
     }
 
     public static void setUsersState(String setState){
