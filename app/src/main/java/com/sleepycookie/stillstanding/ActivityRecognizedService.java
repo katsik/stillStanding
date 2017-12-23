@@ -3,9 +3,6 @@ package com.sleepycookie.stillstanding;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
@@ -35,48 +32,32 @@ public class ActivityRecognizedService extends IntentService {
     }
 
     private void handleDetectedActivities(List<DetectedActivity> probableActivities) {
+        int maxConfidence = 0;
+        DetectedActivity mostProbableActivity = new DetectedActivity(DetectedActivity.UNKNOWN,100);
         for( DetectedActivity activity : probableActivities ) {
-            switch( activity.getType() ) {
-                case DetectedActivity.IN_VEHICLE: {
-                    Log.e( "ActivityRecogition", "In Vehicle: " + activity.getConfidence() );
-                    break;
-                }
-                case DetectedActivity.ON_BICYCLE: {
-                    Log.e( "ActivityRecogition", "On Bicycle: " + activity.getConfidence() );
-                    break;
-                }
-                case DetectedActivity.ON_FOOT: {
-                    Log.e( "ActivityRecogition", "On Foot: " + activity.getConfidence() );
-                    break;
-                }
-                case DetectedActivity.RUNNING: {
-                    Log.e( "ActivityRecogition", "Running: " + activity.getConfidence() );
-                    break;
-                }
-                case DetectedActivity.STILL: {
-                    Log.e( "ActivityRecogition", "Still: " + activity.getConfidence() );
-                    break;
-                }
-                case DetectedActivity.TILTING: {
-                    Log.e( "ActivityRecogition", "Tilting: " + activity.getConfidence() );
-                    break;
-                }
-                case DetectedActivity.WALKING: {
-                    Log.e( "ActivityRecogition", "Walking: " + activity.getConfidence() );
-                    if( activity.getConfidence() >= 75 ) {
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-                        builder.setContentText( "Are you walking?" );
-                        builder.setSmallIcon( R.mipmap.ic_launcher );
-                        builder.setContentTitle( getString( R.string.app_name ) );
-                        NotificationManagerCompat.from(this).notify(0, builder.build());
-                    }
-                    break;
-                }
-                case DetectedActivity.UNKNOWN: {
-                    Log.e( "ActivityRecogition", "Unknown: " + activity.getConfidence() );
-                    break;
-                }
+            if (activity.getConfidence() > maxConfidence){
+                mostProbableActivity = activity;
+                maxConfidence = mostProbableActivity.getConfidence();
             }
+        }
+        switch (mostProbableActivity.getType()){
+            case DetectedActivity.ON_FOOT:
+                ReadDataFromAccelerometer.setUsersState("walking");
+                break;
+            case DetectedActivity.RUNNING:
+                ReadDataFromAccelerometer.setUsersState("running");
+                break;
+            case DetectedActivity.WALKING:
+                ReadDataFromAccelerometer.setUsersState("walking");
+                break;
+            case DetectedActivity.STILL:
+                ReadDataFromAccelerometer.setUsersState("still");
+                break;
+            case DetectedActivity.TILTING:
+                ReadDataFromAccelerometer.setUsersState("tilting");
+                break;
+            default:
+                ReadDataFromAccelerometer.setUsersState("unknown");
         }
     }
 }

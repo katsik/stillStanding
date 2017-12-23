@@ -11,14 +11,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
-import com.google.android.gms.tasks.Task;
 
 public class ReadDataFromAccelerometer extends AppCompatActivity implements SensorEventListener,
                                                             GoogleApiClient.ConnectionCallbacks,
@@ -30,14 +29,18 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public double ax,ay,az;
     public double svTotalAcceleration;
     static int BUFFER_SIZE = 50;
-    static public double[] samples = new double[BUFFER_SIZE];
+    static int SAMPLES_BUFFER_SIZE = 2;
+    static public double[] samples = new double[SAMPLES_BUFFER_SIZE];
+    static public String[] states = new String[BUFFER_SIZE];
 
     final static double GRAVITY_ACCELERATION = 9.81;
 
-    public static String currentState, previousState;
+    public static String currentState;
     double sigma = 0.5,th =10, th1 = 5, th2 = 2;
 
     public GoogleApiClient mApiClient;
+    public ActivityRecognitionClient activityRecognitionClient;
+    private PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         for(int i=0;i<samples.length;i++){
             samples[i] = 0;
         }
-        previousState = "none";
         currentState = "none";
 
         mApiClient = new GoogleApiClient.Builder(this)
@@ -81,16 +83,26 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                     +Math.pow(ay,2)
                     +Math.pow(az,2));
 
-            for (int i =0 ; i<BUFFER_SIZE-2 ; i++ ){
+            for (int i =0 ; i<SAMPLES_BUFFER_SIZE-1 ; i++ ){
                 //last place of buffer cleared
                 samples[i] = samples[i+1];
             }
 //            mAccelerationLabel.setText(Double.toString(svTotalAcceleration));
-            samples[BUFFER_SIZE-1] = svTotalAcceleration;
-//            if(fallDetected()){
-//                checkPosture();
-//            }
+            samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
+            if(fallDetected()){
+                //update user state table
+                currentState = "fell";
+            }
+            renewStates();
+            checkPosture();
         }
+    }
+
+    public void renewStates(){
+        for(int i = 0; i < BUFFER_SIZE - 2; i++){
+            states[i] = states[i+1];
+        }
+        states[BUFFER_SIZE-1] = currentState;
     }
 
     @Override
@@ -119,7 +131,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
     public void checkPosture(){
-        mAccelerationLabel.setVisibility(View.INVISIBLE);
+        //check from the state array to see if the "fall" state became "still"
+        //if so the user fell and is laid down
+        //else the user fell and stood up so no need to worry.
     }
 
     public static void setUsersState(String setState){
@@ -129,9 +143,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Intent intent = new Intent(this, ActivityRecognizedService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(this);
-        Task task = activityRecognitionClient.requestActivityUpdates(3000L,pendingIntent);
+        pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        activityRecognitionClient = ActivityRecognition.getClient(this);
+        activityRecognitionClient.requestActivityUpdates(0,pendingIntent);
     }
 
     @Override
@@ -141,6 +155,18 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e("ActivityDetector","Connection to Google Play Services failed.");
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try{
+            activityRecognitionClient.removeActivityUpdates(pendingIntent);
+            Log.d("Activity Recognition","ActivityRecognitionClient Removed.");
+        }catch (IllegalStateException e){
+            //the client probably was not initialized or something, just ignore and exit
+            Log.e("Activity Recognition","IllegalStateException caused: "+ e.getMessage());
+        }
     }
 }
