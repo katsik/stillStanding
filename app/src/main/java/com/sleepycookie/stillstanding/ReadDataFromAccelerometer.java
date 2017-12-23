@@ -140,7 +140,13 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 if(state == "fell"){flag = true;}
             }else{
                 if(state == "still"){
+                    //turn off the flag
+                    flag = false;
+//TODO triggerEmergency function which will handle the calling emergContact or the SMS sending
 //                    triggerEmergency();
+                }else if (state == "walking" || state =="running" || state == "tilting"){
+                    //user fell and stood up no need for emergency handling just turning off the flag
+                    flag = false;
                 }
             }
         }
