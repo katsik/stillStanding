@@ -3,6 +3,7 @@ package com.sleepycookie.stillstanding;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
@@ -43,21 +44,27 @@ public class ActivityRecognizedService extends IntentService {
         switch (mostProbableActivity.getType()){
             case DetectedActivity.ON_FOOT:
                 ReadDataFromAccelerometer.setUsersState("walking");
+                Log.d("Activity Detection","Walking");
                 break;
             case DetectedActivity.RUNNING:
                 ReadDataFromAccelerometer.setUsersState("running");
+                Log.d("Activity Detection","Running");
                 break;
             case DetectedActivity.WALKING:
                 ReadDataFromAccelerometer.setUsersState("walking");
+                Log.d("Activity Detection","Walking");
                 break;
             case DetectedActivity.STILL:
                 ReadDataFromAccelerometer.setUsersState("still");
+                Log.d("Activity Detection","Still");
                 break;
             case DetectedActivity.TILTING:
                 ReadDataFromAccelerometer.setUsersState("tilting");
+                Log.d("Activity Detection","Tilting");
                 break;
             default:
                 ReadDataFromAccelerometer.setUsersState("unknown");
+                Log.d("Activity Detection","Unknown");
         }
     }
 }

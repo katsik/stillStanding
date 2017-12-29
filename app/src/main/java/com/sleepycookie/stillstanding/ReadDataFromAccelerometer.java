@@ -7,12 +7,18 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,13 +48,18 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public ActivityRecognitionClient activityRecognitionClient;
     private PendingIntent pendingIntent;
 
+    public Button quitButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_data_from_accelerometer);
+
 /*        sensor provides data according to relationship :
                 linear acceleration = acceleration - acceleration due to gravity
  */
+        quitButton = (Button)findViewById(R.id.btn_quit);
+        initQuitFunctionality();
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 
@@ -87,7 +98,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 //last place of buffer cleared
                 samples[i] = samples[i+1];
             }
-//            mAccelerationLabel.setText(Double.toString(svTotalAcceleration));
+            mAccelerationLabel.setText(Double.toString(svTotalAcceleration));
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
             if(fallDetected()){
                 //update user state table
@@ -103,6 +114,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             states[i] = states[i+1];
         }
         states[BUFFER_SIZE-1] = currentState;
+        if (states[BUFFER_SIZE-1]!="fell"){
+            Log.d("Renew States","last element: "+states[BUFFER_SIZE-1]);
+        }
     }
 
     @Override
@@ -115,13 +129,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
 
-        //setting as the highest threshold acceptable the 2.5*9.81 [m/s^2]
-        if (samples[BUFFER_SIZE-1] >= 2.5 * GRAVITY_ACCELERATION){
-            for (int i =0; i<=BUFFER_SIZE-2;i++){
-                //lowest threshold acceptable is 0.6 * 9.81 [m/s^2]
-                if (samples[i] <= 0.6 * GRAVITY_ACCELERATION){
+        //setting as the lowest threshold acceptable the 0.6*9.81 [m/s^2]
+        if (samples[SAMPLES_BUFFER_SIZE-1] <= 0.6 * GRAVITY_ACCELERATION){
+            for (int i =0; i<=SAMPLES_BUFFER_SIZE-2;i++){
+                //highest threshold acceptable is 2.5 * 9.81 [m/s^2]
+                if (samples[i] <= 2.5 * GRAVITY_ACCELERATION){
                     // Fall detected because currently acceleration hit high threshold
                     // and previously had hit the low threshold.
+                    Log.d("Fall Detection","Fall Detected!");
+                    Toast.makeText(this,"It seems like you fell", Toast.LENGTH_LONG).show();
                     return true;
                 }
             }
@@ -131,7 +147,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
     public void checkPosture(){
-        //check from the state array to see if the "fall" state became "still"
+        //check from the state array to see if the "fell" state became "still"
         //if so the user fell and is laid down
         //else the user fell and stood up so no need to worry.
         boolean flag = false;
@@ -143,12 +159,24 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                     //turn off the flag
                     flag = false;
 //TODO triggerEmergency function which will handle the calling emergContact or the SMS sending
-//                    triggerEmergency();
+                    triggerEmergency();
                 }else if (state == "walking" || state =="running" || state == "tilting"){
                     //user fell and stood up no need for emergency handling just turning off the flag
                     flag = false;
                 }
             }
+        }
+    }
+
+    public void triggerEmergency(){
+        mAccelerationLabel.setText("User fell and didn't stand up");
+        Toast.makeText(this,"User fell and didn't stand up",Toast.LENGTH_LONG).show();
+        try{
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),notification);
+            r.play();
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -165,9 +193,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-
-    }
+    public void onConnectionSuspended(int i) {}
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -175,8 +201,23 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onResume(){
+        super.onResume();
+
+        mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Don't receive any more updates from sensor.
+        mSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         try{
             activityRecognitionClient.removeActivityUpdates(pendingIntent);
             Log.d("Activity Recognition","ActivityRecognitionClient Removed.");
@@ -184,5 +225,22 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             //the client probably was not initialized or something, just ignore and exit
             Log.e("Activity Recognition","IllegalStateException caused: "+ e.getMessage());
         }
+
+        if (mApiClient.isConnected()) {
+            Intent intent2 = new Intent(this.getApplicationContext(), ActivityRecognizedService.class);
+            PendingIntent pendingIntent = PendingIntent.getService(this.getApplicationContext(), 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+            activityRecognitionClient.removeActivityUpdates(pendingIntent);
+            mApiClient.disconnect();
+        }
+    }
+
+    public void initQuitFunctionality(){
+        quitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finishAffinity();
+
+            }
+        });
     }
 }
