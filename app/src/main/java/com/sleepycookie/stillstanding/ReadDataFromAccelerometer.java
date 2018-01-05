@@ -31,6 +31,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     private SensorManager mSensorManager;
 
+    static public Context context;
     public TextView mAccelerationLabel;
     public double ax,ay,az;
     public double svTotalAcceleration;
@@ -54,6 +55,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_data_from_accelerometer);
+        ReadDataFromAccelerometer.context = getApplicationContext();
 
 /*        sensor provides data according to relationship :
                 linear acceleration = acceleration - acceleration due to gravity
@@ -79,6 +81,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mApiClient.connect();
     }
 
+    /**
+     * Method triggered every time the accelerometer sensor detects a change and calculates the total acceleration
+     * the device has.
+     *
+     * Maybe we could pass a high-pass filter to make the acceleration values smoother as indicated
+     * in https://developer.android.com/reference/android/hardware/SensorEvent.html but definitely not
+     * a low-pass filter cause this will filter out the sudden quick movements which literally define a fall.
+     * @param sensorEvent
+     */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         //TODO
@@ -114,9 +125,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             states[i] = states[i+1];
         }
         states[BUFFER_SIZE-1] = currentState;
-        if (states[BUFFER_SIZE-1]!="fell"){
-            Log.d("Renew States","last element: "+states[BUFFER_SIZE-1]);
-        }
+//        if (states[BUFFER_SIZE-1]!="fell"){
+//            Log.d("Renew States","last element: "+states[BUFFER_SIZE-1]);
+//        }
     }
 
     @Override
@@ -124,16 +135,28 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //TODO ?
     }
 
+    /**
+     * This method is used to detect a fall of the user.
+     *
+     * What we do here is the following. First we compare the last acceleration value with a low threshold
+     * which is 0.5*gravity_acceleration(=9.81 m/s^2) if this value is less than our low threshold we
+     * continue to comparing the previous from the last value to check if a value over our high threshold
+     * was sampled (high threshold = 3 * gravity_acceleration). If both comparisons come true then a fall was detected.
+     *
+     * TL;DR
+     * @return true in case a fall was detected false otherwise.
+     */
     public boolean fallDetected(){
         //1. compare acceleration amplitude with lower threshold
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
 
         //setting as the lowest threshold acceptable the 0.6*9.81 [m/s^2]
-        if (samples[SAMPLES_BUFFER_SIZE-1] <= 0.6 * GRAVITY_ACCELERATION){
+        if (samples[SAMPLES_BUFFER_SIZE-1] <= 0.5 * GRAVITY_ACCELERATION){
+            //TODO loose the for loop and just compare with the samples[SAMPLE_BUFFER_SIZE - 2] value as the method instruction indicates.
             for (int i =0; i<=SAMPLES_BUFFER_SIZE-2;i++){
                 //highest threshold acceptable is 2.5 * 9.81 [m/s^2]
-                if (samples[i] <= 2.5 * GRAVITY_ACCELERATION){
+                if (samples[i] <= 3 * GRAVITY_ACCELERATION){
                     // Fall detected because currently acceleration hit high threshold
                     // and previously had hit the low threshold.
                     Log.d("Fall Detection","Fall Detected!");
@@ -146,6 +169,14 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         return false;
     }
 
+    /**
+     * This method checks weather the user is still, walking, running etc.
+     *
+     * If a fall of user is detected the next thing to monitor will be whether the user will stand up
+     * or will remain on the ground. If the user stands up and starts walking/running this means that
+     * either we had a FP fall detection or the user fell and stood up again so no need to trigger an
+     * emergency event.
+     */
     public void checkPosture(){
         //check from the state array to see if the "fell" state became "still"
         //if so the user fell and is laid down
@@ -158,7 +189,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 if(state == "still"){
                     //turn off the flag
                     flag = false;
-//TODO triggerEmergency function which will handle the calling emergContact or the SMS sending
+                //TODO triggerEmergency function which will handle the calling emergContact or the SMS sending
                     triggerEmergency();
                 }else if (state == "walking" || state =="running" || state == "tilting"){
                     //user fell and stood up no need for emergency handling just turning off the flag
@@ -168,6 +199,13 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         }
     }
 
+    /**
+     * This method will be used to trigger the actions needed to be done in case user falls.
+     * Probably a phone calling functionality to the emergency contact will be added or even a message
+     * to his cell phone or Messenger, WhatsApp, Viber etc.
+     *
+     * Currently this method makes a notification sound just for debugging purposes.
+     */
     public void triggerEmergency(){
         mAccelerationLabel.setText("User fell and didn't stand up");
         Toast.makeText(this,"User fell and didn't stand up",Toast.LENGTH_LONG).show();
@@ -189,12 +227,21 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         Intent intent = new Intent(this, ActivityRecognizedService.class);
         pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         activityRecognitionClient = ActivityRecognition.getClient(this);
-        activityRecognitionClient.requestActivityUpdates(0,pendingIntent);
+        activityRecognitionClient.requestActivityUpdates(500,pendingIntent);
+//        activityRecognitionClient.requestActivityUpdates(0,pendingIntent);
     }
 
+    /**
+     * We won't be using this.
+     * @param i
+     */
     @Override
     public void onConnectionSuspended(int i) {}
 
+    /**
+     * Method called in case the connection to Google Play cannot be achieved.
+     * @param connectionResult
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e("ActivityDetector","Connection to Google Play Services failed.");
@@ -219,6 +266,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     protected void onDestroy() {
         super.onDestroy();
         try{
+            //unbind client and stop receiving updates according his/her activity
             activityRecognitionClient.removeActivityUpdates(pendingIntent);
             Log.d("Activity Recognition","ActivityRecognitionClient Removed.");
         }catch (IllegalStateException e){
@@ -234,6 +282,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         }
     }
 
+    /**
+    *Method used to initialize functionality of Quit button
+    **/
     public void initQuitFunctionality(){
         quitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -243,4 +294,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             }
         });
     }
+
+    public static void toastingBoom(String msg){
+        Log.d("Activity Detected",msg);
+    }
 }
+// TODO make the Toasts from fall detection stop stacking in queue!
