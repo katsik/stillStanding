@@ -50,6 +50,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     private PendingIntent pendingIntent;
 
     public Button quitButton;
+    public Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,20 +154,32 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         //setting as the lowest threshold acceptable the 0.6*9.81 [m/s^2]
         if (samples[SAMPLES_BUFFER_SIZE-1] <= 0.5 * GRAVITY_ACCELERATION){
-            //TODO loose the for loop and just compare with the samples[SAMPLE_BUFFER_SIZE - 2] value as the method instruction indicates.
-            for (int i =0; i<=SAMPLES_BUFFER_SIZE-2;i++){
-                //highest threshold acceptable is 2.5 * 9.81 [m/s^2]
-                if (samples[i] <= 3 * GRAVITY_ACCELERATION){
-                    // Fall detected because currently acceleration hit high threshold
-                    // and previously had hit the low threshold.
-                    Log.d("Fall Detection","Fall Detected!");
-                    Toast.makeText(this,"It seems like you fell", Toast.LENGTH_LONG).show();
-                    return true;
-                }
+            //highest threshold acceptable is 2.5 * 9.81 [m/s^2]
+            if (samples[0] <= 3 * GRAVITY_ACCELERATION){
+                // Fall detected because currently acceleration hit high threshold
+                // and previously had hit the low threshold.
+                Log.d("Fall Detection","Fall Detected!");
+                showAToast("It seems like you fell");
+
+                return true;
             }
+
         }
 
         return false;
+    }
+
+    /**
+     * Use this to prevent multiple Toasts spamming the UI
+     *
+     * @param message
+     */
+    public void showAToast(String message){
+        if(mToast != null){
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(context,message,Toast.LENGTH_LONG);
+        mToast.show();
     }
 
     /**
