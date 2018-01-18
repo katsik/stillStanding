@@ -36,13 +36,14 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public double ax,ay,az;
     public double svTotalAcceleration;
     static int BUFFER_SIZE = 50;
-    static int SAMPLES_BUFFER_SIZE = 2;
+    static int SAMPLES_BUFFER_SIZE = 10;
     static public double[] samples = new double[SAMPLES_BUFFER_SIZE];
-    static public String[] states = new String[BUFFER_SIZE];
+    public String[] states = new String[BUFFER_SIZE];
 
     final static double GRAVITY_ACCELERATION = 9.81;
 
-    public static String currentState;
+    static boolean flag = false;
+    static public String currentState = "";
     double sigma = 0.5,th =10, th1 = 5, th2 = 2;
 
     public GoogleApiClient mApiClient;
@@ -73,6 +74,10 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         }
         currentState = "none";
 
+        for (int j = 0; j<states.length; j++){
+            states[j] = currentState;
+        }
+
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(ActivityRecognition.API)
                 .addConnectionCallbacks(this)
@@ -93,7 +98,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        //TODO
+
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
             float [] events = sensorEvent.values;
 
@@ -112,6 +117,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             }
             mAccelerationLabel.setText(Double.toString(svTotalAcceleration));
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
+
             if(fallDetected()){
                 //update user state table
                 currentState = "fell";
@@ -122,7 +128,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
     public void renewStates(){
-        for(int i = 0; i < BUFFER_SIZE - 2; i++){
+        for(int i = 0; i <= BUFFER_SIZE - 2; i++){
             states[i] = states[i+1];
         }
         states[BUFFER_SIZE-1] = currentState;
@@ -139,10 +145,10 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     /**
      * This method is used to detect a fall of the user.
      *
-     * What we do here is the following. First we compare the last acceleration value with a low threshold
-     * which is 0.5*gravity_acceleration(=9.81 m/s^2) if this value is less than our low threshold we
-     * continue to comparing the previous from the last value to check if a value over our high threshold
-     * was sampled (high threshold = 3 * gravity_acceleration). If both comparisons come true then a fall was detected.
+     * What we do here is the following. We already have a collection of the 10 latest acceleration
+     * values. We, then, make a comparison between the newest and the oldest value of the accelerations.
+     * If the difference is greater or equal than 2 * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
+     * this indicates a fall and a true value is returned. In any other case a false value is returned.
      *
      * TL;DR
      * @return true in case a fall was detected false otherwise.
@@ -152,22 +158,32 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
 
-        //setting as the lowest threshold acceptable the 0.6*9.81 [m/s^2]
-        if (samples[SAMPLES_BUFFER_SIZE-1] <= 0.5 * GRAVITY_ACCELERATION){
-            //highest threshold acceptable is 2.5 * 9.81 [m/s^2]
-            if (samples[0] <= 3 * GRAVITY_ACCELERATION){
-                // Fall detected because currently acceleration hit high threshold
-                // and previously had hit the low threshold.
-                Log.d("Fall Detection","Fall Detected!");
-                showAToast("It seems like you fell");
+        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2 * GRAVITY_ACCELERATION){
+//            Log.d("Fall Detection","Fall Detected!");
+            showAToast("It seems like you fell");
 
-                return true;
-            }
-
+            return true;
         }
 
         return false;
+
+        //setting as the lowest threshold acceptable the 0.6*9.81 [m/s^2]
+//        if (samples[SAMPLES_BUFFER_SIZE-1] <= 0.5 * GRAVITY_ACCELERATION){
+//            //highest threshold acceptable is 2.5 * 9.81 [m/s^2]
+//            if (samples[0] >= 2 * GRAVITY_ACCELERATION){
+//                // Fall detected because currently acceleration hit high threshold
+//                // and previously had hit the low threshold.
+//                Log.d("Fall Detection","Fall Detected!");
+//                showAToast("It seems like you fell");
+//
+//                return true;
+//            }
+//
+//        }
+//
+//        return false;
     }
+
 
     /**
      * Use this to prevent multiple Toasts spamming the UI
@@ -194,22 +210,28 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //check from the state array to see if the "fell" state became "still"
         //if so the user fell and is laid down
         //else the user fell and stood up so no need to worry.
-        boolean flag = false;
-        for (String state : states ){
+//        flag = false;
+        for (int i=0 ; i< states.length; i++){
             if(!flag){
-                if(state == "fell"){flag = true;}
+                if(states[i] == "fell"){
+                    flag = true;
+                    Log.d("Check Posture","State is " + states[i] + " and flag is " + Boolean.toString(flag));
+                }
             }else{
-                if(state == "still"){
+                Log.d("Check Posture","Hey I'm in!");
+                Log.d("Check Posture", "State is " + states[i]);
+                flag = false;
+
+                if(states[i] == "still"){
                     //turn off the flag
-                    flag = false;
-                //TODO triggerEmergency function which will handle the calling emergContact or the SMS sending
+                    //TODO triggerEmergency function which will handle the calling emergContact or the SMS sending
                     triggerEmergency();
-                }else if (state == "walking" || state =="running" || state == "tilting"){
-                    //user fell and stood up no need for emergency handling just turning off the flag
-                    flag = false;
                 }
             }
         }
+//        for (String state : states ){
+//
+//        }
     }
 
     /**
@@ -220,19 +242,23 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      * Currently this method makes a notification sound just for debugging purposes.
      */
     public void triggerEmergency(){
-        mAccelerationLabel.setText("User fell and didn't stand up");
+//        mAccelerationLabel.setText("User fell and didn't stand up");
+        mAccelerationLabel.setVisibility(View.INVISIBLE);
         Toast.makeText(this,"User fell and didn't stand up",Toast.LENGTH_LONG).show();
         try{
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),notification);
             r.play();
         }catch (Exception e){
+            Log.e("triggerEmergency","I actually caught the following exception");
             e.printStackTrace();
         }
     }
 
     public static void setUsersState(String setState){
-        currentState = setState;
+        //TODO log the value in setState because so far last state from states table seems to be null if no fall is detected
+        ReadDataFromAccelerometer.currentState = setState;
+        Log.d("setUsersState","currentState = " + currentState);
     }
 
     @Override
@@ -241,7 +267,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         activityRecognitionClient = ActivityRecognition.getClient(this);
         activityRecognitionClient.requestActivityUpdates(500,pendingIntent);
-//        activityRecognitionClient.requestActivityUpdates(0,pendingIntent);
+
     }
 
     /**
@@ -312,4 +338,3 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         Log.d("Activity Detected",msg);
     }
 }
-// TODO make the Toasts from fall detection stop stacking in queue!
