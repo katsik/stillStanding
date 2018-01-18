@@ -7,9 +7,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +28,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     private SensorManager mSensorManager;
 
+    public static final int MILLISECONDS_PER_SECOND = 1000;
+    public static final int DETECTION_INTERVAL_SECONDS = 20;
+    public static final int DETECTION_INTERVAL_MILLISECONDS =
+            MILLISECONDS_PER_SECOND * DETECTION_INTERVAL_SECONDS;
+
     static public Context context;
     public TextView mAccelerationLabel;
     public double ax,ay,az;
@@ -42,7 +44,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     final static double GRAVITY_ACCELERATION = 9.81;
 
-    static boolean flag = false;
     static public String currentState = "";
     double sigma = 0.5,th =10, th1 = 5, th2 = 2;
 
@@ -62,12 +63,12 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 /*        sensor provides data according to relationship :
                 linear acceleration = acceleration - acceleration due to gravity
  */
-        quitButton = (Button)findViewById(R.id.btn_quit);
+        quitButton = findViewById(R.id.btn_quit);
         initQuitFunctionality();
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 
-        mAccelerationLabel = (TextView)findViewById(R.id.tv_collecting);
+        mAccelerationLabel = findViewById(R.id.tv_collecting);
 
         for(int i=0;i<samples.length;i++){
             samples[i] = 0;
@@ -210,7 +211,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //check from the state array to see if the "fell" state became "still"
         //if so the user fell and is laid down
         //else the user fell and stood up so no need to worry.
-        flag = false;
+        boolean flag = false;
         for (int i=0 ; i< states.length; i++){
             if(!flag){
                 if(states[i] == "fell"){
@@ -245,14 +246,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 //        mAccelerationLabel.setText("User fell and didn't stand up");
         mAccelerationLabel.setVisibility(View.INVISIBLE);
         showAToast("User fell and didn't stand up");
-        try{
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),notification);
-            r.play();
-        }catch (Exception e){
-            Log.e("triggerEmergency","I actually caught the following exception");
-            e.printStackTrace();
-        }
+        //TODO add calling emergency number functionality
     }
 
     public static void setUsersState(String setState){
@@ -266,7 +260,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         Intent intent = new Intent(this, ActivityRecognizedService.class);
         pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         activityRecognitionClient = ActivityRecognition.getClient(this);
-        activityRecognitionClient.requestActivityUpdates(500,pendingIntent);
+        activityRecognitionClient.requestActivityUpdates(DETECTION_INTERVAL_MILLISECONDS,pendingIntent);
 
     }
 
