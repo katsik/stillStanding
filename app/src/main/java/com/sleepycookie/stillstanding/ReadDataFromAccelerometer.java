@@ -210,7 +210,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //check from the state array to see if the "fell" state became "still"
         //if so the user fell and is laid down
         //else the user fell and stood up so no need to worry.
-//        flag = false;
+        flag = false;
         for (int i=0 ; i< states.length; i++){
             if(!flag){
                 if(states[i] == "fell"){
@@ -244,7 +244,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public void triggerEmergency(){
 //        mAccelerationLabel.setText("User fell and didn't stand up");
         mAccelerationLabel.setVisibility(View.INVISIBLE);
-        Toast.makeText(this,"User fell and didn't stand up",Toast.LENGTH_LONG).show();
+        showAToast("User fell and didn't stand up");
         try{
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),notification);
