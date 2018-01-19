@@ -9,7 +9,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -34,7 +33,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             MILLISECONDS_PER_SECOND * DETECTION_INTERVAL_SECONDS;
 
     static public Context context;
-    public TextView mAccelerationLabel;
+    public TextView mLabelTextView;
     public double ax,ay,az;
     public double svTotalAcceleration;
     static int BUFFER_SIZE = 50;
@@ -68,7 +67,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 
-        mAccelerationLabel = findViewById(R.id.tv_collecting);
+        mLabelTextView = findViewById(R.id.tv_collecting);
+        mLabelTextView.setText("Are You Still Standing?");
 
         for(int i=0;i<samples.length;i++){
             samples[i] = 0;
@@ -116,7 +116,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 //last place of buffer cleared
                 samples[i] = samples[i+1];
             }
-            mAccelerationLabel.setText(Double.toString(svTotalAcceleration));
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
 
             if(fallDetected()){
@@ -243,8 +242,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      * Currently this method makes a notification sound just for debugging purposes.
      */
     public void triggerEmergency(){
-//        mAccelerationLabel.setText("User fell and didn't stand up");
-        mAccelerationLabel.setVisibility(View.INVISIBLE);
+//        mLabelTextView.setText("User fell and didn't stand up");
+        mLabelTextView.setVisibility(View.INVISIBLE);
         showAToast("User fell and didn't stand up");
         //TODO add calling emergency number functionality
     }
@@ -256,8 +255,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Intent intent = new Intent(this, ActivityRecognizedService.class);
+    public void onConnected(Bundle bundle) {
+        Intent intent = new Intent(context, ActivityRecognizedService.class);
         pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         activityRecognitionClient = ActivityRecognition.getClient(this);
         activityRecognitionClient.requestActivityUpdates(DETECTION_INTERVAL_MILLISECONDS,pendingIntent);
