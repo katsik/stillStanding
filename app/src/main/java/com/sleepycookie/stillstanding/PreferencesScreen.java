@@ -2,8 +2,10 @@ package com.sleepycookie.stillstanding;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,8 +41,13 @@ public class PreferencesScreen extends AppCompatActivity {
         emergencyContact = (TextView) findViewById(R.id.contact_name);
         emergencyNumber = (TextView) findViewById(R.id.contact_phone);
 
-        if(StillStandingPreferences.getSafetyContactName() != null) emergencyContact.setText(StillStandingPreferences.getSafetyContactName());
-        if(StillStandingPreferences.getSafetyContactNumber() != null) emergencyNumber.setText(StillStandingPreferences.getSafetyContactNumber());
+        SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
+        String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
+        SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
+        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
+
+        if(mName != null) emergencyContact.setText(mName);
+        if(mNumber != null) emergencyNumber.setText(mNumber);
 
         phoneContactsButtton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +105,13 @@ public class PreferencesScreen extends AppCompatActivity {
                         }
 
                         StillStandingPreferences.setSafetyContactName(name);
-                        emergencyContact.setText(name);
+//                        emergencyContact.setText(name);
+
+//                        SharedPreferences sharedPref = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
+//                        SharedPreferences.Editor editor = sharedPref.edit();
+//                        editor.putString(getString(R.string.emergency_name), name);
+//                        editor.commit();
+//                        emergencyContact.setText(name);
 
 
                         final CharSequence[] items = allNumbers.toArray(new String[allNumbers.size()]);
@@ -109,9 +122,17 @@ public class PreferencesScreen extends AppCompatActivity {
                                 String selectedNumber = items[item].toString();
                                 selectedNumber = selectedNumber.replace("-", "");
                                 Log.v("Selected Number:", selectedNumber);
-                                StillStandingPreferences.setSafetyContactNumber(selectedNumber);
 
+                                SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
+                                SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editorN = sharedPrefName.edit();
+                                SharedPreferences.Editor editorP = sharedPrefPhone.edit();
+                                editorP.putString(getString(R.string.emergency_number), selectedNumber);
+                                editorP.commit();
+                                editorN.putString(getString(R.string.emergency_name), StillStandingPreferences.getSafetyContactName());
+                                editorN.commit();
                                 emergencyNumber.setText(selectedNumber);
+                                emergencyContact.setText(StillStandingPreferences.getSafetyContactName());
                             }
                         });
                         AlertDialog alert = builder.create();
@@ -121,11 +142,6 @@ public class PreferencesScreen extends AppCompatActivity {
                             String selectedNumber = phoneNumber.toString();
                             selectedNumber = selectedNumber.replace("-", "");
                             Log.e("Sel:", selectedNumber);
-                            StillStandingPreferences.setSafetyContactNumber(selectedNumber);
-                            StillStandingPreferences.setSafetyContactName(name);
-
-                            emergencyNumber.setText(selectedNumber);
-                            emergencyContact.setText(name);
                         }
 
                         if (phoneNumber.length() == 0) {

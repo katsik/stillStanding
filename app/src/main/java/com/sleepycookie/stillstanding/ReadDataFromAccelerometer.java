@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -255,7 +256,10 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //TODO add calling emergency number functionality
         Intent intent = new Intent(Intent.ACTION_CALL);
 
-        intent.setData(Uri.parse("tel:" + StillStandingPreferences.getSafetyContactNumber()));
+        SharedPreferences sharedPref = getSharedPreferences("PREF_PHONE",Context.MODE_PRIVATE);
+        String mNumber = sharedPref.getString(getString(R.string.emergency_number), null);
+
+        intent.setData(Uri.parse("tel:" + mNumber));
 
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE);
