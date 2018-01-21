@@ -2,4 +2,5 @@
     <string name="app_name">Still Standing</string>
     <string name="collecting">Collecting Accelerometer Data...</string>
     <string name="quit">Quit</string>
+    <string name="app_description">This app will detect a potential fall and will call your emergency contact. Make sure you have accepted the requested permissions in order for the app to be able to contact your family or friend.</string>
 </resources>

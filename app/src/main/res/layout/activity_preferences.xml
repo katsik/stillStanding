@@ -4,27 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sleepycookie.stillstanding.MainActivity"
+    tools:context="com.sleepycookie.stillstanding.PreferencesScreen"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/contact_name"
         android:layout_margin="8dp"
-        android:text="@string/app_description"/>
+        android:text="Emergency Contact"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_phone"
+        android:layout_margin="8dp"
+        android:text="Phone Number"/>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/start_detection"
-        android:text="Start Detection"
-        android:layout_margin="8dp"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/set_contact"
-        android:text="Set Emergency Contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="pick contact"
         android:layout_margin="8dp"/>
 
 </LinearLayout>

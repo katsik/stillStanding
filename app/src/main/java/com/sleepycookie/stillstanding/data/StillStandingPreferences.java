@@ -6,14 +6,23 @@ package com.sleepycookie.stillstanding.data;
 
 public class StillStandingPreferences {
 
-    public static String safetyContact;
+    public static String safetyContactName;
 
+    public static String safetyContactNumber;
 
-    public static void setSafetyContact(String cnt){
-        safetyContact = cnt;
+    public static String getSafetyContactName() {
+        return safetyContactName;
     }
 
-    public static String getSafetyContact(){
-        return safetyContact;
+    public static String getSafetyContactNumber() {
+        return safetyContactNumber;
+    }
+
+    public static void setSafetyContactName(String safetyContactName) {
+        StillStandingPreferences.safetyContactName = safetyContactName;
+    }
+
+    public static void setSafetyContactNumber(String safetyContactNumber) {
+        StillStandingPreferences.safetyContactNumber = safetyContactNumber;
     }
 }

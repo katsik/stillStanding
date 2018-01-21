@@ -1,5 +1,6 @@
 package com.sleepycookie.stillstanding;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -7,9 +8,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +24,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
+import com.sleepycookie.stillstanding.data.StillStandingPreferences;
+
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class ReadDataFromAccelerometer extends AppCompatActivity implements SensorEventListener,
                                                             GoogleApiClient.ConnectionCallbacks,
@@ -247,6 +253,19 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mAccelerationLabel.setVisibility(View.INVISIBLE);
         showAToast("User fell and didn't stand up");
         //TODO add calling emergency number functionality
+        Intent intent = new Intent(Intent.ACTION_CALL);
+
+        intent.setData(Uri.parse("tel:" + StillStandingPreferences.getSafetyContactNumber()));
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CALL_PHONE);
+
+        if(permissionCheck==PERMISSION_GRANTED){
+            context.startActivity(intent);
+        }
+        else {
+            Log.d("Place emergency call", "User didn't give permission");
+        }
     }
 
     public static void setUsersState(String setState){

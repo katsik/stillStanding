@@ -3,6 +3,8 @@
     package="com.sleepycookie.stillstanding">
     
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"></uses-permission>
+    <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+    <uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,6 +21,7 @@
         </activity>
         <activity android:name=".ReadDataFromAccelerometer">
         </activity>
+        <activity android:name=".PreferencesScreen"></activity>
         <service android:name=".ActivityRecognizedService"/>
     </application>
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
