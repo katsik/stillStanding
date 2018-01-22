@@ -7,4 +7,7 @@
         app to be able to contact your family or friend.</string>
     <string name="emergency_name"></string>
     <string name="emergency_number"></string>
+    <string name="placholder_phone">Phone Number</string>
+    <string name="placeholder_name">Emergency Contact</string>
+    <string name="pick_contact">Pick Contact</string>
 </resources>

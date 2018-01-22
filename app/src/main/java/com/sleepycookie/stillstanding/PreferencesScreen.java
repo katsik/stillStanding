@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by geotsam on 21/01/2018.
+ * This is the activity that gets launched when a user goes to pick a contact.
+ * It inflates the proper xml UI and also handles the logic behind picking and saving
+ * contact.
  */
 
 public class PreferencesScreen extends AppCompatActivity {
@@ -36,10 +38,16 @@ public class PreferencesScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preferences);
 
-        phoneContactsButtton = (Button) findViewById(R.id.set_contact);
+        //TODO in activity_preferences: Refine the UI.
 
+        phoneContactsButtton = (Button) findViewById(R.id.set_contact);
         emergencyContact = (TextView) findViewById(R.id.contact_name);
         emergencyNumber = (TextView) findViewById(R.id.contact_phone);
+
+
+        /**
+         * Show the saved preferences or the placeholder text if there is nothing saved.
+         */
 
         SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
         String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
@@ -59,6 +67,25 @@ public class PreferencesScreen extends AppCompatActivity {
             }
         });
     }
+
+
+    /**
+     * Method triggered after clicking "Pick a contact". It shows the user the contact list UI,
+     * depending on their phone, and they can pick a desired contact. After that there is a dialog
+     * that lets them pick one of the phone numbers from that contact, which is then saved for
+     * future use. The dialog is shown even if there is only one number stored.
+     *
+     * Issues: - contacts with no phone number are shown in the list
+     *         - contacts almost always show the same number more than once (probably viber's fault)
+     *
+     * This piece of code was found in parts on stackoverflow.
+     *
+     * @param reqCode
+     * @param resultCode
+     * @param data
+     */
+
+    //TODO Show unique numbers in the dialog pop-up
 
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
@@ -105,13 +132,6 @@ public class PreferencesScreen extends AppCompatActivity {
                         }
 
                         StillStandingPreferences.setSafetyContactName(name);
-//                        emergencyContact.setText(name);
-
-//                        SharedPreferences sharedPref = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-//                        SharedPreferences.Editor editor = sharedPref.edit();
-//                        editor.putString(getString(R.string.emergency_name), name);
-//                        editor.commit();
-//                        emergencyContact.setText(name);
 
 
                         final CharSequence[] items = allNumbers.toArray(new String[allNumbers.size()]);

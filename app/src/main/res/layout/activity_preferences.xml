@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/contact_name"
         android:layout_margin="8dp"
-        android:text="Emergency Contact"
+        android:text="@string/placeholder_name"
         android:textStyle="bold"/>
 
     <TextView
@@ -20,13 +20,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/contact_phone"
         android:layout_margin="8dp"
-        android:text="Phone Number"/>
+        android:text="@string/placholder_phone"/>
 
     <Button
         android:id="@+id/set_contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="pick contact"
+        android:text="@string/pick_contact"
         android:layout_margin="8dp"/>
 
 </LinearLayout>

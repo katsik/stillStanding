@@ -247,13 +247,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      * Probably a phone calling functionality to the emergency contact will be added or even a message
      * to his cell phone or Messenger, WhatsApp, Viber etc.
      *
-     * Currently this method makes a notification sound just for debugging purposes.
+     * Currently this method places a call to the saved phone.
      */
+
+    //TODO Handle the case where the user has set no emergency contact. Maybe play an alarm, instead of calling null.
+
     public void triggerEmergency(){
 //        mLabelTextView.setText("User fell and didn't stand up");
         mLabelTextView.setVisibility(View.INVISIBLE);
         showAToast("User fell and didn't stand up");
-        //TODO add calling emergency number functionality
         Intent intent = new Intent(Intent.ACTION_CALL);
 
         SharedPreferences sharedPref = getSharedPreferences("PREF_PHONE",Context.MODE_PRIVATE);

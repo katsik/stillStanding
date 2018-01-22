@@ -24,35 +24,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //TODO in activity_main: Refine the UI
 
-        SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
-        String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
-        SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
-        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
+//        SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
+//        String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
+//        SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
+//        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
+//
+//        Log.e("name:", "n - " + mName);
+//        Log.e("phone:", "p - " + mNumber);
 
-        Log.e("name:", "n - " + mName);
-        Log.e("phone:", "p - " + mNumber);
-
-        int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
-        int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 2;
-
-
-        //TODO check why sometimes only phone permissions are asked
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CALL_PHONE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CALL_PHONE},MY_PERMISSIONS_REQUEST_CALL_PHONE);
-        }
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_CONTACTS},MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-        }
+        checkForPermissions();
 
         startDetection = (Button) findViewById(R.id.start_detection);
 
@@ -73,5 +55,28 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(setEmergencyContact);
             }
         });
+    }
+
+    void checkForPermissions(){
+        int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
+        int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 2;
+
+
+        //TODO check why sometimes only phone permissions are asked
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CALL_PHONE},MY_PERMISSIONS_REQUEST_CALL_PHONE);
+        }
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_CONTACTS},MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+        }
     }
 }
