@@ -22,7 +22,8 @@
         <activity android:name=".ReadDataFromAccelerometer"
             android:parentActivityName=".MainActivity">
         </activity>
-        <activity android:name=".PreferencesScreen"></activity>
+        <activity android:name=".PreferencesScreen"
+            android:parentActivityName=".MainActivity"></activity>
         <service android:name=".ActivityRecognizedService"/>
     </application>
     <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />

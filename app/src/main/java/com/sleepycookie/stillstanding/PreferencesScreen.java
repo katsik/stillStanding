@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +40,12 @@ public class PreferencesScreen extends AppCompatActivity {
         setContentView(R.layout.activity_preferences);
 
         //TODO in activity_preferences: Refine the UI.
+
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
 
         phoneContactsButtton = (Button) findViewById(R.id.set_contact);
         emergencyContact = (TextView) findViewById(R.id.contact_name);

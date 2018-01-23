@@ -12,6 +12,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -27,13 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO in activity_main: Refine the UI
 
-//        SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
-//        String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
-//        SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
-//        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
-//
-//        Log.e("name:", "n - " + mName);
-//        Log.e("phone:", "p - " + mNumber);
+        //checkStoredValues();
 
         checkForPermissions();
 
@@ -58,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.app_bar_menu, menu);
+        return true;
+    }
+
     void checkForPermissions(){
         int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
         int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 2;
@@ -79,5 +83,37 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_CONTACTS},MY_PERMISSIONS_REQUEST_READ_CONTACTS);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                Intent setEmergencyContact = new Intent(MainActivity.this, PreferencesScreen.class);
+                startActivity(setEmergencyContact);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    /**
+     * This method prints in the log the stored values for emergency contact/phone.
+     * FOR DEBUGGING PURPOSES
+     */
+
+    public void checkStoredValues(){
+        SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
+        String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
+        SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
+        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
+
+        Log.e("name:", "n - " + mName);
+        Log.e("phone:", "p - " + mNumber);
     }
 }

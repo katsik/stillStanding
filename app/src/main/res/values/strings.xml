@@ -10,4 +10,5 @@
     <string name="placholder_phone">Phone Number</string>
     <string name="placeholder_name">Emergency Contact</string>
     <string name="pick_contact">Pick Contact</string>
+    <string name="action_settings">Settings</string>
 </resources>
