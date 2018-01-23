@@ -14,12 +14,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -70,6 +72,13 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 /*        sensor provides data according to relationship :
                 linear acceleration = acceleration - acceleration due to gravity
  */
+
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
+
         quitButton = findViewById(R.id.btn_quit);
         initQuitFunctionality();
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);

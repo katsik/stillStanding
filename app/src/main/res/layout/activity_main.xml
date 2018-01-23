@@ -1,30 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sleepycookie.stillstanding.MainActivity"
-    android:orientation="vertical">
+    tools:context="com.sleepycookie.stillstanding.MainActivity" >
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="@string/app_description"/>
+        android:text="@string/app_description"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/app_description"/>
 
+    <!--
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/start_detection"
         android:text="Start Detection"
         android:layout_margin="8dp"/>
+    -->
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/set_contact"
         android:text="Set Emergency Contact"
-        android:layout_margin="8dp"/>
+        android:layout_margin="8dp"
+        android:layout_below="@+id/app_description"/>
 
-</LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:fabSize="normal"
+        android:id="@+id/start_detection"
+        android:src="@drawable/ic_accessibility_white_24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+</RelativeLayout>

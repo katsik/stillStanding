@@ -19,7 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ReadDataFromAccelerometer">
+        <activity android:name=".ReadDataFromAccelerometer"
+            android:parentActivityName=".MainActivity">
         </activity>
         <activity android:name=".PreferencesScreen"></activity>
         <service android:name=".ActivityRecognizedService"/>
