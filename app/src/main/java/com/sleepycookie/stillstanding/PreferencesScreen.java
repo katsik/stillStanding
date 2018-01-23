@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.sleepycookie.stillstanding.data.StillStandingPreferences;
@@ -30,7 +31,8 @@ import java.util.List;
 
 public class PreferencesScreen extends AppCompatActivity {
 
-    Button phoneContactsButtton;
+//    Button phoneContactsButtton;
+    ImageButton phoneContactsButtton;
     TextView emergencyNumber;
     TextView emergencyContact;
 
@@ -47,7 +49,8 @@ public class PreferencesScreen extends AppCompatActivity {
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
-        phoneContactsButtton = (Button) findViewById(R.id.set_contact);
+//        phoneContactsButtton = (Button) findViewById(R.id.set_contact);
+        phoneContactsButtton = (ImageButton) findViewById(R.id.set_contact);
         emergencyContact = (TextView) findViewById(R.id.contact_name);
         emergencyNumber = (TextView) findViewById(R.id.contact_phone);
 
