@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_item_height"
+    android:minHeight="@dimen/list_item_height">
+
+    <ImageView
+        android:layout_width="@dimen/list_item_height"
+        android:layout_height="@dimen/list_item_height"
+        android:id="@+id/person_image"
+        tools:src="@mipmap/ic_launcher"
+        android:layout_alignParentLeft="true"/>
+
+    <LinearLayout
+        android:id="@+id/item_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:gravity="center_vertical"
+        android:layout_toRightOf="@id/person_image"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:id="@+id/person_name"
+            tools:text="Giorgos Tsamis"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:layout_weight="1"
+            android:textSize="22sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:id="@+id/person_mail"
+            tools:text="geotsam@gmail.com"
+            android:textColor="#000000"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:layout_weight="1"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:id="@+id/person_website"
+            tools:text="github.com/geotsam"
+            android:textColor="#000000"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:layout_weight="1"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

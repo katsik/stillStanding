@@ -25,9 +25,9 @@
             android:parentActivityName=".MainActivity"
             android:label="@string/label_read_data"></activity>
         <activity
-            android:name=".PreferencesScreen"
+            android:name=".AboutActivity"
             android:parentActivityName=".MainActivity"
-            android:label="@string/label_preferences"></activity>
+            android:label="@string/label_about"></activity>
 
         <service android:name=".ActivityRecognizedService" />
     </application>

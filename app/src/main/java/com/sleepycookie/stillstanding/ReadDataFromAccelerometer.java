@@ -63,6 +63,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public Button quitButton;
     public Toast mToast;
 
+    //TODO init everything in onCreate
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -260,6 +262,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      */
 
     //TODO Handle the case where the user has set no emergency contact. Maybe play an alarm, instead of calling null.
+    //TODO This is triggered only when I lock the phone (Tsamis).
 
     public void triggerEmergency(){
 //        mLabelTextView.setText("User fell and didn't stand up");
