@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sleepycookie.stillstanding">
-    
+
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"></uses-permission>
     <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
     <uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,13 +20,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ReadDataFromAccelerometer"
-            android:parentActivityName=".MainActivity">
-        </activity>
-        <activity android:name=".PreferencesScreen"
-            android:parentActivityName=".MainActivity"></activity>
-        <service android:name=".ActivityRecognizedService"/>
+        <activity
+            android:name=".ReadDataFromAccelerometer"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/label_read_data"></activity>
+        <activity
+            android:name=".PreferencesScreen"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/label_preferences"></activity>
+
+        <service android:name=".ActivityRecognizedService" />
     </application>
-    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
 
 </manifest>
