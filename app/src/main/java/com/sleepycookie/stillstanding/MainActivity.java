@@ -1,6 +1,6 @@
 package com.sleepycookie.stillstanding;
 
- import android.Manifest;
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentUris;
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                         //TODO check if it does that consistently
                         List<String> allNumbers = new ArrayList<String>();
                         int phoneIdx = 0;
-
+                        //TODO check why some contacts show no numbers while they have.
                         while (phoneCur.moveToNext()) {
                             no = phoneCur.getString(phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                             int type = phoneCur.getInt(phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
@@ -323,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
     public Uri getPhoto(long contactId) {
         Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
 
+        //TODO get high quality image if available
         //Thumbnail photo uri
         Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
         Cursor cursor = getContentResolver().query(photoUri,
