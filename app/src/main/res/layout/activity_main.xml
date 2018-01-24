@@ -15,49 +15,76 @@
         android:paddingRight="16dp"
         android:paddingTop="16dp"
         android:text="@string/app_description"
-        android:layout_below="@+id/contact_block"/>
+        android:layout_below="@+id/card_view"/>
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/contact_block"
-        android:background="@color/colorPrimaryLight">
+        android:layout_height="90dp"
+        card_view:cardCornerRadius="2dp"
+        android:layout_margin="8dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/set_contact"
-            android:orientation="vertical"
-            android:padding="16dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:id="@+id/contact_block"
+            android:elevation="2dp">
 
-            <TextView
-                android:id="@+id/contact_name"
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/contact_image"
+                tools:src="@drawable/ic_tsamis"
+                tools:visibility="visible"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="@string/placeholder_name"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_toRightOf="@id/contact_image"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:layout_centerVertical="true">
 
-            <TextView
-                android:id="@+id/contact_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/placholder_phone"
-                android:textSize="16sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your Emergency Contact"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000"/>
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/contact_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/placeholder_name"
+                    android:textSize="14sp" />
 
-        <ImageButton
-            android:id="@+id/set_contact"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentRight="true"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_person_add_black_24dp" />
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/contact_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/placholder_phone"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/set_contact"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_margin="8dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_person_add_black_24dp"
+                android:background="#00000000"/>
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/start_detection"

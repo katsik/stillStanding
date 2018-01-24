@@ -3,6 +3,7 @@ package com.sleepycookie.stillstanding;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,8 +22,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sleepycookie.stillstanding.data.StillStandingPreferences;
@@ -30,7 +31,6 @@ import com.sleepycookie.stillstanding.data.StillStandingPreferences;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton phoneContactsButton;
     TextView emergencyNumber;
     TextView emergencyContact;
+    ImageView emergencyPhoto;
 
 
     @Override
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         phoneContactsButton = (ImageButton) findViewById(R.id.set_contact);
         emergencyContact = (TextView) findViewById(R.id.contact_name);
         emergencyNumber = (TextView) findViewById(R.id.contact_phone);
+        emergencyPhoto = (ImageView) findViewById(R.id.contact_image);
 
         /**
          * Show the saved preferences or the placeholder text if there is nothing saved.
@@ -71,9 +73,16 @@ public class MainActivity extends AppCompatActivity {
         String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
         SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
         String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
+        SharedPreferences sharedPrefPhoto = getSharedPreferences("PREF_PHOTO", Context.MODE_PRIVATE);
+        String mPhoto = sharedPrefPhoto.getString(getString(R.string.emergency_photo), null);
 
         if (mName != null) emergencyContact.setText(mName);
         if (mNumber != null) emergencyNumber.setText(mNumber);
+        if (mPhoto != null) {
+            emergencyPhoto.setVisibility(View.VISIBLE);
+            emergencyPhoto.setImageURI(Uri.parse(mPhoto));
+        }
+        else emergencyPhoto.setVisibility(View.GONE);
 
         phoneContactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,10 +156,8 @@ public class MainActivity extends AppCompatActivity {
      * depending on their phone, and they can pick a desired contact. After that there is a dialog
      * that lets them pick one of the phone numbers from that contact, which is then saved for
      * future use. The dialog is shown even if there is only one number stored.
-     * <p>
-     * Issues: - contacts with no phone number are shown in the list
-     * - contacts almost always show the same number more than once (probably viber's fault)
-     * <p>
+     * Issues:
+     * - contacts with no phone number are shown in the list
      * This piece of code was found in parts on stackoverflow.
      *
      * @param reqCode
@@ -176,7 +183,17 @@ public class MainActivity extends AppCompatActivity {
                         Cursor phoneCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
 
+
+                        //Gets contact photo URI
+                        Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long
+                                .parseLong(id));
+                        final Uri photoUri = getPhoto(Long.parseLong(id));
+
+
                         String phoneNumber = "";
+
+                        //Removes duplicate numbers
+                        //TODO check if it does that consistently
                         List<String> allNumbers = new ArrayList<String>();
                         int phoneIdx = 0;
 
@@ -222,14 +239,32 @@ public class MainActivity extends AppCompatActivity {
 
                                 SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
                                 SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
+                                SharedPreferences sharedPrefPhoto = getSharedPreferences("PREF_PHOTO", Context.MODE_PRIVATE);
+
                                 SharedPreferences.Editor editorN = sharedPrefName.edit();
                                 SharedPreferences.Editor editorP = sharedPrefPhone.edit();
+                                SharedPreferences.Editor editorPhoto = sharedPrefPhoto.edit();
+
                                 editorP.putString(getString(R.string.emergency_number), selectedNumber);
                                 editorP.commit();
                                 editorN.putString(getString(R.string.emergency_name), StillStandingPreferences.getSafetyContactName());
                                 editorN.commit();
+
                                 emergencyNumber.setText(selectedNumber);
                                 emergencyContact.setText(StillStandingPreferences.getSafetyContactName());
+
+                                if (photoUri != null) {
+                                    editorPhoto.putString(getString(R.string.emergency_photo), photoUri.toString());
+                                    editorPhoto.commit();
+                                    emergencyPhoto.setVisibility(View.VISIBLE);
+                                    emergencyPhoto.setImageURI(photoUri);
+                                    Log.e("Photo URI", photoUri.toString());
+                                }
+                                else{
+                                    emergencyPhoto.setVisibility(View.GONE);
+                                    editorPhoto.putString(getString(R.string.emergency_photo), null);
+                                    editorPhoto.commit();
+                                }
                             }
                         });
                         AlertDialog alert = builder.create();
@@ -259,5 +294,26 @@ public class MainActivity extends AppCompatActivity {
      */
     private static String removeSpaces(String input) {
         return input.replaceAll(" ", "");
+    }
+
+    public Uri getPhoto(long contactId) {
+        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+        Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+        Cursor cursor = getContentResolver().query(photoUri,
+                new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+        if (cursor == null) {
+            return null;
+        }
+        try {
+            if (cursor.moveToFirst()) {
+                byte[] data = cursor.getBlob(0);
+                if (data != null) {
+                    return photoUri;
+                }
+            }
+        } finally {
+            cursor.close();
+        }
+        return null;
     }
 }
