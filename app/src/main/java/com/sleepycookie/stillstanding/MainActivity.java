@@ -28,7 +28,9 @@ import android.widget.TextView;
 import com.sleepycookie.stillstanding.data.StillStandingPreferences;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,15 +72,15 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
         String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
 
-        if(mName != null) emergencyContact.setText(mName);
-        if(mNumber != null) emergencyNumber.setText(mNumber);
+        if (mName != null) emergencyContact.setText(mName);
+        if (mNumber != null) emergencyNumber.setText(mNumber);
 
         phoneContactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // The below two lines is needed to open the contact list of  mobile
                 Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(contactPickerIntent,1);
+                startActivityForResult(contactPickerIntent, 1);
 
             }
         });
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    void checkForPermissions(){
+    void checkForPermissions() {
         int MY_PERMISSIONS_REQUEST_ALL = 1;
 
         String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE};
@@ -101,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED
                 ||
                 ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
+                        Manifest.permission.READ_CONTACTS)
+                        != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
         }
@@ -130,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
      * FOR DEBUGGING PURPOSES
      */
 
-    public void checkStoredValues(){
+    public void checkStoredValues() {
         SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
         String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
         SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
@@ -145,10 +147,10 @@ public class MainActivity extends AppCompatActivity {
      * depending on their phone, and they can pick a desired contact. After that there is a dialog
      * that lets them pick one of the phone numbers from that contact, which is then saved for
      * future use. The dialog is shown even if there is only one number stored.
-     *
+     * <p>
      * Issues: - contacts with no phone number are shown in the list
-     *         - contacts almost always show the same number more than once (probably viber's fault)
-     *
+     * - contacts almost always show the same number more than once (probably viber's fault)
+     * <p>
      * This piece of code was found in parts on stackoverflow.
      *
      * @param reqCode
@@ -156,17 +158,15 @@ public class MainActivity extends AppCompatActivity {
      * @param data
      */
 
-    //TODO Show unique numbers in the dialog pop-up
-
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
 
         switch (reqCode) {
-            case (1) :
+            case (1):
                 if (resultCode == Activity.RESULT_OK) {
                     Uri contactData = data.getData();
-                    Cursor c =  getContentResolver().query(contactData, null, null, null, null);
+                    Cursor c = getContentResolver().query(contactData, null, null, null, null);
                     if (c.moveToFirst()) {
                         String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                         String no = "";
 
                         Cursor phoneCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[] { id }, null);
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
 
                         String phoneNumber = "";
                         List<String> allNumbers = new ArrayList<String>();
@@ -187,16 +187,19 @@ public class MainActivity extends AppCompatActivity {
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
                                     // do something with the Home number here...
                                     Log.v("Home", name + ": " + no);
+                                    no = removeSpaces(no);
                                     allNumbers.add(no);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
                                     // do something with the Mobile number here...
                                     Log.v("Mobile", name + ": " + no);
+                                    no = removeSpaces(no);
                                     allNumbers.add(no);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
                                     // do something with the Work number here...
                                     Log.v("Work", name + ": " + no);
+                                    no = removeSpaces(no);
                                     allNumbers.add(no);
                                     break;
                             }
@@ -204,6 +207,9 @@ public class MainActivity extends AppCompatActivity {
 
                         StillStandingPreferences.setSafetyContactName(name);
 
+
+                        //removes duplicates from list
+                        allNumbers = new ArrayList<>(new HashSet<>(allNumbers));
 
                         final CharSequence[] items = allNumbers.toArray(new String[allNumbers.size()]);
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -227,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         AlertDialog alert = builder.create();
-                        if(allNumbers.size() > 0) {
+                        if (allNumbers.size() > 0) {
                             alert.show();
                         } else {
                             String selectedNumber = phoneNumber.toString();
@@ -243,5 +249,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    /**
+     * Removes all space characters from input string
+     *
+     * @param input
+     * @return
+     */
+    private static String removeSpaces(String input) {
+        return input.replaceAll(" ", "");
     }
 }
