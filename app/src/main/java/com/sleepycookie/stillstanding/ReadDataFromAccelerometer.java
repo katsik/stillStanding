@@ -12,7 +12,6 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,13 +20,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
-import com.sleepycookie.stillstanding.data.StillStandingPreferences;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -89,14 +86,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mLabelTextView = findViewById(R.id.tv_collecting);
         mLabelTextView.setText("Are You Still Standing?");
 
-        for(int i=0;i<samples.length;i++){
-            samples[i] = 0;
-        }
-        currentState = "none";
-
-        for (int j = 0; j<states.length; j++){
-            states[j] = currentState;
-        }
+        initValues();
 
         mApiClient = new GoogleApiClient.Builder(this)
                 .addApi(ActivityRecognition.API)
@@ -105,6 +95,20 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 .build();
 
         mApiClient.connect();
+    }
+
+    /**
+     * This method initializes the arrays used for keeping track of the states and the acceleration values.
+     */
+    public void initValues(){
+        for(int i=0;i<samples.length;i++){
+            samples[i] = 0;
+        }
+        currentState = "none";
+
+        for (int j = 0; j<states.length; j++){
+            states[j] = currentState;
+        }
     }
 
     /**
@@ -186,21 +190,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         return false;
 
-        //setting as the lowest threshold acceptable the 0.6*9.81 [m/s^2]
-//        if (samples[SAMPLES_BUFFER_SIZE-1] <= 0.5 * GRAVITY_ACCELERATION){
-//            //highest threshold acceptable is 2.5 * 9.81 [m/s^2]
-//            if (samples[0] >= 2 * GRAVITY_ACCELERATION){
-//                // Fall detected because currently acceleration hit high threshold
-//                // and previously had hit the low threshold.
-//                Log.d("Fall Detection","Fall Detected!");
-//                showAToast("It seems like you fell");
-//
-//                return true;
-//            }
-//
-//        }
-//
-//        return false;
     }
 
 
@@ -274,6 +263,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         String mNumber = sharedPref.getString(getString(R.string.emergency_number), null);
 
         intent.setData(Uri.parse("tel:" + mNumber));
+        //initialize state values to prevent multiple calling events.
+        initValues();
 
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE);
@@ -287,9 +278,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
     public static void setUsersState(String setState){
-        //TODO log the value in setState because so far last state from states table seems to be null if no fall is detected
         ReadDataFromAccelerometer.currentState = setState;
-        Log.d("setUsersState","currentState = " + currentState);
+//        Log.d("setUsersState","currentState = " + currentState);
     }
 
     @Override

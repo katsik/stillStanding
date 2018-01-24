@@ -107,16 +107,26 @@ public class MainActivity extends AppCompatActivity {
 
         String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE};
 
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CALL_PHONE)
-                != PackageManager.PERMISSION_GRANTED
-                ||
-                ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_CONTACTS)
-                        != PackageManager.PERMISSION_GRANTED) {
-
+        if (forbiddenToCallOrReadContacts(this)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
         }
+    }
+
+    /**
+     * Used to check for permissions to access contacts or call phone
+     * @param context
+     *
+     * @return
+     * true if either one of the two permissions is NOT granted
+     * false in any other case
+     */
+    private boolean forbiddenToCallOrReadContacts(Context context){
+        if(ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        return false;
     }
 
     @Override
