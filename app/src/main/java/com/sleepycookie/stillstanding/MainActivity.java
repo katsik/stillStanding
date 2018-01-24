@@ -214,19 +214,31 @@ public class MainActivity extends AppCompatActivity {
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
                                     // do something with the Home number here...
                                     Log.v("Home", name + ": " + no);
-                                    no = removeSpacesAndLines(no);
+                                    no = removeClutter(no);
                                     allNumbers.add(no);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
                                     // do something with the Mobile number here...
                                     Log.v("Mobile", name + ": " + no);
-                                    no = removeSpacesAndLines(no);
+                                    no = removeClutter(no);
                                     allNumbers.add(no);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
                                     // do something with the Work number here...
                                     Log.v("Work", name + ": " + no);
-                                    no = removeSpacesAndLines(no);
+                                    no = removeClutter(no);
+                                    allNumbers.add(no);
+                                    break;
+                                case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
+                                    // do something with the Work number here...
+                                    Log.v("Other", name + ": " + no);
+                                    no = removeClutter(no);
+                                    allNumbers.add(no);
+                                    break;
+                                case ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM:
+                                    // do something with the Work number here...
+                                    Log.v("Custom", name + ": " + no);
+                                    no = removeClutter(no);
                                     allNumbers.add(no);
                                     break;
                             }
@@ -297,13 +309,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Removes all space characters from input string
+     * Removes all space, "-", "/" characters from input string
      *
      * @param input
      * @return
      */
-    private static String removeSpacesAndLines(String input) {
-        input.replaceAll("-", "");
+    private static String removeClutter(String input) {
+        input = input.replaceAll("-", "");
+        input = input.replaceAll("/","");
         return input.replaceAll(" ", "");
     }
 
