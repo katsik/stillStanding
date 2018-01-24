@@ -32,10 +32,10 @@ public class AboutActivity extends AppCompatActivity {
                 "giorgoskatsikopoulos@gmail.com",
                 "github.com/katsik",
                 R.drawable.ic_katsikopoulos));
-//        TODO add an image for stathis
         people.add(new Person("Stathis Bozikas",
                 "stathis.bozikas@gmail.com",
-                "github.com/AnonymousHyena", R.drawable.ic_tsamis));
+                "github.com/AnonymousHyena",
+                R.drawable.ic_bozikas));
 
         PersonAdapter adapter = new PersonAdapter(this, people);
 

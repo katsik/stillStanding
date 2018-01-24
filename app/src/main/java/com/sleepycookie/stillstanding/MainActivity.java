@@ -1,6 +1,6 @@
 package com.sleepycookie.stillstanding;
 
-import android.Manifest;
+ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentUris;
@@ -214,19 +214,19 @@ public class MainActivity extends AppCompatActivity {
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
                                     // do something with the Home number here...
                                     Log.v("Home", name + ": " + no);
-                                    no = removeSpaces(no);
+                                    no = removeSpacesAndLines(no);
                                     allNumbers.add(no);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
                                     // do something with the Mobile number here...
                                     Log.v("Mobile", name + ": " + no);
-                                    no = removeSpaces(no);
+                                    no = removeSpacesAndLines(no);
                                     allNumbers.add(no);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
                                     // do something with the Work number here...
                                     Log.v("Work", name + ": " + no);
-                                    no = removeSpaces(no);
+                                    no = removeSpacesAndLines(no);
                                     allNumbers.add(no);
                                     break;
                             }
@@ -302,12 +302,15 @@ public class MainActivity extends AppCompatActivity {
      * @param input
      * @return
      */
-    private static String removeSpaces(String input) {
+    private static String removeSpacesAndLines(String input) {
+        input.replaceAll("-", "");
         return input.replaceAll(" ", "");
     }
 
     public Uri getPhoto(long contactId) {
         Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+
+        //Thumbnail photo uri
         Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
         Cursor cursor = getContentResolver().query(photoUri,
                 new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
