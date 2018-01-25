@@ -173,7 +173,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      *
      * What we do here is the following. We already have a collection of the 10 latest acceleration
      * values. We, then, make a comparison between the newest and the oldest value of the accelerations.
-     * If the difference is greater or equal than 2 * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
+     * If the difference is greater or equal than 2.5 * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
      * this indicates a fall and a true value is returned. In any other case a false value is returned.
      *
      * TL;DR
@@ -184,7 +184,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
 
-        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2 * GRAVITY_ACCELERATION){
+        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2.5 * GRAVITY_ACCELERATION){
 //            Log.d("Fall Detection","Fall Detected!");
             showAToast("It seems like you fell");
 
@@ -361,8 +361,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         });
     }
 
+    //for debugging purposes
     public static void toastingBoom(String msg){
         Log.d("Activity Detected",msg);
-        Toast.makeText(context,msg,Toast.LENGTH_SHORT).show();
     }
 }
