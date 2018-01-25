@@ -39,6 +39,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public static final int DETECTION_INTERVAL_MILLISECONDS =
             MILLISECONDS_PER_SECOND * DETECTION_INTERVAL_SECONDS;
 
+    public static final int DETECTION_INTERVAL_ASAP = 0;
     static public Context context;
     public TextView mLabelTextView;
     public double ax,ay,az;
@@ -60,13 +61,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public Button quitButton;
     public Toast mToast;
 
-    //TODO init everything in onCreate
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_data_from_accelerometer);
         ReadDataFromAccelerometer.context = getApplicationContext();
+
+        mContext = this;
 
 /*        sensor provides data according to relationship :
                 linear acceleration = acceleration - acceleration due to gravity
@@ -170,7 +173,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      *
      * What we do here is the following. We already have a collection of the 10 latest acceleration
      * values. We, then, make a comparison between the newest and the oldest value of the accelerations.
-     * If the difference is greater or equal than 2 * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
+     * If the difference is greater or equal than 2.5 * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
      * this indicates a fall and a true value is returned. In any other case a false value is returned.
      *
      * TL;DR
@@ -181,7 +184,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
 
-        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2 * GRAVITY_ACCELERATION){
+        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2.5 * GRAVITY_ACCELERATION){
 //            Log.d("Fall Detection","Fall Detected!");
             showAToast("It seems like you fell");
 
@@ -237,9 +240,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 }
             }
         }
-//        for (String state : states ){
-//
-//        }
+
     }
 
     /**
@@ -257,12 +258,12 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 //        mLabelTextView.setText("User fell and didn't stand up");
         mLabelTextView.setVisibility(View.INVISIBLE);
         showAToast("User fell and didn't stand up");
-        Intent intent = new Intent(Intent.ACTION_CALL);
+        Intent callingIntent = new Intent(Intent.ACTION_CALL);
 
         SharedPreferences sharedPref = getSharedPreferences("PREF_PHONE",Context.MODE_PRIVATE);
         String mNumber = sharedPref.getString(getString(R.string.emergency_number), null);
 
-        intent.setData(Uri.parse("tel:" + mNumber));
+        callingIntent.setData(Uri.parse("tel:" + mNumber));
         //initialize state values to prevent multiple calling events.
         initValues();
 
@@ -270,7 +271,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 Manifest.permission.CALL_PHONE);
 
         if(permissionCheck==PERMISSION_GRANTED){
-            context.startActivity(intent);
+            try{
+                mContext.startActivity(callingIntent);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         else {
             Log.d("Place emergency call", "User didn't give permission");
@@ -285,9 +290,10 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     @Override
     public void onConnected(Bundle bundle) {
         Intent intent = new Intent(context, ActivityRecognizedService.class);
+        intent.setAction(Long.toString(System.currentTimeMillis()));
         pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         activityRecognitionClient = ActivityRecognition.getClient(this);
-        activityRecognitionClient.requestActivityUpdates(DETECTION_INTERVAL_MILLISECONDS,pendingIntent);
+        activityRecognitionClient.requestActivityUpdates(DETECTION_INTERVAL_ASAP,pendingIntent);
 
     }
 
@@ -355,6 +361,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         });
     }
 
+    //for debugging purposes
     public static void toastingBoom(String msg){
         Log.d("Activity Detected",msg);
     }
