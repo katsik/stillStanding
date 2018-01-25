@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                         String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
                         String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-                        String no = "";
+                        String number = "";
 
                         Cursor phoneCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                         //Gets contact photo URI
                         Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long
                                 .parseLong(id));
-                        final Uri photoUri = getPhoto(Long.parseLong(id));
+                        final Uri photoUri = getPhotoUri(Long.parseLong(id));
 
 
                         String phoneNumber = "";
@@ -213,41 +213,35 @@ public class MainActivity extends AppCompatActivity {
                         //Removes duplicate numbers
                         //TODO check if it does that consistently
                         List<String> allNumbers = new ArrayList<String>();
-                        int phoneIdx = 0;
-                        //TODO check why some contacts show no numbers while they have.
+
                         while (phoneCur.moveToNext()) {
-                            no = phoneCur.getString(phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            number = phoneCur.getString(phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                             int type = phoneCur.getInt(phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
                             switch (type) {
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                                    // do something with the Home number here...
-                                    Log.v("Home", name + ": " + no);
-                                    no = removeClutter(no);
-                                    allNumbers.add(no);
+                                    Log.v("Home", name + ": " + number);
+                                    number = removeClutter(number);
+                                    allNumbers.add(number);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
-                                    // do something with the Mobile number here...
-                                    Log.v("Mobile", name + ": " + no);
-                                    no = removeClutter(no);
-                                    allNumbers.add(no);
+                                    Log.v("Mobile", name + ": " + number);
+                                    number = removeClutter(number);
+                                    allNumbers.add(number);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                                    // do something with the Work number here...
-                                    Log.v("Work", name + ": " + no);
-                                    no = removeClutter(no);
-                                    allNumbers.add(no);
+                                    Log.v("Work", name + ": " + number);
+                                    number = removeClutter(number);
+                                    allNumbers.add(number);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
-                                    // do something with the Work number here...
-                                    Log.v("Other", name + ": " + no);
-                                    no = removeClutter(no);
-                                    allNumbers.add(no);
+                                    Log.v("Other", name + ": " + number);
+                                    number = removeClutter(number);
+                                    allNumbers.add(number);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM:
-                                    // do something with the Work number here...
-                                    Log.v("Custom", name + ": " + no);
-                                    no = removeClutter(no);
-                                    allNumbers.add(no);
+                                    Log.v("Custom", name + ": " + number);
+                                    number = removeClutter(number);
+                                    allNumbers.add(number);
                                     break;
                             }
                         }
@@ -307,11 +301,6 @@ public class MainActivity extends AppCompatActivity {
                             selectedNumber = selectedNumber.replace("-", "");
                             Log.v("Sel:", selectedNumber);
                         }
-
-                        if (phoneNumber.length() == 0) {
-                            //no numbers found actions
-                            Log.v("Phone Number", "None");
-                        }
                     }
                 }
                 break;
@@ -330,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
         return input.replaceAll(" ", "");
     }
 
-    public Uri getPhoto(long contactId) {
+    public Uri getPhotoUri(long contactId) {
         Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
 
         //TODO get high quality image if available
