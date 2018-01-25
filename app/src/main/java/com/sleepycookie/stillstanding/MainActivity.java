@@ -39,14 +39,12 @@ public class MainActivity extends AppCompatActivity {
     TextView emergencyNumber;
     TextView emergencyContact;
     ImageView emergencyPhoto;
-
+    android.support.v7.widget.CardView contactCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //TODO in activity_main: Refine the UI
 
         checkForPermissions();
 
@@ -64,9 +62,11 @@ public class MainActivity extends AppCompatActivity {
         emergencyContact = (TextView) findViewById(R.id.contact_name);
         emergencyNumber = (TextView) findViewById(R.id.contact_phone);
         emergencyPhoto = (ImageView) findViewById(R.id.contact_image);
+        contactCard = (android.support.v7.widget.CardView) findViewById(R.id.card_view);
 
         /**
          * Show the saved preferences or the placeholder text if there is nothing saved.
+         * In case there is no saved number the color of the card changes to orange to grab attention.
          */
 
         SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
@@ -77,7 +77,15 @@ public class MainActivity extends AppCompatActivity {
         String mPhoto = sharedPrefPhoto.getString(getString(R.string.emergency_photo), null);
 
         if (mName != null) emergencyContact.setText(mName);
-        if (mNumber != null) emergencyNumber.setText(mNumber);
+        if (mNumber != null) {
+            emergencyNumber.setText(mNumber);
+            contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
+            phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
+        }
+        else{
+            contactCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
+            phoneContactsButton.setImageResource(R.drawable.ic_person_add_black_24dp);
+        }
         if (mPhoto != null) {
             emergencyPhoto.setVisibility(View.VISIBLE);
             emergencyPhoto.setImageURI(Uri.parse(mPhoto));
@@ -157,8 +165,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
         String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
 
-        Log.e("name:", "n - " + mName);
-        Log.e("phone:", "p - " + mNumber);
+        Log.d("name:", "n - " + mName);
+        Log.d("phone:", "p - " + mNumber);
     }
 
     /**
@@ -246,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
 
                         StillStandingPreferences.setSafetyContactName(name);
 
-
                         //removes duplicates from list
                         allNumbers = new ArrayList<>(new HashSet<>(allNumbers));
 
@@ -274,13 +281,16 @@ public class MainActivity extends AppCompatActivity {
 
                                 emergencyNumber.setText(selectedNumber);
                                 emergencyContact.setText(StillStandingPreferences.getSafetyContactName());
+                                contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
+                                phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
+
 
                                 if (photoUri != null) {
                                     editorPhoto.putString(getString(R.string.emergency_photo), photoUri.toString());
                                     editorPhoto.commit();
                                     emergencyPhoto.setVisibility(View.VISIBLE);
                                     emergencyPhoto.setImageURI(photoUri);
-                                    Log.e("Photo URI", photoUri.toString());
+                                    Log.v("Photo URI", photoUri.toString());
                                 }
                                 else{
                                     emergencyPhoto.setVisibility(View.GONE);
@@ -295,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             String selectedNumber = phoneNumber.toString();
                             selectedNumber = selectedNumber.replace("-", "");
-                            Log.e("Sel:", selectedNumber);
+                            Log.v("Sel:", selectedNumber);
                         }
 
                         if (phoneNumber.length() == 0) {
