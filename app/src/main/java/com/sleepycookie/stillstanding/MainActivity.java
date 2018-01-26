@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+                          implements PickContactFragment.PickContactListener{
 
     FloatingActionButton startDetection;
     ImageButton phoneContactsButton;
@@ -50,14 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
         startDetection = (FloatingActionButton) findViewById(R.id.start_detection);
 
-        startDetection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent readData = new Intent(MainActivity.this, ReadDataFromAccelerometer.class);
-                startActivity(readData);
-            }
-        });
-
         phoneContactsButton = (ImageButton) findViewById(R.id.set_contact);
         emergencyContact = (TextView) findViewById(R.id.contact_name);
         emergencyNumber = (TextView) findViewById(R.id.contact_phone);
@@ -72,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
         String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
         SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
-        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
+        final String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
         SharedPreferences sharedPrefPhoto = getSharedPreferences("PREF_PHOTO", Context.MODE_PRIVATE);
         String mPhoto = sharedPrefPhoto.getString(getString(R.string.emergency_photo), null);
 
@@ -101,6 +94,34 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        startDetection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mNumber==null){
+                    triggerDialogBox();
+                }else{
+                    Intent readData = new Intent(MainActivity.this, ReadDataFromAccelerometer.class);
+                    startActivity(readData);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onPickContactPositive() {
+        Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(contactPickerIntent, 1);
+    }
+
+    @Override
+    public void onPickContactNegative() {
+        //TODO not sure if any useful but added it anyway :)
+    }
+
+    public void triggerDialogBox(){
+        PickContactFragment pickContact = new PickContactFragment();
+        pickContact.show(getSupportFragmentManager(),"PickContactFragment");
     }
 
     @Override
