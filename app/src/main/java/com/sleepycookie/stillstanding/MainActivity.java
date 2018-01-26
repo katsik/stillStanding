@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    //TODO save selected contact and don't show the dialog UI again if there is a contact
     @Override
     public void onPickContactPositive() {
         Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
