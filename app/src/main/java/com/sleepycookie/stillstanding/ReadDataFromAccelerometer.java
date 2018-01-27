@@ -196,6 +196,17 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
 
+
+//    public void checkPosture(){
+//        //wait for 30 seconds (setting the time randomly) to see if user stands up during this time
+//
+//        long timeOfFall = System.currentTimeMillis();
+//
+//        while(System.currentTimeMillis() - timeOfFall < 30*MILLISECONDS_PER_SECOND){
+//
+//        }
+//    }
+
     /**
      * Use this to prevent multiple Toasts spamming the UI
      *

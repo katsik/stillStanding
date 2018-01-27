@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
         String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
         SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
-        final String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
+        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
         SharedPreferences sharedPrefPhoto = getSharedPreferences("PREF_PHOTO", Context.MODE_PRIVATE);
         String mPhoto = sharedPrefPhoto.getString(getString(R.string.emergency_photo), null);
 
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity
         startDetection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mNumber==null){
+                if(getEmergencyNumber() == null){
                     triggerDialogBox();
                 }else{
                     Intent readData = new Intent(MainActivity.this, ReadDataFromAccelerometer.class);
@@ -106,6 +106,11 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    public String getEmergencyNumber(){
+        SharedPreferences sharedPreferences = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
+        return sharedPreferences.getString(getString(R.string.emergency_number),null);
     }
 
     @Override
