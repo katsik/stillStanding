@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+
     public String getEmergencyNumber(){
         SharedPreferences sharedPreferences = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
         return sharedPreferences.getString(getString(R.string.emergency_number),null);
@@ -233,11 +234,8 @@ public class MainActivity extends AppCompatActivity
                                 .parseLong(id));
                         final Uri photoUri = getPhotoUri(Long.parseLong(id));
 
-
                         String phoneNumber = "";
 
-                        //Removes duplicate numbers
-                        //TODO check if it does that consistently
                         List<String> allNumbers = new ArrayList<String>();
 
                         while (phoneCur.moveToNext()) {
@@ -274,7 +272,8 @@ public class MainActivity extends AppCompatActivity
 
                         StillStandingPreferences.setSafetyContactName(name);
 
-                        //removes duplicates from list
+                        //Removes duplicate numbers
+                        //TODO check if it does that consistently
                         allNumbers = new ArrayList<>(new HashSet<>(allNumbers));
 
                         final CharSequence[] items = allNumbers.toArray(new String[allNumbers.size()]);
