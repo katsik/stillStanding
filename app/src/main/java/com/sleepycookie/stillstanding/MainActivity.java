@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
         phoneContactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // The below two lines is needed to open the contact list of  mobile
+                // The two lines below are needed to open the contact list of  mobile
                 Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
                 startActivityForResult(contactPickerIntent, 1);
 

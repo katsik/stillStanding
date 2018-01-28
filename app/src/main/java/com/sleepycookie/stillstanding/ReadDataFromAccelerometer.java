@@ -63,6 +63,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     private Context mContext;
 
+    private Long timeOfFall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,9 +149,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             if(fallDetected()){
                 //update user state table
                 currentState = "fell";
+                setTimeOfFall(System.currentTimeMillis());
             }
+            //the states probably won't be needed since we changed our approach
+            //TODO remove the states from code.
             renewStates();
-            checkPosture();
+            if(getTimeOfFall()!=null){
+                checkPosture(timeOfFall);
+            }
+//            checkPosture();
         }
     }
 
@@ -197,15 +205,24 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
 
 
-//    public void checkPosture(){
-//        //wait for 30 seconds (setting the time randomly) to see if user stands up during this time
-//
-//        long timeOfFall = System.currentTimeMillis();
-//
-//        while(System.currentTimeMillis() - timeOfFall < 30*MILLISECONDS_PER_SECOND){
-//
-//        }
-//    }
+    public void checkPosture(long timeSinceFall){
+        //wait for 30 seconds (setting the time randomly) to see if user stands up during this time
+
+        long currentTime = System.currentTimeMillis();
+
+        if(currentTime - timeSinceFall >= 30 * MILLISECONDS_PER_SECOND){
+            for (double sample : samples){
+                if(sample > 1.25 * GRAVITY_ACCELERATION){
+                    //user stood up no need to trigger anything
+                    initValues();
+                }else{
+                    triggerEmergency();
+                }
+            }
+        }else{
+            Log.d("CheckPosture","Not yet");
+        }
+    }
 
     /**
      * Use this to prevent multiple Toasts spamming the UI
@@ -370,6 +387,14 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
             }
         });
+    }
+
+    private Long getTimeOfFall(){
+        return timeOfFall;
+    }
+
+    private void setTimeOfFall(long time){
+        timeOfFall = time;
     }
 
     //for debugging purposes
