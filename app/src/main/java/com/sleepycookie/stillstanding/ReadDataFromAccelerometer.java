@@ -110,7 +110,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             samples[i] = 0;
         }
         currentState = "none";
-
+        setTimeOfFall(null);
         for (int j = 0; j<states.length; j++){
             states[j] = currentState;
         }
@@ -206,17 +206,20 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
 
     public void checkPosture(long timeSinceFall){
-        //wait for 30 seconds (setting the time randomly) to see if user stands up during this time
+        //wait for 15 seconds (setting the time randomly) to see if user stands up during this time
 
         long currentTime = System.currentTimeMillis();
 
-        if(currentTime - timeSinceFall >= 30 * MILLISECONDS_PER_SECOND){
+        if(currentTime - timeSinceFall >= 15 * MILLISECONDS_PER_SECOND){
             for (double sample : samples){
-                if(sample > 1.25 * GRAVITY_ACCELERATION){
+                if(sample > 1.15 * GRAVITY_ACCELERATION){
                     //user stood up no need to trigger anything
                     initValues();
+                    break;
                 }else{
+                    initValues();
                     triggerEmergency();
+                    break;
                 }
             }
         }else{
@@ -393,7 +396,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         return timeOfFall;
     }
 
-    private void setTimeOfFall(long time){
+    private void setTimeOfFall(Long time){
         timeOfFall = time;
     }
 
