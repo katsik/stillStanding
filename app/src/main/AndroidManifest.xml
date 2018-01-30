@@ -28,6 +28,10 @@
             android:name=".AboutActivity"
             android:parentActivityName=".MainActivity"
             android:label="@string/label_about"></activity>
+        <activity
+            android:name=".IncidentHistory"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/label_history"></activity>
 
         <service android:name=".ActivityRecognizedService" />
     </application>

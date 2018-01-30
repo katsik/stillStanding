@@ -10,4 +10,11 @@
         android:title="@string/action_about"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/action_history"
+        android:orderInCategory="2"
+        android:icon="@drawable/ic_history_white_24dp"
+        android:title="@string/action_history"
+        app:showAsAction="ifRoom"/>
+
 </menu>

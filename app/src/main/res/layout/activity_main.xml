@@ -13,9 +13,8 @@
         android:layout_centerHorizontal="true"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="16dp"
         android:text="@string/app_description"
-        android:layout_below="@id/card_view" />
+        android:layout_below="@id/incident_card" />
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -86,63 +85,72 @@
 
     </android.support.v7.widget.CardView>
 
-
-    <!-- In case we want to show a different card when no contact has been selected
-
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view2"
+        android:id="@+id/incident_card"
         android:layout_width="match_parent"
         android:layout_height="90dp"
         card_view:cardCornerRadius="2dp"
-        android:layout_margin="8dp"
-        android:backgroundTint="#FF9800" >
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:elevation="2dp"
+        android:layout_below="@id/card_view"
+        android:visibility="gone"
+        tools:visibility="visible">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:id="@+id/contact_block2"
-            android:elevation="2dp">
+            android:id="@+id/incident_block" >
 
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/incident_image"
+                android:src="@drawable/ic_phone_white_24dp"
+                android:background="@drawable/shape_circle"
+                tools:visibility="visible"
+                android:padding="10dp"
+                android:layout_margin="15dp"/>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/incident_image"
                 android:orientation="vertical"
-                android:layout_alignParentLeft="true"
                 android:padding="12dp"
                 android:layout_centerVertical="true">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your Emergency Contact"
+                    android:text="Last Incident"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="#000000"/>
 
                 <TextView
+                    android:id="@+id/incident_card_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Select a contact."
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="30 Jan 2018, 15:38:23"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/incident_card_response"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Call to +306976162949"
                     android:textSize="14sp" />
 
             </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/set_contact2"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentRight="true"
-                android:layout_margin="8dp"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_person_add_black_24dp"
-                android:background="#00000000"/>
         </RelativeLayout>
-
     </android.support.v7.widget.CardView>
-    -->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/start_detection"

@@ -27,7 +27,7 @@ public class PersonAdapter extends ArrayAdapter<Person> {
         View listItemView=convertView;
         if(listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.list_item, parent, false);
+                    R.layout.list_person, parent, false);
         }
 
         Person currentPerson = getItem(position);

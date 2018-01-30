@@ -3,6 +3,7 @@ package com.sleepycookie.stillstanding;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.arch.persistence.room.Room;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,12 +27,17 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.sleepycookie.stillstanding.data.StillStandingPreferences;
+import com.sleepycookie.stillstanding.data.AppDatabase;
+import com.sleepycookie.stillstanding.data.Incident;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+
+//TODO clean & organize this activity
 public class MainActivity extends AppCompatActivity
                           implements PickContactFragment.PickContactListener{
 
@@ -41,6 +47,8 @@ public class MainActivity extends AppCompatActivity
     TextView emergencyContact;
     ImageView emergencyPhoto;
     android.support.v7.widget.CardView contactCard;
+    android.support.v7.widget.CardView incidentCard;
+    String tempName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +58,6 @@ public class MainActivity extends AppCompatActivity
         checkForPermissions();
 
         startDetection = (FloatingActionButton) findViewById(R.id.start_detection);
-
         phoneContactsButton = (ImageButton) findViewById(R.id.set_contact);
         emergencyContact = (TextView) findViewById(R.id.contact_name);
         emergencyNumber = (TextView) findViewById(R.id.contact_phone);
@@ -106,6 +113,8 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+        setIncidentCard();
     }
 
 
@@ -171,6 +180,12 @@ public class MainActivity extends AppCompatActivity
                 // User chose the "About" item, show the app "about" UI...
                 Intent seeInfo = new Intent(MainActivity.this, AboutActivity.class);
                 startActivity(seeInfo);
+                return true;
+
+            case R.id.action_history:
+                // User chose the "History" item, show the app "history" UI...
+                Intent seeHistory = new Intent(MainActivity.this, IncidentHistory.class);
+                startActivity(seeHistory);
                 return true;
 
             default:
@@ -270,7 +285,7 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
 
-                        StillStandingPreferences.setSafetyContactName(name);
+                        tempName=name;
 
                         //Removes duplicate numbers
                         //TODO check if it does that consistently
@@ -295,11 +310,11 @@ public class MainActivity extends AppCompatActivity
 
                                 editorP.putString(getString(R.string.emergency_number), selectedNumber);
                                 editorP.commit();
-                                editorN.putString(getString(R.string.emergency_name), StillStandingPreferences.getSafetyContactName());
+                                editorN.putString(getString(R.string.emergency_name), tempName);
                                 editorN.commit();
 
                                 emergencyNumber.setText(selectedNumber);
-                                emergencyContact.setText(StillStandingPreferences.getSafetyContactName());
+                                emergencyContact.setText(tempName);
                                 contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
                                 phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
 
@@ -366,5 +381,29 @@ public class MainActivity extends AppCompatActivity
             cursor.close();
         }
         return null;
+    }
+
+    //TODO run this on onResume() maybe? (when you get back from the readData activity it does not refresh)
+    public void setIncidentCard(){
+        incidentCard = (android.support.v7.widget.CardView) findViewById(R.id.incident_card);
+
+
+        //TODO async this
+        AppDatabase.Builder builder = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name");
+        builder.allowMainThreadQueries();
+        AppDatabase db = (AppDatabase) builder.build();
+
+        Incident lastIncident = db.incidentDao().loadLastIncident();
+
+        if (lastIncident != null){
+            incidentCard.setVisibility(View.VISIBLE);
+            DateFormat df = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss");
+
+            TextView incidentDate = (TextView) findViewById(R.id.incident_card_date);
+            incidentDate.setText(df.format(lastIncident.getDate()));
+
+            TextView incidentResponse = (TextView) findViewById(R.id.incident_card_response);
+            incidentResponse.setText(lastIncident.getResponse());
+        }
     }
 }

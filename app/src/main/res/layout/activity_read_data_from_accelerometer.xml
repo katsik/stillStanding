@@ -14,7 +14,8 @@
         android:layout_margin="16dp"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
-        android:id="@+id/tv_collecting" />
+        android:id="@+id/tv_collecting"
+        tools:text="Still Standing?"/>
 
     <ProgressBar
         android:id="@+id/pb_collecting_data"
@@ -24,28 +25,25 @@
         android:layout_centerVertical="true" />
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btn_quit"
         android:text="@string/quit"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:textColor="@color/colorAccent"/>
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@color/white"
+        android:layout_marginBottom="16dp"/>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:src="#E0E0E0"
-        android:layout_above="@id/btn_quit"/>
 
+    <!-- For debugging purposes mostly -->
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btn_trigger"
         android:text="Trigger"
         android:layout_above="@id/btn_quit"
-        android:layout_margin="20dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_margin="10dp"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

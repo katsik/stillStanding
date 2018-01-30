@@ -2,6 +2,7 @@ package com.sleepycookie.stillstanding;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,6 +28,11 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
+import com.sleepycookie.stillstanding.data.AppDatabase;
+import com.sleepycookie.stillstanding.data.Incident;
+import com.sleepycookie.stillstanding.data.IncidentDao;
+
+import java.util.Date;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -75,11 +81,18 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     /** Handles audio focus when playing a sound file */
     private AudioManager mAudioManager;
 
+    private AppDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_data_from_accelerometer);
         ReadDataFromAccelerometer.context = getApplicationContext();
+
+        //TODO async this
+        AppDatabase.Builder builder = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name");
+        builder.allowMainThreadQueries();
+        db = (AppDatabase) builder.build();
 
         mContext = this;
 
@@ -220,14 +233,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
 
     public void checkPosture(long timeSinceFall){
-        //wait for 15 seconds (setting the time randomly) to see if user stands up during this time
+        //wait for 5 seconds (setting the time randomly) to see if user stands up during this time
 
         long currentTime = System.currentTimeMillis();
 
-        if(currentTime - timeSinceFall >= 15 * MILLISECONDS_PER_SECOND){
+        if(currentTime - timeSinceFall >= 5 * MILLISECONDS_PER_SECOND){
             for (double sample : samples){
-                if(sample > 1.15 * GRAVITY_ACCELERATION){
+                if(sample > 0.85 * GRAVITY_ACCELERATION){
                     //user stood up no need to trigger anything
+                    showAToast("User stood up");
                     initValues();
                     break;
                 }else{
@@ -300,7 +314,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      */
 
     //TODO Handle the case where the user has set no emergency contact. Maybe play an alarm, instead of calling null.
-    //TODO This is triggered only when I lock the phone (Tsamis).
+    //TODO Add siren and SMS functionality
 
     public void triggerEmergency(){
 //        mLabelTextView.setText("User fell and didn't stand up");
@@ -320,6 +334,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         if(permissionCheck==PERMISSION_GRANTED){
             try{
+                db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber));
                 mContext.startActivity(callingIntent);
             }catch (Exception e){
                 e.printStackTrace();

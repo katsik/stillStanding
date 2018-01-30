@@ -18,4 +18,6 @@
     <string name="pick_contact_msg">It seems you haven\'t selected your emergency contact yet!</string>
     <string name="pick_contact_pos">Select now</string>
     <string name="pick_contact_neg">Later</string>
+    <string name="action_history">History</string>
+    <string name="label_history">History</string>
 </resources>

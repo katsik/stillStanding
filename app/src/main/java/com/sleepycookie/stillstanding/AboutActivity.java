@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  * Created by geotsam on 23/01/2018.
- * This activity show info about the app. Right now it shows a list with some info about us.
+ * This activity shows info about the app. Right now it shows a list with some info about us.
  */
 
 public class AboutActivity extends AppCompatActivity {
