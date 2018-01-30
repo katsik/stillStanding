@@ -233,13 +233,13 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
 
     public void checkPosture(long timeSinceFall){
-        //wait for 5 seconds (setting the time randomly) to see if user stands up during this time
+        //wait for 15 seconds (setting the time randomly) to see if user stands up during this time
 
         long currentTime = System.currentTimeMillis();
 
-        if(currentTime - timeSinceFall >= 5 * MILLISECONDS_PER_SECOND){
+        if(currentTime - timeSinceFall >= 15 * MILLISECONDS_PER_SECOND){
             for (double sample : samples){
-                if(sample > 0.85 * GRAVITY_ACCELERATION){
+                if(sample < 0.85 * GRAVITY_ACCELERATION){
                     //user stood up no need to trigger anything
                     showAToast("User stood up");
                     initValues();
