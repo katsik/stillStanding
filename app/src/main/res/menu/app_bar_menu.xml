@@ -4,17 +4,25 @@
 
     <!-- "Settings", should appear as action button if possible -->
     <item
-        android:id="@+id/action_about"
+        android:id="@+id/settings"
         android:orderInCategory="1"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:title="@string/settings_label"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="2"
         android:icon="@drawable/ic_info_white_24dp"
         android:title="@string/action_about"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_history"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:icon="@drawable/ic_history_white_24dp"
         android:title="@string/action_history"
         app:showAsAction="ifRoom"/>
+
+
 
 </menu>

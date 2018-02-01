@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:key="sms_preference"
+        android:summary="@string/sms_notification_summary"
+        android:title="SMS Notification" />
+
+</PreferenceScreen>

@@ -30,7 +30,6 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
-import com.sleepycookie.stillstanding.data.IncidentDao;
 
 import java.util.Date;
 
@@ -239,7 +238,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         if(currentTime - timeSinceFall >= 15 * MILLISECONDS_PER_SECOND){
             for (double sample : samples){
-                if(sample < 0.85 * GRAVITY_ACCELERATION){
+                if(sample <= 0.85 * GRAVITY_ACCELERATION){
                     //user stood up no need to trigger anything
                     showAToast("User stood up");
                     initValues();

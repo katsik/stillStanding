@@ -20,4 +20,7 @@
     <string name="pick_contact_neg">Later</string>
     <string name="action_history">History</string>
     <string name="label_history">History</string>
+    <string name="settings_label">Settings</string>
+    <string name="sms_notification_summary">If set your emergency contact will be notified via SMS instead of a phone call</string>
+
 </resources>
