@@ -142,7 +142,7 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/incident_card_response"
+                    android:id="@+id/incident_card_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Call to +306976162949"

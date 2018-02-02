@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity
     void checkForPermissions() {
         int MY_PERMISSIONS_REQUEST_ALL = 1;
 
-        String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE};
+        String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS};
 
         if (forbiddenToCallOrReadContacts(this)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
@@ -157,17 +157,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Used to check for permissions to access contacts or call phone
+     * Used to check for permissions to access contacts or call phone or send SMS
      * @param context
      *
      * @return
-     * true if either one of the two permissions is NOT granted
+     * true if either one of the three permissions is NOT granted
      * false in any other case
      */
     private boolean forbiddenToCallOrReadContacts(Context context){
         if(ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
             return true;
         }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
             return true;
         }
         return false;
@@ -402,8 +404,21 @@ public class MainActivity extends AppCompatActivity
             TextView incidentDate = (TextView) findViewById(R.id.incident_card_date);
             incidentDate.setText(df.format(lastIncident.getDate()));
 
-            TextView incidentResponse = (TextView) findViewById(R.id.incident_card_response);
-            incidentResponse.setText(lastIncident.getResponse());
+            TextView incidentInfo = (TextView) findViewById(R.id.incident_card_info);
+            incidentInfo.setText(lastIncident.getInfo());
+
+            ImageView incidentImage = (ImageView) findViewById(R.id.incident_image);
+            switch (lastIncident.getType()){
+                case 1:
+                    incidentImage.setImageResource(R.drawable.ic_phone_white_24dp);
+                    break;
+                case 2:
+                    incidentImage.setImageResource(R.drawable.ic_message_white_24dp);
+                    break;
+                case 3:
+                    incidentImage.setImageResource(R.drawable.ic_siren_white_24dp);
+                    break;
+            }
         }
     }
 }

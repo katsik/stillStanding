@@ -25,24 +25,22 @@ public class Incident {
     @ColumnInfo (name = "date")
     public Date date;
 
-    @ColumnInfo (name = "response")
-    public String response;
+    @ColumnInfo (name = "info")
+    public String info;
+
+    @ColumnInfo (name="type") // 1=call, 2=sms, 3=alarm
+    public int type;
+
 
     /*
     @ColumnInfo (name = "location")
     public Location location;
     */
 
-    @Ignore
-    public Incident(int id, Date date, String response) {
-        this.id = id;
+    public Incident( Date date, String info, int type) {
         this.date = date;
-        this.response = response;
-    }
-
-    public Incident( Date date, String response) {
-        this.date = date;
-        this.response = response;
+        this.info = info;
+        this.type = type;
     }
 
     @Ignore
@@ -66,12 +64,20 @@ public class Incident {
     }
 
     @Ignore
-    public String getResponse() {
-        return response;
+    public String getInfo() { return info; }
+
+    @Ignore
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @Ignore
-    public void setResponse(String response) {
-        this.response = response;
+    public int getType() {
+        return type;
+    }
+
+    @Ignore
+    public void setType(int type) {
+        this.type = type;
     }
 }

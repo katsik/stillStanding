@@ -4,7 +4,7 @@ package com.sleepycookie.stillstanding.data;
  * Created by George Katsikopoulos on 1/18/2018.
  */
 
-//TODO Evaluate if this is needed. Currently in use by the contact picker to simultaneously commit both values.
+//TODO Evaluate if this is needed. Currently not in use.
 
 public class StillStandingPreferences {
 

@@ -1,12 +1,14 @@
 package com.sleepycookie.stillstanding;
 
 import android.app.Activity;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sleepycookie.stillstanding.data.Incident;
@@ -42,8 +44,22 @@ public class IncidentAdapter extends ArrayAdapter<Incident>{
         TextView dateView = (TextView) listItemView.findViewById(R.id.incident_date);
         dateView.setText(df.format(currentIncident.getDate()));
 
-        TextView responseView = (TextView) listItemView.findViewById(R.id.incident_response);
-        responseView.setText(currentIncident.getResponse());
+        TextView infoView = (TextView) listItemView.findViewById(R.id.incident_info);
+        infoView.setText(currentIncident.getInfo());
+
+        ImageView imageView = (ImageView) listItemView.findViewById(R.id.incident_item_image);
+        switch (currentIncident.getType()){
+            case 1:
+                imageView.setImageResource(R.drawable.ic_phone_white_24dp);
+                break;
+            case 2:
+                imageView.setImageResource(R.drawable.ic_message_white_24dp);
+                break;
+            case 3:
+                imageView.setImageResource(R.drawable.ic_siren_white_24dp);
+                break;
+        }
+
 
         return listItemView;
     }

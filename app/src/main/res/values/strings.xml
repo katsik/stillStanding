@@ -22,5 +22,6 @@
     <string name="label_history">History</string>
     <string name="settings_label">Settings</string>
     <string name="sms_notification_summary">If set your emergency contact will be notified via SMS instead of a phone call</string>
+    <string name="sms_message_body">Help me! I fell!</string>
 
 </resources>

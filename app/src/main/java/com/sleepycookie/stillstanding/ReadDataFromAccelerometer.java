@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -333,8 +334,21 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         if(permissionCheck==PERMISSION_GRANTED){
             try{
-                db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber));
-                mContext.startActivity(callingIntent);
+                //TODO correctly implement this :P
+                if(true){
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1));
+                    mContext.startActivity(callingIntent);
+                }
+                else if(false){
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
+                    SmsManager manager = SmsManager.getDefault();
+                    manager.sendTextMessage(mNumber, null, getString(R.string.sms_message_body), null, null);
+                    showAToast("SMS sent to " + mNumber);
+                }
+                else{
+                    //play alarm
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "Alarm played", 3));
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
