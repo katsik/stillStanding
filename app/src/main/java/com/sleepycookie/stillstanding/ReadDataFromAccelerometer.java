@@ -332,7 +332,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE);
 
-        if(permissionCheck==PERMISSION_GRANTED){
+        if (permissionCheck==PERMISSION_GRANTED){
             try{
                 //TODO correctly implement this :P
                 if(true){
@@ -370,7 +370,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         activityRecognitionClient = ActivityRecognition.getClient(this);
         activityRecognitionClient.requestActivityUpdates(DETECTION_INTERVAL_ASAP,pendingIntent);
-
     }
 
     /**

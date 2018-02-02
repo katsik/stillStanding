@@ -393,7 +393,6 @@ public class MainActivity extends AppCompatActivity
         return null;
     }
 
-    //TODO run this on onResume() maybe? (when you get back from the readData activity it does not refresh)
     public void setIncidentCard(){
         incidentCard = (android.support.v7.widget.CardView) findViewById(R.id.incident_card);
 
@@ -428,5 +427,11 @@ public class MainActivity extends AppCompatActivity
                     break;
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setIncidentCard();
     }
 }
