@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
@@ -240,7 +241,7 @@ public class MainActivity extends AppCompatActivity
                         String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
                         String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-                        String number = "";
+                        String number;
 
                         Cursor phoneCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
@@ -288,6 +289,10 @@ public class MainActivity extends AppCompatActivity
                         }
 
                         tempName=name;
+
+                        if (allNumbers.isEmpty()){
+                            Toast.makeText(this, "This contact has no phone number", Toast.LENGTH_SHORT).show();
+                        }
 
                         //Removes duplicate numbers
                         //TODO check if it does that consistently
@@ -343,7 +348,10 @@ public class MainActivity extends AppCompatActivity
                             selectedNumber = selectedNumber.replace("-", "");
                             Log.v("Sel:", selectedNumber);
                         }
+
+                        phoneCur.close();
                     }
+                    c.close();
                 }
                 break;
         }
