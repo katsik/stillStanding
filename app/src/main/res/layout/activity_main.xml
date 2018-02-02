@@ -113,7 +113,7 @@
                 android:src="@drawable/ic_phone_white_24dp"
                 android:background="@drawable/shape_circle"
                 tools:visibility="visible"
-                android:padding="10dp"
+                android:padding="15dp"
                 android:layout_margin="15dp"/>
 
             <LinearLayout
