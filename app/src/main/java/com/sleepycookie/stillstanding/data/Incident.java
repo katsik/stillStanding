@@ -46,47 +46,36 @@ public class Incident {
         this.type = type;
     }
 
-    @Ignore
     public int getId() {
         return id;
     }
 
-    @Ignore
     public void setId(int id) {
         this.id = id;
     }
 
-    @Ignore
     public Date getDate() {
         return date;
     }
 
-    @Ignore
     public void setDate(Date date) {
         this.date = date;
     }
 
-    @Ignore
-    public String getInfo() {
-        return info;
-    }
+    public String getInfo() { return info; }
 
-    @Ignore
     public void setInfo(String info) {
         this.info = info;
     }
 
-    @Ignore
     public int getType() {
         return type;
     }
 
-    @Ignore
     public void setType(int type) {
         this.type = type;
     }
 
-    @Ignore
     public int getIcon() {
         if (type == 1) {
             return R.drawable.ic_phone_white_24dp;
@@ -97,7 +86,6 @@ public class Incident {
         }
     }
 
-    @Ignore
     public String getDateText(){
         DateFormat df = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss");
         return df.format(date);
