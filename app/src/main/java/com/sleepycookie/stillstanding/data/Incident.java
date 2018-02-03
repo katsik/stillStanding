@@ -31,7 +31,7 @@ public class Incident {
     @ColumnInfo(name = "info")
     public String info;
 
-    @ColumnInfo(name = "type") // 1=call, 2=sms, 3=alarm
+    @ColumnInfo(name = "type") // 1 = call, 2 = sms, 3 = alarm
     public int type;
 
 

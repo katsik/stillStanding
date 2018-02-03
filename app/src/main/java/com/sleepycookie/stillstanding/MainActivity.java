@@ -219,8 +219,6 @@ public class MainActivity extends AppCompatActivity
      * depending on their phone, and they can pick a desired contact. After that there is a dialog
      * that lets them pick one of the phone numbers from that contact, which is then saved for
      * future use. The dialog is shown even if there is only one number stored.
-     * Issues:
-     * - contacts with no phone number are shown in the list
      * This piece of code was found in parts on stackoverflow.
      *
      * @param reqCode
@@ -288,10 +286,12 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
 
-                        tempName=name;
+                        tempName = name;
 
                         if (allNumbers.isEmpty()){
                             Toast.makeText(this, "This contact has no phone number", Toast.LENGTH_SHORT).show();
+                            phoneCur.close();
+                            break;
                         }
 
                         //Removes duplicate numbers
@@ -395,7 +395,6 @@ public class MainActivity extends AppCompatActivity
 
     public void setIncidentCard(){
         incidentCard = (android.support.v7.widget.CardView) findViewById(R.id.incident_card);
-
 
         //TODO async this
         AppDatabase.Builder builder = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name");
