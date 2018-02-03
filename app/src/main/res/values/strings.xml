@@ -1,4 +1,5 @@
 <resources>
+    <!--TODO add toast strings here and translate them-->
     <string name="app_name" translatable="false">Still Standing</string>
     <string name="collecting">Collecting Accelerometer Data...</string>
     <string name="quit">Quit</string>
@@ -25,5 +26,5 @@
     <string name="sms_notification_summary">If set your emergency contact will be notified via SMS instead of a phone call</string>
     <string name="sms_message_body">Help me! I fell!</string>
     <string name="last_incident">Last Incident</string>
-
+    <string name="choose_number">Choose a number</string>
 </resources>

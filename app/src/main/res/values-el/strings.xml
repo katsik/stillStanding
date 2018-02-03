@@ -20,4 +20,6 @@
     <string name="label_preferences">Επαφή Έκτακτης Ανάγκης</string>
     <string name="emergency_contact">Επαφή Έκτακτης Ανάγκης</string>
     <string name="last_incident">Πιο Πρόσφατο Συμβάν</string>
+    <string name="pick_contact_msg">Δεν έχετε επιλέξει ακόμα επαφή έκτακτης ανάγκης!</string>
+    <string name="choose_number">Επιλέξτε νούμερο</string>
 </resources>
