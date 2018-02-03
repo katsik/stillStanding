@@ -406,26 +406,15 @@ public class MainActivity extends AppCompatActivity
 
         if (lastIncident != null){
             incidentCard.setVisibility(View.VISIBLE);
-            DateFormat df = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss");
 
             TextView incidentDate = (TextView) findViewById(R.id.incident_card_date);
-            incidentDate.setText(df.format(lastIncident.getDate()));
+            incidentDate.setText(lastIncident.getDateText());
 
             TextView incidentInfo = (TextView) findViewById(R.id.incident_card_info);
             incidentInfo.setText(lastIncident.getInfo());
 
             ImageView incidentImage = (ImageView) findViewById(R.id.incident_image);
-            switch (lastIncident.getType()){
-                case 1:
-                    incidentImage.setImageResource(R.drawable.ic_phone_white_24dp);
-                    break;
-                case 2:
-                    incidentImage.setImageResource(R.drawable.ic_message_white_24dp);
-                    break;
-                case 3:
-                    incidentImage.setImageResource(R.drawable.ic_siren_white_24dp);
-                    break;
-            }
+            incidentImage.setImageResource(lastIncident.getIcon());
         }
     }
 

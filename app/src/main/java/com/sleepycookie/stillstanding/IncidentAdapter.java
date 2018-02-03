@@ -36,30 +36,18 @@ public class IncidentAdapter extends ArrayAdapter<Incident>{
         }
 
         Incident currentIncident = getItem(position);
-        DateFormat df = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss");
 
         TextView idView = (TextView) listItemView.findViewById(R.id.incident_id);
         idView.setText("Incident " + currentIncident.getId());
 
         TextView dateView = (TextView) listItemView.findViewById(R.id.incident_date);
-        dateView.setText(df.format(currentIncident.getDate()));
+        dateView.setText(currentIncident.getDateText());
 
         TextView infoView = (TextView) listItemView.findViewById(R.id.incident_info);
         infoView.setText(currentIncident.getInfo());
 
         ImageView imageView = (ImageView) listItemView.findViewById(R.id.incident_item_image);
-        switch (currentIncident.getType()){
-            case 1:
-                imageView.setImageResource(R.drawable.ic_phone_white_24dp);
-                break;
-            case 2:
-                imageView.setImageResource(R.drawable.ic_message_white_24dp);
-                break;
-            case 3:
-                imageView.setImageResource(R.drawable.ic_siren_white_24dp);
-                break;
-        }
-
+        imageView.setImageResource(currentIncident.getIcon());
 
         return listItemView;
     }
