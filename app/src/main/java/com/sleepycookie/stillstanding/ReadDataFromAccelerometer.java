@@ -14,6 +14,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -335,14 +336,19 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         if (permissionCheck==PERMISSION_GRANTED){
             try{
                 //TODO correctly implement this :P
-                if(true){
+
+                SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
+                boolean smsPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS, false);
+                String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
+
+                if(!smsPref){
                     db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1));
                     mContext.startActivity(callingIntent);
                 }
-                else if(false){
+                else if(smsPref){
                     db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
                     SmsManager manager = SmsManager.getDefault();
-                    manager.sendTextMessage(mNumber, null, getString(R.string.sms_message_body), null, null);
+                    manager.sendTextMessage(mNumber, null, smsBody, null, null);
                     showAToast("SMS sent to " + mNumber);
                 }
                 else{

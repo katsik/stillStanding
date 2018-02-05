@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -61,6 +62,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         checkForPermissions();
+
+        //Sets preferences (from settings UI) to the default values, unless the user has changed them.
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         startDetection = (FloatingActionButton) findViewById(R.id.start_detection);
         phoneContactsButton = (ImageButton) findViewById(R.id.set_contact);
@@ -193,6 +197,12 @@ public class MainActivity extends AppCompatActivity
                 // User chose the "History" item, show the app "history" UI...
                 Intent seeHistory = new Intent(MainActivity.this, IncidentHistory.class);
                 startActivity(seeHistory);
+                return true;
+
+            case R.id.action_settings:
+                //User chose the "Settings" item, show the "settings" UI...
+                Intent seeSettings = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(seeSettings);
                 return true;
 
             default:

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <android.support.v7.preference.SwitchPreferenceCompat
+    <SwitchPreference
         android:defaultValue="false"
         android:key="sms_preference"
         android:summary="@string/sms_notification_summary"
-        android:title="SMS Notification" />
+        android:title="@string/send_sms_pref_title" />
+
+    <EditTextPreference
+        android:defaultValue="@string/sms_message_body"
+        android:key="sms_body_preference"
+        android:title="@string/sms_body_pref_title"
+        android:summary="@string/sms_pref_body_summary"
+        android:dependency="sms_preference"/>
 
 </PreferenceScreen>
