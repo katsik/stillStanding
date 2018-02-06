@@ -1,29 +1,23 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.UI;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.arch.persistence.room.Room;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.LocaleList;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,18 +28,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sleepycookie.stillstanding.PickContactFragment;
+import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 
 
 //TODO clean & organize this activity
 public class MainActivity extends AppCompatActivity
-                          implements PickContactFragment.PickContactListener{
+                          implements PickContactFragment.PickContactListener {
 
     FloatingActionButton startDetection;
     ImageButton phoneContactsButton;
@@ -410,12 +405,8 @@ public class MainActivity extends AppCompatActivity
     public void setIncidentCard(){
         incidentCard = (android.support.v7.widget.CardView) findViewById(R.id.incident_card);
 
-        //TODO async this
-        AppDatabase.Builder builder = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name");
-        builder.allowMainThreadQueries();
-        AppDatabase db = (AppDatabase) builder.build();
-
-        Incident lastIncident = db.incidentDao().loadLastIncident();
+        //TODO Async this
+        Incident lastIncident = AppDatabase.getInstance(this).incidentDao().loadLastIncident();
 
         if (lastIncident != null){
             incidentCard.setVisibility(View.VISIBLE);

@@ -1,8 +1,10 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.utils;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
+
+import com.sleepycookie.stillstanding.R;
 
 /**
  * Created by geotsam on 01/02/2018.

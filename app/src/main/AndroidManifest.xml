@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".UI.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,20 +22,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ReadDataFromAccelerometer"
-            android:parentActivityName=".MainActivity"
+            android:name=".UI.ReadDataFromAccelerometer"
+            android:parentActivityName=".UI.MainActivity"
             android:label="@string/label_read_data"></activity>
         <activity
-            android:name=".AboutActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".UI.AboutActivity"
+            android:parentActivityName=".UI.MainActivity"
             android:label="@string/label_about"></activity>
         <activity
-            android:name=".IncidentHistory"
-            android:parentActivityName=".MainActivity"
+            android:name=".UI.IncidentHistory"
+            android:parentActivityName=".UI.MainActivity"
             android:label="@string/label_history"></activity>
 
-        <activity android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity"
+        <activity android:name=".UI.SettingsActivity"
+            android:parentActivityName=".UI.MainActivity"
             android:label="@string/label_preferences"></activity>
 
         <service android:name=".ActivityRecognizedService" />

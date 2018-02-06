@@ -1,4 +1,4 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.UI;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -30,6 +30,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
+import com.sleepycookie.stillstanding.ActivityRecognizedService;
+import com.sleepycookie.stillstanding.R;
+import com.sleepycookie.stillstanding.SettingsFragment;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 
@@ -91,9 +94,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         ReadDataFromAccelerometer.context = getApplicationContext();
 
         //TODO async this
-        AppDatabase.Builder builder = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name");
-        builder.allowMainThreadQueries();
-        db = (AppDatabase) builder.build();
+        db = AppDatabase.getInstance(this);
 
         mContext = this;
 

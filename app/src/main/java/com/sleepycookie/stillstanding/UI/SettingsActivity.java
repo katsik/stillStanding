@@ -1,10 +1,10 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.UI;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+
+import com.sleepycookie.stillstanding.SettingsFragment;
 
 /**
  * Created by geotsam on 05/02/2018.

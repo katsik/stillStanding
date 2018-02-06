@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sleepycookie.stillstanding.MainActivity">
+    tools:context="com.sleepycookie.stillstanding.UI.MainActivity">
 
     <TextView
         android:id="@+id/app_description"
