@@ -1,4 +1,4 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.UI;
 
 import android.app.Activity;
 import android.media.Image;
@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.Incident;
 
 import java.text.DateFormat;
@@ -37,16 +38,16 @@ public class IncidentAdapter extends ArrayAdapter<Incident>{
 
         Incident currentIncident = getItem(position);
 
-        TextView idView = (TextView) listItemView.findViewById(R.id.incident_id);
+        TextView idView = listItemView.findViewById(R.id.incident_id);
         idView.setText("Incident " + currentIncident.getId());
 
-        TextView dateView = (TextView) listItemView.findViewById(R.id.incident_date);
+        TextView dateView = listItemView.findViewById(R.id.incident_date);
         dateView.setText(currentIncident.getDateText());
 
-        TextView infoView = (TextView) listItemView.findViewById(R.id.incident_info);
+        TextView infoView = listItemView.findViewById(R.id.incident_info);
         infoView.setText(currentIncident.getInfo());
 
-        ImageView imageView = (ImageView) listItemView.findViewById(R.id.incident_item_image);
+        ImageView imageView = listItemView.findViewById(R.id.incident_item_image);
         imageView.setImageResource(currentIncident.getIcon());
 
         return listItemView;

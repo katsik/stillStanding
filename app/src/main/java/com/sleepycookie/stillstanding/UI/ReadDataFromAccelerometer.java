@@ -108,7 +108,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
-        triggerButton = (Button) findViewById(R.id.btn_trigger);
+        triggerButton = findViewById(R.id.btn_trigger);
         initTriggerFunctionality();
         mAudioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
 

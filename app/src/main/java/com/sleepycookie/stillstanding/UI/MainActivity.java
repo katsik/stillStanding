@@ -61,12 +61,12 @@ public class MainActivity extends AppCompatActivity
         //Sets preferences (from settings UI) to the default values, unless the user has changed them.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        startDetection = (FloatingActionButton) findViewById(R.id.start_detection);
-        phoneContactsButton = (ImageButton) findViewById(R.id.set_contact);
-        emergencyContact = (TextView) findViewById(R.id.contact_name);
-        emergencyNumber = (TextView) findViewById(R.id.contact_phone);
-        emergencyPhoto = (ImageView) findViewById(R.id.contact_image);
-        contactCard = (android.support.v7.widget.CardView) findViewById(R.id.card_view);
+        startDetection = findViewById(R.id.start_detection);
+        phoneContactsButton = findViewById(R.id.set_contact);
+        emergencyContact = findViewById(R.id.contact_name);
+        emergencyNumber = findViewById(R.id.contact_phone);
+        emergencyPhoto = findViewById(R.id.contact_image);
+        contactCard = findViewById(R.id.card_view);
 
         /**
          * Show the saved preferences or the placeholder text if there is nothing saved.
@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void setIncidentCard(){
-        incidentCard = (android.support.v7.widget.CardView) findViewById(R.id.incident_card);
+        incidentCard = findViewById(R.id.incident_card);
 
         //TODO Async this
         Incident lastIncident = AppDatabase.getInstance(this).incidentDao().loadLastIncident();
@@ -411,13 +411,13 @@ public class MainActivity extends AppCompatActivity
         if (lastIncident != null){
             incidentCard.setVisibility(View.VISIBLE);
 
-            TextView incidentDate = (TextView) findViewById(R.id.incident_card_date);
+            TextView incidentDate = findViewById(R.id.incident_card_date);
             incidentDate.setText(lastIncident.getDateText());
 
-            TextView incidentInfo = (TextView) findViewById(R.id.incident_card_info);
+            TextView incidentInfo = findViewById(R.id.incident_card_info);
             incidentInfo.setText(lastIncident.getInfo());
 
-            ImageView incidentImage = (ImageView) findViewById(R.id.incident_image);
+            ImageView incidentImage = findViewById(R.id.incident_image);
             incidentImage.setImageResource(lastIncident.getIcon());
         }
     }

@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
 import com.sleepycookie.stillstanding.Person;
-import com.sleepycookie.stillstanding.PersonAdapter;
 import com.sleepycookie.stillstanding.R;
 
 import java.util.ArrayList;

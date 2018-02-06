@@ -1,12 +1,10 @@
 package com.sleepycookie.stillstanding.UI;
 
-import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
-import com.sleepycookie.stillstanding.IncidentAdapter;
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
