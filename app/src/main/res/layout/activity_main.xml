@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sleepycookie.stillstanding.UI.MainActivity">
+    tools:context="com.sleepycookie.stillstanding.ui.MainActivity">
 
     <TextView
         android:id="@+id/app_description"
@@ -37,7 +37,8 @@
                 android:layout_alignParentLeft="true"
                 android:id="@+id/contact_image"
                 tools:src="@drawable/ic_tsamis"
-                tools:visibility="visible"/>
+                tools:visibility="visible"
+                android:contentDescription="TODO" />
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +81,8 @@
                 android:layout_margin="8dp"
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_person_add_black_24dp"
-                android:background="?attr/selectableItemBackgroundBorderless" />
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="TODO" />
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>
@@ -114,7 +116,8 @@
                 android:background="@drawable/shape_circle"
                 tools:visibility="visible"
                 android:padding="15dp"
-                android:layout_margin="15dp"/>
+                android:layout_margin="15dp"
+                android:contentDescription="TODO" />
 
             <LinearLayout
                 android:layout_width="match_parent"

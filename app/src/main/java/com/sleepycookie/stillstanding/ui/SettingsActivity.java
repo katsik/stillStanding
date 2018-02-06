@@ -1,4 +1,4 @@
-package com.sleepycookie.stillstanding.UI;
+package com.sleepycookie.stillstanding.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;

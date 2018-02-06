@@ -14,7 +14,8 @@
         android:background="@drawable/shape_circle"
         android:padding="15dp"
         tools:src="@drawable/ic_phone_white_24dp"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        android:contentDescription="TODO" />
 
     <LinearLayout
         android:id="@+id/item_text"

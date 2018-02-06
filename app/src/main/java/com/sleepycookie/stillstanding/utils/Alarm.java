@@ -22,14 +22,14 @@ public class Alarm {
         if (-1 == id) {
             id = pool.load(context.getApplicationContext(), R.raw.alarm, 1);
         }
-        loudest(context, AudioManager.STREAM_ALARM);
+        loudest(context);
         pool.play(id, 1.0f, 1.0f, 1, 3, 1.0f);
     }
 
-    public static void loudest(Context context, int stream) {
+    public static void loudest(Context context) {
         AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        int loudest = manager.getStreamMaxVolume(stream);
-        manager.setStreamVolume(stream, loudest, 0);
+        int loudest = manager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+        manager.setStreamVolume(AudioManager.STREAM_ALARM, loudest, 0);
     }
 
 //    public static void call(Context context) {

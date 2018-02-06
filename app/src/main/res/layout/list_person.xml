@@ -10,7 +10,8 @@
         android:layout_height="@dimen/list_item_height"
         android:id="@+id/person_image"
         tools:src="@drawable/ic_tsamis"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true"
+        android:contentDescription="TODO" />
 
     <LinearLayout
         android:id="@+id/item_text"

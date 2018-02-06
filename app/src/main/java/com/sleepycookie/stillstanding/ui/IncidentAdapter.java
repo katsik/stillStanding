@@ -1,7 +1,6 @@
-package com.sleepycookie.stillstanding.UI;
+package com.sleepycookie.stillstanding.ui;
 
 import android.app.Activity;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -14,8 +13,6 @@ import android.widget.TextView;
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.Incident;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**

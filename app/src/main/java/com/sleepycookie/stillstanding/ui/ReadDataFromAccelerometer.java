@@ -1,8 +1,7 @@
-package com.sleepycookie.stillstanding.UI;
+package com.sleepycookie.stillstanding.ui;
 
 import android.Manifest;
 import android.app.PendingIntent;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;

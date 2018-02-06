@@ -1,4 +1,4 @@
-package com.sleepycookie.stillstanding.UI;
+package com.sleepycookie.stillstanding.ui;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;

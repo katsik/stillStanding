@@ -1,4 +1,4 @@
-package com.sleepycookie.stillstanding.UI;
+package com.sleepycookie.stillstanding.ui;
 
 import android.Manifest;
 import android.app.Activity;
@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity
                         if (allNumbers.size() > 0) {
                             alert.show();
                         } else {
-                            String selectedNumber = phoneNumber.toString();
+                            String selectedNumber = phoneNumber;
                             selectedNumber = selectedNumber.replace("-", "");
                             Log.v("Sel:", selectedNumber);
                         }

@@ -1,7 +1,7 @@
 <resources>
     <!--TODO add toast strings here and translate them-->
     <string name="app_name" translatable="false">Still Standing</string>
-    <string name="collecting">Collecting Accelerometer Data...</string>
+    <string name="collecting">Collecting Accelerometer Data…</string>
     <string name="quit">Quit</string>
     <string name="app_description">This app will detect a potential fall and will call your
         emergency contact. Make sure you have accepted the requested permissions in order for the
