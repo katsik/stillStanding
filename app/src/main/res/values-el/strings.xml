@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Still Standing</string>
+    <string name="collecting">Συλλογή Δεδομένων…</string>
+    <string name="quit">Έξοδος</string>
+    <string name="app_description">H εφαρμογή αυτή ανιχνεύει πιθανές πτώσεις και καλεί την επαφή έκτακτης ανάγκης σας. Βεβαιωθείτε ότι έχετε αποδεχτεί τα δικαιώματα που χρειάζεται η εφαρμογή ούτως ώστε να μπορούν να ειδοποιηθούν η οικογένεια ή οι φίλοι σας.</string>
+    <string name="placholder_phone">Τηλέφωνο</string>
+    <string name="placeholder_name">Επαφή</string>
+    <string name="action_about">Σχετικά</string>
+    <string name="label_about">Σχετικά</string>
+    <string name="pick_contact_pos">Επιλογή τώρα</string>
+    <string name="pick_contact_neg">Αργότερα</string>
+    <string name="action_history">Ιστορικό</string>
+    <string name="label_history">Ιστορικό</string>
+    <string name="settings_label">Ρυθμίσεις</string>
+    <string name="sms_message_body">Βοήθεια! Έπεσα!</string>
+    <string name="sms_notification_summary">Αν η ρύθμιση αυτή είναι ενεργοποιημένη, η επαφή σας θα ενημερωθεί με SMS αντί για τηλέφωνο</string>
+    <string name="label_read_data">Ανίχνευση Πτώσης</string>
+    <string name="pick_contact">Επιλογή Επαφής</string>
+    <string name="emergency_contact">Επαφή Έκτακτης Ανάγκης</string>
+    <string name="last_incident">Πιο Πρόσφατο Συμβάν</string>
+    <string name="pick_contact_msg">Δεν έχετε επιλέξει ακόμα επαφή έκτακτης ανάγκης!</string>
+    <string name="choose_number">Επιλέξτε νούμερο</string>
+    <string name="sms_pref_body_summary">Αυτό το μήνυμα θα σταλεί με SMS στην επαφή έκτακτης ανάγκης σας</string>
+    <string name="send_sms_pref_title">Αποστολή SMS</string>
+    <string name="sms_body_pref_title">Μήνυμα SMS</string>
+    <string name="label_preferences">Ρυθμίσεις</string>
+</resources>

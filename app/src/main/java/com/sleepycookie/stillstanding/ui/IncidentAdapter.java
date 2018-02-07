@@ -1,4 +1,4 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.ui;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -7,12 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.Incident;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -34,16 +34,18 @@ public class IncidentAdapter extends ArrayAdapter<Incident>{
         }
 
         Incident currentIncident = getItem(position);
-        DateFormat df = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss");
 
-        TextView idView = (TextView) listItemView.findViewById(R.id.incident_id);
+        TextView idView = listItemView.findViewById(R.id.incident_id);
         idView.setText("Incident " + currentIncident.getId());
 
-        TextView dateView = (TextView) listItemView.findViewById(R.id.incident_date);
-        dateView.setText(df.format(currentIncident.getDate()));
+        TextView dateView = listItemView.findViewById(R.id.incident_date);
+        dateView.setText(currentIncident.getDateText());
 
-        TextView responseView = (TextView) listItemView.findViewById(R.id.incident_response);
-        responseView.setText(currentIncident.getResponse());
+        TextView infoView = listItemView.findViewById(R.id.incident_info);
+        infoView.setText(currentIncident.getInfo());
+
+        ImageView imageView = listItemView.findViewById(R.id.incident_item_image);
+        imageView.setImageResource(currentIncident.getIcon());
 
         return listItemView;
     }

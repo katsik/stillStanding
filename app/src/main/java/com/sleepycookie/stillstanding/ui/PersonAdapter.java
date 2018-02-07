@@ -1,4 +1,4 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.ui;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.sleepycookie.stillstanding.Person;
+import com.sleepycookie.stillstanding.R;
 
 import java.util.ArrayList;
 
@@ -32,16 +35,16 @@ public class PersonAdapter extends ArrayAdapter<Person> {
 
         Person currentPerson = getItem(position);
 
-        ImageView imageView = (ImageView) listItemView.findViewById(R.id.person_image);
+        ImageView imageView = listItemView.findViewById(R.id.person_image);
         imageView.setImageResource(currentPerson.getImageID());
 
-        TextView nameView = (TextView) listItemView.findViewById(R.id.person_name);
+        TextView nameView = listItemView.findViewById(R.id.person_name);
         nameView.setText(currentPerson.getName());
 
-        TextView mailView = (TextView) listItemView.findViewById(R.id.person_mail);
+        TextView mailView = listItemView.findViewById(R.id.person_mail);
         mailView.setText(currentPerson.getMail());
 
-        TextView websiteView = (TextView) listItemView.findViewById(R.id.person_website);
+        TextView websiteView = listItemView.findViewById(R.id.person_website);
         websiteView.setText(currentPerson.getWebsite());
 
         return listItemView;

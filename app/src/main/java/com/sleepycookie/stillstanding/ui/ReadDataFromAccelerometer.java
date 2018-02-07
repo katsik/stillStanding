@@ -1,8 +1,7 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.ui;
 
 import android.Manifest;
 import android.app.PendingIntent;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,10 +13,12 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +29,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
+import com.sleepycookie.stillstanding.ActivityRecognizedService;
+import com.sleepycookie.stillstanding.R;
+import com.sleepycookie.stillstanding.SettingsFragment;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 
@@ -89,9 +93,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         ReadDataFromAccelerometer.context = getApplicationContext();
 
         //TODO async this
-        AppDatabase.Builder builder = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name");
-        builder.allowMainThreadQueries();
-        db = (AppDatabase) builder.build();
+        db = AppDatabase.getInstance(this);
 
         mContext = this;
 
@@ -105,7 +107,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
-        triggerButton = (Button) findViewById(R.id.btn_trigger);
+        triggerButton = findViewById(R.id.btn_trigger);
         initTriggerFunctionality();
         mAudioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
 
@@ -331,10 +333,28 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE);
 
-        if(permissionCheck==PERMISSION_GRANTED){
+        if (permissionCheck==PERMISSION_GRANTED){
             try{
-                db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber));
-                mContext.startActivity(callingIntent);
+                //TODO correctly implement this :P
+
+                SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
+                boolean smsPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS, false);
+                String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
+
+                if(!smsPref){
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1));
+                    mContext.startActivity(callingIntent);
+                }
+                else if(smsPref){
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
+                    SmsManager manager = SmsManager.getDefault();
+                    manager.sendTextMessage(mNumber, null, smsBody, null, null);
+                    showAToast("SMS sent to " + mNumber);
+                }
+                else{
+                    //play alarm
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "Alarm played", 3));
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -356,7 +376,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         activityRecognitionClient = ActivityRecognition.getClient(this);
         activityRecognitionClient.requestActivityUpdates(DETECTION_INTERVAL_ASAP,pendingIntent);
-
     }
 
     /**

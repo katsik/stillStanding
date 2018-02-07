@@ -1,9 +1,8 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.ui;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.arch.persistence.room.Room;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -26,12 +26,13 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.sleepycookie.stillstanding.PickContactFragment;
+import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +40,7 @@ import java.util.List;
 
 //TODO clean & organize this activity
 public class MainActivity extends AppCompatActivity
-                          implements PickContactFragment.PickContactListener{
+                          implements PickContactFragment.PickContactListener {
 
     FloatingActionButton startDetection;
     ImageButton phoneContactsButton;
@@ -57,12 +58,15 @@ public class MainActivity extends AppCompatActivity
 
         checkForPermissions();
 
-        startDetection = (FloatingActionButton) findViewById(R.id.start_detection);
-        phoneContactsButton = (ImageButton) findViewById(R.id.set_contact);
-        emergencyContact = (TextView) findViewById(R.id.contact_name);
-        emergencyNumber = (TextView) findViewById(R.id.contact_phone);
-        emergencyPhoto = (ImageView) findViewById(R.id.contact_image);
-        contactCard = (android.support.v7.widget.CardView) findViewById(R.id.card_view);
+        //Sets preferences (from settings UI) to the default values, unless the user has changed them.
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        startDetection = findViewById(R.id.start_detection);
+        phoneContactsButton = findViewById(R.id.set_contact);
+        emergencyContact = findViewById(R.id.contact_name);
+        emergencyNumber = findViewById(R.id.contact_phone);
+        emergencyPhoto = findViewById(R.id.contact_image);
+        contactCard = findViewById(R.id.card_view);
 
         /**
          * Show the saved preferences or the placeholder text if there is nothing saved.
@@ -149,7 +153,7 @@ public class MainActivity extends AppCompatActivity
     void checkForPermissions() {
         int MY_PERMISSIONS_REQUEST_ALL = 1;
 
-        String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE};
+        String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS};
 
         if (forbiddenToCallOrReadContacts(this)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
@@ -157,17 +161,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Used to check for permissions to access contacts or call phone
+     * Used to check for permissions to access contacts or call phone or send SMS
      * @param context
      *
      * @return
-     * true if either one of the two permissions is NOT granted
+     * true if either one of the three permissions is NOT granted
      * false in any other case
      */
     private boolean forbiddenToCallOrReadContacts(Context context){
         if(ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
             return true;
         }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
             return true;
         }
         return false;
@@ -186,6 +192,12 @@ public class MainActivity extends AppCompatActivity
                 // User chose the "History" item, show the app "history" UI...
                 Intent seeHistory = new Intent(MainActivity.this, IncidentHistory.class);
                 startActivity(seeHistory);
+                return true;
+
+            case R.id.action_settings:
+                //User chose the "Settings" item, show the "settings" UI...
+                Intent seeSettings = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(seeSettings);
                 return true;
 
             default:
@@ -216,8 +228,6 @@ public class MainActivity extends AppCompatActivity
      * depending on their phone, and they can pick a desired contact. After that there is a dialog
      * that lets them pick one of the phone numbers from that contact, which is then saved for
      * future use. The dialog is shown even if there is only one number stored.
-     * Issues:
-     * - contacts with no phone number are shown in the list
      * This piece of code was found in parts on stackoverflow.
      *
      * @param reqCode
@@ -238,7 +248,7 @@ public class MainActivity extends AppCompatActivity
                         String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
 
                         String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-                        String number = "";
+                        String number;
 
                         Cursor phoneCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
@@ -285,7 +295,13 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
 
-                        tempName=name;
+                        tempName = name;
+
+                        if (allNumbers.isEmpty()){
+                            Toast.makeText(this, "This contact has no phone number", Toast.LENGTH_SHORT).show();
+                            phoneCur.close();
+                            break;
+                        }
 
                         //Removes duplicate numbers
                         //TODO check if it does that consistently
@@ -293,7 +309,7 @@ public class MainActivity extends AppCompatActivity
 
                         final CharSequence[] items = allNumbers.toArray(new String[allNumbers.size()]);
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle("Choose a number");
+                        builder.setTitle(getString(R.string.choose_number));
                         builder.setItems(items, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item) {
                                 String selectedNumber = items[item].toString();
@@ -337,11 +353,14 @@ public class MainActivity extends AppCompatActivity
                         if (allNumbers.size() > 0) {
                             alert.show();
                         } else {
-                            String selectedNumber = phoneNumber.toString();
+                            String selectedNumber = phoneNumber;
                             selectedNumber = selectedNumber.replace("-", "");
                             Log.v("Sel:", selectedNumber);
                         }
+
+                        phoneCur.close();
                     }
+                    c.close();
                 }
                 break;
         }
@@ -383,27 +402,29 @@ public class MainActivity extends AppCompatActivity
         return null;
     }
 
-    //TODO run this on onResume() maybe? (when you get back from the readData activity it does not refresh)
     public void setIncidentCard(){
-        incidentCard = (android.support.v7.widget.CardView) findViewById(R.id.incident_card);
+        incidentCard = findViewById(R.id.incident_card);
 
-
-        //TODO async this
-        AppDatabase.Builder builder = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name");
-        builder.allowMainThreadQueries();
-        AppDatabase db = (AppDatabase) builder.build();
-
-        Incident lastIncident = db.incidentDao().loadLastIncident();
+        //TODO Async this
+        Incident lastIncident = AppDatabase.getInstance(this).incidentDao().loadLastIncident();
 
         if (lastIncident != null){
             incidentCard.setVisibility(View.VISIBLE);
-            DateFormat df = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss");
 
-            TextView incidentDate = (TextView) findViewById(R.id.incident_card_date);
-            incidentDate.setText(df.format(lastIncident.getDate()));
+            TextView incidentDate = findViewById(R.id.incident_card_date);
+            incidentDate.setText(lastIncident.getDateText());
 
-            TextView incidentResponse = (TextView) findViewById(R.id.incident_card_response);
-            incidentResponse.setText(lastIncident.getResponse());
+            TextView incidentInfo = findViewById(R.id.incident_card_info);
+            incidentInfo.setText(lastIncident.getInfo());
+
+            ImageView incidentImage = findViewById(R.id.incident_image);
+            incidentImage.setImageResource(lastIncident.getIcon());
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setIncidentCard();
     }
 }

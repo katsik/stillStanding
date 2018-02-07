@@ -1,11 +1,11 @@
-package com.sleepycookie.stillstanding;
+package com.sleepycookie.stillstanding.ui;
 
-import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
+import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 
@@ -30,9 +30,7 @@ public class IncidentHistory extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
 
         //TODO async this
-        AppDatabase.Builder builder = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name");
-        builder.allowMainThreadQueries();
-        AppDatabase db = (AppDatabase) builder.build();
+        AppDatabase db = AppDatabase.getInstance(this);
 
         ArrayList<Incident> incidents = new ArrayList<Incident>();
         Collections.addAll(incidents, db.incidentDao().loadAllIncidents());

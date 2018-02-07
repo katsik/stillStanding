@@ -15,20 +15,20 @@ import java.util.ArrayList;
 @Dao
 public interface IncidentDao {
     @Insert
-    public void insertIncidents(Incident... incidents);
+    void insertIncidents(Incident... incidents);
 
     @Insert
-    public void insertIncidents(ArrayList<Incident> incidents);
+    void insertIncidents(ArrayList<Incident> incidents);
 
     @Delete
-    public void deleteIncidents(Incident... incidents);
+    void deleteIncidents(Incident... incidents);
 
     @Query("SELECT * FROM incidents ORDER BY id DESC")
-    public Incident[] loadAllIncidents();
+    Incident[] loadAllIncidents();
 
     @Query("SELECT * FROM incidents WHERE date > Date (:minDate)")
-    public Incident[] loadAllIncidentsMoreRecentThan(String minDate);
+    Incident[] loadAllIncidentsMoreRecentThan(String minDate);
 
     @Query("SELECT * FROM incidents ORDER BY id DESC LIMIT 1")
-    public Incident loadLastIncident();
+    Incident loadLastIncident();
 }

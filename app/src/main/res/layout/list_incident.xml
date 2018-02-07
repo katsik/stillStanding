@@ -2,50 +2,61 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_item_height"
+    android:layout_height="90dp"
     android:minHeight="@dimen/list_item_height">
+
+    <ImageView
+        android:id="@+id/incident_item_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="15dp"
+        android:background="@drawable/shape_circle"
+        android:padding="15dp"
+        tools:src="@drawable/ic_phone_white_24dp"
+        tools:visibility="visible"
+        android:contentDescription="TODO" />
 
     <LinearLayout
         android:id="@+id/item_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:gravity="center_vertical"
-        android:layout_toRightOf="@id/person_image"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:orientation="vertical">
+        android:layout_toRightOf="@id/incident_item_image"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/incident_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Incident"
-            android:textStyle="bold"
             android:textColor="#000000"
-            android:layout_weight="1"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/incident_date"
-            tools:text="30 Jan 2018, 15:53"
-            android:layout_weight="1"
-            android:textSize="14sp"/>
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/incident_response"
-            tools:text="Phone Call"
             android:layout_weight="1"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            tools:text="30 Jan 2018, 15:53" />
+
+        <TextView
+            android:id="@+id/incident_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            tools:text="Phone Call" />
 
     </LinearLayout>
-
 
 </RelativeLayout>
