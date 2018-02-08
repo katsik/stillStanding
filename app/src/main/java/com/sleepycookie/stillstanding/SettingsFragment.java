@@ -20,6 +20,7 @@ public class SettingsFragment extends PreferenceFragment {
 
     public static final String KEY_SMS = "sms_preference";
     public static final String KEY_SMS_BODY = "sms_body_preference";
+    public static final String KEY_SMS_LOCATION = "location_preference";
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                           String key) {
@@ -29,6 +30,10 @@ public class SettingsFragment extends PreferenceFragment {
 
         if (key.equals(KEY_SMS_BODY)){
             Preference smsBodyPref = findPreference(key);
+        }
+
+        if(key.equals(KEY_SMS_LOCATION)){
+            Preference locationPref = findPreference(key);
         }
     }
 }

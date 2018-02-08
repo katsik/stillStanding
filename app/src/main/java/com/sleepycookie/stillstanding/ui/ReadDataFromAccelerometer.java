@@ -3,6 +3,7 @@ package com.sleepycookie.stillstanding.ui;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
@@ -17,8 +18,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -60,18 +61,22 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     static public double[] samples = new double[SAMPLES_BUFFER_SIZE];
     public String[] states = new String[BUFFER_SIZE];
 
+    private double[] location = new double[2];
     final static double GRAVITY_ACCELERATION = 9.81;
 
     static public String currentState = "";
-    double sigma = 0.5,th =10, th1 = 5, th2 = 2;
 
     public GoogleApiClient mApiClient;
     public ActivityRecognitionClient activityRecognitionClient;
     private PendingIntent pendingIntent;
-
+    
     public Button quitButton;
     public Button triggerButton;
     public Toast mToast;
+    AlertDialog alertDialog;
+
+    private Boolean accelerationBalanced;
+    private Boolean stoodUp;
 
     private Context mContext;
 
@@ -138,6 +143,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             samples[i] = 0;
         }
         currentState = "none";
+        setAccelerationBalanced(false);
+        setStoodUp(false);
         setTimeOfFall(null);
         for (int j = 0; j<states.length; j++){
             states[j] = currentState;
@@ -179,24 +186,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 currentState = "fell";
                 setTimeOfFall(System.currentTimeMillis());
             }
-            //the states probably won't be needed since we changed our approach
-            //TODO remove the states from code.
-            renewStates();
+
             if(getTimeOfFall()!=null){
                 checkPosture(timeOfFall);
             }
-//            checkPosture();
         }
-    }
-
-    public void renewStates(){
-        for(int i = 0; i <= BUFFER_SIZE - 2; i++){
-            states[i] = states[i+1];
-        }
-        states[BUFFER_SIZE-1] = currentState;
-//        if (states[BUFFER_SIZE-1]!="fell"){
-//            Log.d("Renew States","last element: "+states[BUFFER_SIZE-1]);
-//        }
     }
 
     @Override
@@ -238,21 +232,42 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         long currentTime = System.currentTimeMillis();
 
-        if(currentTime - timeSinceFall >= 15 * MILLISECONDS_PER_SECOND){
-            for (double sample : samples){
-                if(sample <= 0.85 * GRAVITY_ACCELERATION){
-                    //user stood up no need to trigger anything
-                    showAToast("User stood up");
-                    initValues();
-                    break;
+        if(!getAccelerationBalanced()){
+            // we check for the last measurement to see if it's between the following limits
+            accelerationBalanced = (samples[SAMPLES_BUFFER_SIZE-1] >= 9.6 && samples[SAMPLES_BUFFER_SIZE-1] <= 10.0);
+            Log.d("checkPosture","accelerationBalanced: " + accelerationBalanced);
+        }else{
+            //acceleration has balanced between (9.5,10) so now we assume user is lying down
+            Log.d("checkPosture","stoodup: "+stoodUp);
+            if(!getStoodUp() && (currentTime - timeSinceFall < 15* MILLISECONDS_PER_SECOND)){
+                //check to see if he stood up
+                stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= 0.65 * GRAVITY_ACCELERATION);
+                Log.d("CheckPosture", "Not stood up yet.");
+            }else if(!getStoodUp() && (currentTime - timeSinceFall >= 15* MILLISECONDS_PER_SECOND)){
+                //user didn't stand up since fall and there's been 15 seconds => trigger action
+                Log.d("checkPosture","not stood up and gonna trigger emergency");
+                initValues();
+                triggerEmergency();
+            }else if(getStoodUp() && (currentTime - timeSinceFall <= 15 * MILLISECONDS_PER_SECOND)){
+
+                if(alertDialog==null){
+                    alertDialog = new AlertDialog.Builder(ReadDataFromAccelerometer.this).create();
+                    alertDialog.setTitle("Are you OK?");
+                    alertDialog.setMessage("It seems like you had a fall but stood up are you ok?");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    initValues();
+                                }
+                            });
+                    alertDialog.show();
                 }else{
-                    initValues();
-                    triggerEmergency();
-                    break;
+                    if(!alertDialog.isShowing()){
+                        alertDialog.show();
+                    }
                 }
             }
-        }else{
-            Log.d("CheckPosture","Not yet");
         }
     }
 
@@ -340,16 +355,32 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
                 boolean smsPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS, false);
                 String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
+                boolean locationPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
+
 
                 if(!smsPref){
                     db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1));
                     mContext.startActivity(callingIntent);
                 }
                 else if(smsPref){
-                    db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
-                    SmsManager manager = SmsManager.getDefault();
-                    manager.sendTextMessage(mNumber, null, smsBody, null, null);
+                    StringBuffer smsBodyBuilder = new StringBuffer();
+                    smsBodyBuilder.append(smsBody);
+                    if(locationPref){
+                        getCurrentLocation();
+                        //concat location link to SMS body
+                        smsBodyBuilder.append("\n \n My location is ");
+                        smsBodyBuilder.append("http://maps.google.com?q=");
+                        smsBodyBuilder.append(location[0]);
+                        smsBodyBuilder.append(",");
+                        smsBodyBuilder.append(location[1]);
+                    }
+//                    db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
+//                    SmsManager manager = SmsManager.getDefault();
+//                    manager.sendTextMessage(mNumber, null, smsBodyBuilder.toString(), null, null);
+                    Log.d("Trigger",smsBodyBuilder.toString());
+
                     showAToast("SMS sent to " + mNumber);
+
                 }
                 else{
                     //play alarm
@@ -462,6 +493,12 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         timeOfFall = time;
     }
 
+    public void setAccelerationBalanced(Boolean accelerationBalanced) {this.accelerationBalanced = accelerationBalanced;}
+    public Boolean getAccelerationBalanced(){return accelerationBalanced;}
+
+    public void setStoodUp(Boolean stoodUp) {this.stoodUp = stoodUp;}
+    public Boolean getStoodUp(){return stoodUp;}
+
     //for debugging purposes
     public static void toastingBoom(String msg){
         Log.d("Activity Detected",msg);
@@ -555,4 +592,14 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             releaseMediaPlayer();
         }
     };
+
+    public void setLocation(double latitude, double longitude){
+        location[0] = latitude;
+        location[1] = longitude;
+    }
+
+    private void getCurrentLocation() {
+
+    }
+
 }

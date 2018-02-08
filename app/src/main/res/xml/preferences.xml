@@ -14,4 +14,11 @@
         android:summary="@string/sms_pref_body_summary"
         android:dependency="sms_preference"/>
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:title="@string/location_pref_title"
+        android:key="location_preference"
+        android:summary="@string/location_pref_summary"
+        android:dependency="sms_preference"/>
+
 </PreferenceScreen>
