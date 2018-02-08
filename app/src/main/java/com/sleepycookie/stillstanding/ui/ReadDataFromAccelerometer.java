@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -374,9 +375,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                         smsBodyBuilder.append(",");
                         smsBodyBuilder.append(location[1]);
                     }
-//                    db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
-//                    SmsManager manager = SmsManager.getDefault();
-//                    manager.sendTextMessage(mNumber, null, smsBodyBuilder.toString(), null, null);
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
+                    SmsManager manager = SmsManager.getDefault();
+                    manager.sendTextMessage(mNumber, null, smsBodyBuilder.toString(), null, null);
                     Log.d("Trigger",smsBodyBuilder.toString());
 
                     showAToast("SMS sent to " + mNumber);
