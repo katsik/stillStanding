@@ -607,6 +607,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             Toast.makeText(context,"Sending SMS to emergency contact...", Toast.LENGTH_SHORT).show();
         }
 
+        /**
+         *
+         * This method takes the location which has already been retrieved by doInBackground.
+         * After location is set we enhance the SMS body already specified by user with his/her
+         * latitude & longitude. Finally we sent an SMS to the user's emergency contact.
+         *
+         * @param SMSAttributes first attribute contains number and second contains SMS body
+         */
+
         @Override
         protected void onPostExecute(String[] SMSAttributes) {
             //first argument is number, second is smsbody
@@ -630,6 +639,20 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             Toast.makeText(context,"SMS sent to "+ number,Toast.LENGTH_SHORT).show();
         }
 
+        /**
+         *
+         * In background there is a location manager initialized and responsible for location tracking.
+         * We only get the location once, either by gps or by network depending on what's available on
+         * the user's phone.
+         * Due to the fact that it may take some time to get the new location we initialize a looper
+         * for waiting until the location is returned by the location manager. Once the location returned
+         * the looper stops waiting.
+         * When location is returned we store it to the appropriate variable through updateLocation()
+         *
+         *
+         * @param args
+         * @return an array of Strings with the phone number and the sms body.
+         */
         @Override
         protected String[] doInBackground(String... args) {
             if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_COARSE_LOCATION)==PERMISSION_GRANTED
@@ -671,6 +694,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             }
         }
 
+        /**
+         * Updates the user's location
+         *
+         * @param location
+         */
         protected void updateLocation(Location location){
             currentLocation = location;
             currentLatitude = location.getLatitude();
@@ -679,7 +707,12 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         protected Location getCurrentLocation(){return currentLocation;}
 
+        //-----------------------------------LocationListener's Overrided methods------------------------------------
 
+        /**
+         * Updates location and stops looper.
+         * @param location
+         */
         @Override
         public void onLocationChanged(Location location) {
             updateLocation(location);
