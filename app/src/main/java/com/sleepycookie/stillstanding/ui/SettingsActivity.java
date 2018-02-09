@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
+import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.SettingsFragment;
 
 /**
@@ -13,6 +14,8 @@ import com.sleepycookie.stillstanding.SettingsFragment;
 public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
+
         super.onCreate(savedInstanceState);
 
         // Get a support ActionBar corresponding to this toolbar

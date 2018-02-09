@@ -94,6 +94,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        setTheme(R.style.AppTheme);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_data_from_accelerometer);
         ReadDataFromAccelerometer.context = getApplicationContext();

@@ -17,6 +17,9 @@ import java.util.ArrayList;
 
 public class AboutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
+
+        setTheme(R.style.AppTheme);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
