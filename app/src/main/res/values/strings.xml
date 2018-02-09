@@ -33,4 +33,5 @@
     <string name="location_pref_title">Send Location</string>
     <string name="location_pref_summary">If set, your location will also be sent to your emergency contact.</string>
     <string name="action_feedback">Feedback</string>
+    <string name="sms_location_text">"My location is: "</string>
 </resources>

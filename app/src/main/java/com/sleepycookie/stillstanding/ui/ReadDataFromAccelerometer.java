@@ -180,7 +180,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             ay = events[1];
             az = events[2];
 
-        // calculate the sum of vector of acceleration
+            // calculate the sum of vector of acceleration
             svTotalAcceleration = Math.sqrt(Math.pow(ax,2)
                     +Math.pow(ay,2)
                     +Math.pow(az,2));
@@ -612,7 +612,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         @Override
         protected void onPostExecute(String[] SMSAttributes) {
-            //first argument is number, second is smsbody
+            //first argument is number, second is sms body
             //latitude and longitude can be acquired by getCurrentLocation and the respective getters.
             String number = SMSAttributes[0];
             String smsBody = SMSAttributes[1];
@@ -620,7 +620,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             StringBuffer smsBodyBuilder = new StringBuffer();
             smsBodyBuilder.append(smsBody);
 
-            smsBodyBuilder.append("\n \n My location is ");
+            smsBodyBuilder.append("\n \n" + getString(R.string.sms_location_text));
             smsBodyBuilder.append("http://maps.google.com?q=");
             smsBodyBuilder.append(getCurrentLocation().getLatitude());
             smsBodyBuilder.append(",");

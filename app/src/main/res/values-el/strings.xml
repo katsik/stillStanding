@@ -28,4 +28,5 @@
     <string name="location_pref_summary">Αν η ρύθμιση αυτή είναι ενεργοποιημένη, η τοποθεσία σας θα αποσταλεί στην επαφή σας.</string>
     <string name="action_feedback">Αποστολή Σχολίων</string>
     <string name="location_pref_title">Αποστολή Τοποθεσίας</string>
+    <string name="sms_location_text">"Η τοποθεσία μου: "</string>
 </resources>
