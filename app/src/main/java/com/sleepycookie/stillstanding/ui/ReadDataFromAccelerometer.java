@@ -10,10 +10,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -366,24 +372,20 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                     db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1));
                     mContext.startActivity(callingIntent);
                 }
-                else if(smsPref){
+                else if(smsPref && !locationPref){
                     StringBuffer smsBodyBuilder = new StringBuffer();
                     smsBodyBuilder.append(smsBody);
-                    if(locationPref){
-                        getCurrentLocation();
-                        //concat location link to SMS body
-                        smsBodyBuilder.append("\n \n My location is ");
-                        smsBodyBuilder.append("http://maps.google.com?q=");
-                        smsBodyBuilder.append(location[0]);
-                        smsBodyBuilder.append(",");
-                        smsBodyBuilder.append(location[1]);
-                    }
+
                     db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
                     SmsManager manager = SmsManager.getDefault();
                     manager.sendTextMessage(mNumber, null, smsBodyBuilder.toString(), null, null);
                     Log.d("Trigger",smsBodyBuilder.toString());
 
                     showAToast("SMS sent to " + mNumber);
+
+                }else if(smsPref && locationPref){
+
+                    new LocationRetrieving().execute(new String[] {mNumber,smsBody});
 
                 }
                 else{
@@ -597,13 +599,98 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         }
     };
 
-    public void setLocation(double latitude, double longitude){
-        location[0] = latitude;
-        location[1] = longitude;
+
+    private class LocationRetrieving extends AsyncTask<String, Void, String[]> implements LocationListener{
+        Location currentLocation;
+        Double currentLatitude, currentLongitude;
+//        ProgressDialog dialog = new ProgressDialog(mContext);
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(context,"Sending SMS to emergency contact...", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onPostExecute(String[] SMSAttributes) {
+            //first argument is number, second is smsbody
+            //latitude and longitude can be acquired by getCurrentLocation and the respective getters.
+            String number = SMSAttributes[0];
+            String smsBody = SMSAttributes[1];
+
+            StringBuffer smsBodyBuilder = new StringBuffer();
+            smsBodyBuilder.append(smsBody);
+
+            smsBodyBuilder.append("\n \n My location is ");
+            smsBodyBuilder.append("http://maps.google.com?q=");
+            smsBodyBuilder.append(getCurrentLocation().getLatitude());
+            smsBodyBuilder.append(",");
+            smsBodyBuilder.append(getCurrentLocation().getLongitude());
+
+            db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + number, 2));
+            SmsManager manager = SmsManager.getDefault();
+            manager.sendTextMessage(number, null, smsBodyBuilder.toString(), null, null);
+
+            Toast.makeText(context,"SMS sent to "+ number,Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected String[] doInBackground(String... args) {
+            if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_COARSE_LOCATION)==PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)==PERMISSION_GRANTED){
+                LocationManager mLocationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+                boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                boolean isGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+                if (isNetworkEnabled){
+                    Criteria criteria = new Criteria();
+                    criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+                    Looper.prepare();
+                    mLocationManager.requestSingleUpdate(criteria,this,null);
+                    Looper.loop();
+
+                }else if(isGPSEnabled){
+                    Criteria criteria = new Criteria();
+                    criteria.setAccuracy(Criteria.ACCURACY_FINE);
+                    Looper.prepare();
+                    mLocationManager.requestSingleUpdate(criteria,this,null);
+                    Looper.loop();
+                }
+
+                if(getCurrentLocation()==null){
+                    Log.e("Location","No location returned");
+                }
+                return new String[]{args[0],
+                        args[1]};
+
+            }else{
+                //return a dummy location
+                Location dummyLocation = new Location("");
+                dummyLocation.setLatitude(0.0d);
+                dummyLocation.setLongitude(0.0d);
+                updateLocation(dummyLocation);
+                Log.e("Location","returned dummy location");
+                return new String[]{args[0],
+                        args[1]};
+            }
+        }
+
+        protected void updateLocation(Location location){
+            currentLocation = location;
+            currentLatitude = location.getLatitude();
+            currentLongitude = location.getLongitude();
+        }
+
+        protected Location getCurrentLocation(){return currentLocation;}
+
+
+        @Override
+        public void onLocationChanged(Location location) {
+            updateLocation(location);
+            Looper.myLooper().quit();
+        }
+
+        @Override public void onStatusChanged(String s, int i, Bundle bundle) {}
+        @Override public void onProviderEnabled(String s) {}
+        @Override public void onProviderDisabled(String s) {}
     }
-
-    private void getCurrentLocation() {
-
-    }
-
 }
