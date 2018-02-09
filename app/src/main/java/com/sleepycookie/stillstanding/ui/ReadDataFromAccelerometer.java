@@ -369,14 +369,14 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
 
                 if(!smsPref){
-                    db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1));
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1, 0, 0));
                     mContext.startActivity(callingIntent);
                 }
                 else if(smsPref && !locationPref){
                     StringBuffer smsBodyBuilder = new StringBuffer();
                     smsBodyBuilder.append(smsBody);
 
-                    db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2));
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2, 0, 0));
                     SmsManager manager = SmsManager.getDefault();
                     manager.sendTextMessage(mNumber, null, smsBodyBuilder.toString(), null, null);
                     Log.d("Trigger",smsBodyBuilder.toString());
@@ -390,7 +390,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 }
                 else{
                     //play alarm
-                    db.incidentDao().insertIncidents(new Incident(new Date(), "Alarm played", 3));
+                    db.incidentDao().insertIncidents(new Incident(new Date(), "Alarm played", 3, 0, 0));
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -629,13 +629,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             StringBuffer smsBodyBuilder = new StringBuffer();
             smsBodyBuilder.append(smsBody);
 
+            double[] coordinates = {getCurrentLocation().getLatitude(), getCurrentLocation().getLongitude()};
+
             smsBodyBuilder.append("\n \n" + getString(R.string.sms_location_text));
             smsBodyBuilder.append("http://maps.google.com?q=");
-            smsBodyBuilder.append(getCurrentLocation().getLatitude());
+            smsBodyBuilder.append(String.format ("%.7f", coordinates[0]));
             smsBodyBuilder.append(",");
-            smsBodyBuilder.append(getCurrentLocation().getLongitude());
+            smsBodyBuilder.append(String.format ("%.7f", coordinates[1]));
 
-            db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + number, 2));
+            db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + number, 2, coordinates[0], coordinates[1]));
             SmsManager manager = SmsManager.getDefault();
             manager.sendTextMessage(number, null, smsBodyBuilder.toString(), null, null);
 

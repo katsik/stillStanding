@@ -57,7 +57,7 @@
 
                 <TextView
                     android:id="@+id/contact_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="4dp"
@@ -66,7 +66,7 @@
 
                 <TextView
                     android:id="@+id/contact_phone"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/placholder_phone"
                     android:textSize="14sp" />
@@ -120,7 +120,7 @@
                 android:contentDescription="TODO" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/incident_image"
                 android:orientation="vertical"
@@ -137,7 +137,7 @@
 
                 <TextView
                     android:id="@+id/incident_card_date"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="4dp"
@@ -146,12 +146,23 @@
 
                 <TextView
                     android:id="@+id/incident_card_info"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Call to +306976162949"
                     android:textSize="14sp" />
 
             </LinearLayout>
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_place_black_24dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:id="@+id/incident_card_location"/>
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

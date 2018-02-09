@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.sleepycookie.stillstanding.R;
@@ -26,7 +28,7 @@ public class IncidentAdapter extends ArrayAdapter<Incident>{
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
         View listItemView=convertView;
         if(listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(
@@ -46,6 +48,20 @@ public class IncidentAdapter extends ArrayAdapter<Incident>{
 
         ImageView imageView = listItemView.findViewById(R.id.incident_item_image);
         imageView.setImageResource(currentIncident.getIcon());
+
+        ImageButton imageButton = listItemView.findViewById(R.id.incident_location);
+        if(currentIncident.hasLocation() == false) {
+            imageButton.setVisibility(View.GONE);
+        }
+        else{
+            imageButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    ((ListView) parent).performItemClick(v, position, 0); // Let the event be handled in onItemClick()
+                }
+            });
+        }
 
         return listItemView;
     }

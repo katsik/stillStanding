@@ -2,10 +2,8 @@ package com.sleepycookie.stillstanding.data;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
-import android.location.Location;
 
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.utils.DateTypeConverter;
@@ -34,16 +32,18 @@ public class Incident {
     @ColumnInfo(name = "type") // 1 = call, 2 = sms, 3 = alarm
     public int type;
 
+    @ColumnInfo (name = "latitude")
+    public double latitude;
 
-    /*
-    @ColumnInfo (name = "location")
-    public Location location;
-    */
+    @ColumnInfo (name = "longitude")
+    public double longitude;
 
-    public Incident(Date date, String info, int type) {
+    public Incident(Date date, String info, int type, double latitude, double longitude) {
         this.date = date;
         this.info = info;
         this.type = type;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public int getId() {
@@ -89,5 +89,26 @@ public class Incident {
     public String getDateText(){
         DateFormat df = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss");
         return df.format(date);
+    }
+
+    public boolean hasLocation(){
+        if(latitude == 0 && longitude == 0) return false;
+        else return true;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

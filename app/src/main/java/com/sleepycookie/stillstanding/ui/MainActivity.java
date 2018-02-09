@@ -420,7 +420,7 @@ public class MainActivity extends AppCompatActivity
         incidentCard = findViewById(R.id.incident_card);
 
         //TODO Async this
-        Incident lastIncident = AppDatabase.getInstance(this).incidentDao().loadLastIncident();
+        final Incident lastIncident = AppDatabase.getInstance(this).incidentDao().loadLastIncident();
 
         if (lastIncident != null){
             incidentCard.setVisibility(View.VISIBLE);
@@ -433,6 +433,30 @@ public class MainActivity extends AppCompatActivity
 
             ImageView incidentImage = findViewById(R.id.incident_image);
             incidentImage.setImageResource(lastIncident.getIcon());
+
+            ImageButton incidentLocationButton = findViewById(R.id.incident_card_location);
+
+            if(lastIncident.hasLocation() == false){
+                incidentLocationButton.setVisibility(View.GONE);
+            }
+            else {
+                incidentLocationButton.setVisibility(View.VISIBLE);
+                incidentLocationButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // The two lines below are needed to open location
+                        StringBuffer url = new StringBuffer();
+                        url.append( "http://maps.google.com?q=");
+                        url.append(String.format ("%.7f", lastIncident.getLatitude()));
+                        url.append(",");
+                        url.append(String.format ("%.7f", lastIncident.getLongitude()));
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url.toString()));
+                        startActivity(i);
+                    }
+                });
+            }
+
         }
     }
 

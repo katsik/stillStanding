@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="90dp"
-    android:minHeight="@dimen/list_item_height">
+    android:minHeight="@dimen/list_item_height"
+    tools:background="@color/white" >
 
     <ImageView
         android:id="@+id/incident_item_image"
@@ -19,10 +20,9 @@
 
     <LinearLayout
         android:id="@+id/item_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@id/incident_item_image"
         android:gravity="center_vertical"
@@ -58,5 +58,15 @@
             tools:text="Phone Call" />
 
     </LinearLayout>
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_place_black_24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="8dp"
+        android:id="@+id/incident_location"/>
 
 </RelativeLayout>
