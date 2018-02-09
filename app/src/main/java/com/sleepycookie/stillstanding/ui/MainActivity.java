@@ -203,6 +203,17 @@ public class MainActivity extends AppCompatActivity
                 startActivity(seeSettings);
                 return true;
 
+            case R.id.action_feedback:
+                //User chose the "Feedback" item, go to email app...
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:geotsam@gmail.com")); // only email apps should handle this
+                intent.putExtra(Intent.EXTRA_SUBJECT, "[Still Standing] App Feedback");
+
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.

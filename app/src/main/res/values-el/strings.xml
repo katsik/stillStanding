@@ -25,5 +25,7 @@
     <string name="send_sms_pref_title">Αποστολή SMS</string>
     <string name="sms_body_pref_title">Μήνυμα SMS</string>
     <string name="label_preferences">Ρυθμίσεις</string>
-    <string name="location_pref_summary">Αν η ρύθμιση αυτή είναι ενεργοποιημένη, η επαφή σας θα ενημερωθεί και για την τοποθεσία σας σε περίπτωση που χρειαστεί να σας εντωπίσει.</string>
+    <string name="location_pref_summary">Αν η ρύθμιση αυτή είναι ενεργοποιημένη, η τοποθεσία σας θα αποσταλεί στην επαφή σας.</string>
+    <string name="action_feedback">Αποστολή Σχολίων</string>
+    <string name="location_pref_title">Αποστολή Τοποθεσίας</string>
 </resources>

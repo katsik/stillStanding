@@ -23,13 +23,14 @@
     <string name="action_history">History</string>
     <string name="label_history">History</string>
     <string name="settings_label">Settings</string>
-    <string name="sms_notification_summary">If set your emergency contact will be notified via SMS instead of a phone call.</string>
+    <string name="sms_notification_summary">If set, your emergency contact will be notified via SMS instead of a phone call.</string>
     <string name="sms_message_body">Help me! I fell!</string>
     <string name="last_incident">Last Incident</string>
     <string name="choose_number">Choose a number</string>
     <string name="sms_pref_body_summary">This message will be sent with SMS to your emergency contact</string>
     <string name="send_sms_pref_title">Send SMS</string>
     <string name="sms_body_pref_title">SMS Message</string>
-    <string name="location_pref_title">Enable Location</string>
-    <string name="location_pref_summary">If set your emergency contact will be given your location to track you if need be.</string>
+    <string name="location_pref_title">Send Location</string>
+    <string name="location_pref_summary">If set, your location will also be sent to your emergency contact.</string>
+    <string name="action_feedback">Feedback</string>
 </resources>

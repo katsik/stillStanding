@@ -23,6 +23,10 @@
         android:title="@string/action_history"
         app:showAsAction="ifRoom"/>
 
-
-
+    <item
+        android:id="@+id/action_feedback"
+        android:orderInCategory="4"
+        android:title="@string/action_feedback"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_feedback_white_24dp"/>
 </menu>
