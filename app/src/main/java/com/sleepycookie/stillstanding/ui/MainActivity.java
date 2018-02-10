@@ -447,9 +447,9 @@ public class MainActivity extends AppCompatActivity
                         // The two lines below are needed to open location
                         StringBuffer url = new StringBuffer();
                         url.append( "http://maps.google.com?q=");
-                        url.append(String.format ("%.7f", lastIncident.getLatitude()));
+                        url.append(String.format ("%.7f", lastIncident.getLatitude()).replaceAll(",", "."));
                         url.append(",");
-                        url.append(String.format ("%.7f", lastIncident.getLongitude()));
+                        url.append(String.format ("%.7f", lastIncident.getLongitude()).replaceAll(",", "."));
                         Intent i = new Intent(Intent.ACTION_VIEW);
                         i.setData(Uri.parse(url.toString()));
                         startActivity(i);

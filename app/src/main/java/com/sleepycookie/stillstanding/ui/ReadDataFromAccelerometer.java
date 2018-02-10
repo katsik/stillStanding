@@ -633,9 +633,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
             smsBodyBuilder.append("\n \n" + getString(R.string.sms_location_text));
             smsBodyBuilder.append("http://maps.google.com?q=");
-            smsBodyBuilder.append(String.format ("%.7f", coordinates[0]));
+            smsBodyBuilder.append(String.format ("%.7f", coordinates[0]).replaceAll(",", "."));
             smsBodyBuilder.append(",");
-            smsBodyBuilder.append(String.format ("%.7f", coordinates[1]));
+            smsBodyBuilder.append(String.format ("%.7f", coordinates[1]).replaceAll(",", "."));
 
             db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + number, 2, coordinates[0], coordinates[1]));
             SmsManager manager = SmsManager.getDefault();
