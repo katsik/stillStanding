@@ -33,5 +33,9 @@
     <string name="location_pref_title">Send Location</string>
     <string name="location_pref_summary">If set, your location will also be sent to your emergency contact.</string>
     <string name="action_feedback">Feedback</string>
-    <string name="sms_location_text">"My location is: "</string>
+    <string name="sms_location_text">My location is: </string>
+    <string name="warning_card_title">Are you OK?</string>
+    <string name="warning_card_text">It seems like you fell and stood up. Do you need assistance?</string>
+    <string name="warning_card_action_ok">I\'m OK</string>
+    <string name="warning_card_action_fall">Emergency</string>
 </resources>

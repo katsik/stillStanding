@@ -29,4 +29,8 @@
     <string name="action_feedback">Αποστολή Σχολίων</string>
     <string name="location_pref_title">Αποστολή Τοποθεσίας</string>
     <string name="sms_location_text">"Η τοποθεσία μου: "</string>
+    <string name="warning_card_title">Είστε εντάξει;</string>
+    <string name="warning_card_text">Μοιάζει να πέσατε και να σηκωθήκατε. Χρείαζεστε βοήθεια;</string>
+    <string name="warning_card_action_ok">Είμαι εντάξει</string>
+    <string name="warning_card_action_fall">Βοήθεια</string>
 </resources>

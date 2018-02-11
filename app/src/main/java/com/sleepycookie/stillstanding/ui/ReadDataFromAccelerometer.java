@@ -89,6 +89,10 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     private Long timeOfFall;
 
+    public android.support.v7.widget.CardView warningCard;
+    public Button warningOkButton;
+    public Button warningEmergencyButton;
+
 
     /** Handles playback of all the sound files */
     private MediaPlayer mMediaPlayer;
@@ -132,7 +136,12 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 
         mLabelTextView = findViewById(R.id.tv_collecting);
-        mLabelTextView.setText("Are You Still Standing?");
+        mLabelTextView.setText("Analyzing Data...");
+
+        warningCard = findViewById(R.id.warning_card);
+        warningEmergencyButton = findViewById(R.id.warning_action_fell);
+        warningOkButton = findViewById(R.id.warning_action_ok);
+        initWarningButtonFunctionality();
 
         initValues();
 
@@ -159,6 +168,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         for (int j = 0; j<states.length; j++){
             states[j] = currentState;
         }
+        warningCard.setVisibility(View.GONE);
+        mLabelTextView.setText("Analyzing Data...");
     }
 
     /**
@@ -260,23 +271,25 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 triggerEmergency();
             }else if(getStoodUp() && (currentTime - timeSinceFall <= 15 * MILLISECONDS_PER_SECOND)){
 
-                if(alertDialog==null){
-                    alertDialog = new AlertDialog.Builder(ReadDataFromAccelerometer.this).create();
-                    alertDialog.setTitle("Are you OK?");
-                    alertDialog.setMessage("It seems like you had a fall but stood up are you ok?");
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    initValues();
-                                }
-                            });
-                    alertDialog.show();
-                }else{
-                    if(!alertDialog.isShowing()){
-                        alertDialog.show();
-                    }
-                }
+                warningCard.setVisibility(View.VISIBLE);
+
+//                if(alertDialog==null){
+//                    alertDialog = new AlertDialog.Builder(ReadDataFromAccelerometer.this).create();
+//                    alertDialog.setTitle("Are you OK?");
+//                    alertDialog.setMessage("It seems like you had a fall but stood up are you ok?");
+//                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                            new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.dismiss();
+//                                    initValues();
+//                                }
+//                            });
+//                    alertDialog.show();
+//                }else{
+//                    if(!alertDialog.isShowing()){
+//                        alertDialog.show();
+//                    }
+//                }
             }
         }
     }
@@ -344,7 +357,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     public void triggerEmergency(){
 //        mLabelTextView.setText("User fell and didn't stand up");
-        mLabelTextView.setVisibility(View.INVISIBLE);
+        mLabelTextView.setText("Fall Detected!");
         showAToast("User fell and didn't stand up");
         Intent callingIntent = new Intent(Intent.ACTION_CALL);
 
@@ -358,7 +371,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         int permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE);
 
-        if (permissionCheck==PERMISSION_GRANTED){
+        if (permissionCheck==PERMISSION_GRANTED){ //TODO Check for the correct permissions
             try{
                 //TODO correctly implement this :P
 
@@ -367,7 +380,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
                 boolean locationPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
 
-
+                //TODO enable speakerphone
                 if(!smsPref){
                     db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1, 0, 0));
                     mContext.startActivity(callingIntent);
@@ -487,6 +500,25 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             @Override
             public void onClick(View view) {
                 triggerEmergency();
+            }
+        });
+    }
+
+    /**
+     *Method used to initialize functionality of Warning card buttons
+     **/
+    public void initWarningButtonFunctionality(){
+        warningEmergencyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                triggerEmergency();
+            }
+        });
+
+        warningOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initValues();
             }
         });
     }
