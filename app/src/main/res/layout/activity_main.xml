@@ -4,168 +4,178 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sleepycookie.stillstanding.ui.MainActivity"
-    tools:background="@color/white">
+    tools:background="@color/white"
+    tools:context="com.sleepycookie.stillstanding.ui.MainActivity">
 
-    <TextView
-        android:id="@+id/app_description"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:text="@string/app_description"
-        android:layout_below="@id/incident_card" />
-
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        android:layout_width="match_parent"
-        android:layout_height="90dp"
-        card_view:cardCornerRadius="2dp"
-        android:layout_margin="8dp"
-        android:elevation="2dp">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/contact_block" >
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:layout_width="90dp"
+            <TextView
+                android:id="@+id/app_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/incident_card"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="@string/app_description"
+                android:layout_marginBottom="96dp"/>
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/card_view"
+                android:layout_width="match_parent"
                 android:layout_height="90dp"
-                android:layout_alignParentLeft="true"
-                android:id="@+id/contact_image"
-                tools:src="@drawable/ic_tsamis"
-                tools:visibility="visible"
-                android:contentDescription="TODO" />
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/contact_image"
-                android:orientation="vertical"
-                android:padding="12dp"
-                android:layout_centerVertical="true">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/emergency_contact"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#000000"/>
-
-                <TextView
-                    android:id="@+id/contact_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:text="@string/placeholder_name"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/contact_phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/placholder_phone"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/set_contact"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentRight="true"
                 android:layout_margin="8dp"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_person_add_black_24dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="TODO" />
+                android:elevation="2dp"
+                card_view:cardCornerRadius="2dp">
+
+                <RelativeLayout
+                    android:id="@+id/contact_block"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/contact_image"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:layout_alignParentLeft="true"
+                        android:contentDescription="TODO"
+                        tools:src="@drawable/ic_tsamis"
+                        tools:visibility="visible" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@id/contact_image"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/emergency_contact"
+                            android:textColor="#000000"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/contact_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/placeholder_name"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/contact_phone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/placholder_phone"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/set_contact"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="TODO"
+                        android:src="@drawable/ic_person_add_black_24dp" />
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/incident_card"
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:layout_below="@id/card_view"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:elevation="2dp"
+                android:visibility="gone"
+                card_view:cardCornerRadius="2dp"
+                tools:visibility="visible">
+
+                <RelativeLayout
+                    android:id="@+id/incident_block"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/incident_image"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_margin="15dp"
+                        android:background="@drawable/shape_circle"
+                        android:contentDescription="TODO"
+                        android:padding="15dp"
+                        android:src="@drawable/ic_phone_white_24dp"
+                        tools:visibility="visible" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@id/incident_image"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/last_incident"
+                            android:textColor="#000000"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/incident_card_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginTop="4dp"
+                            android:text="30 Jan 2018, 15:38:23"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/incident_card_info"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Call to +306976162949"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/incident_card_location"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_place_black_24dp" />
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
         </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/incident_card"
-        android:layout_width="match_parent"
-        android:layout_height="90dp"
-        card_view:cardCornerRadius="2dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:elevation="2dp"
-        android:layout_below="@id/card_view"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/incident_block" >
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_alignParentLeft="true"
-                android:id="@+id/incident_image"
-                android:src="@drawable/ic_phone_white_24dp"
-                android:background="@drawable/shape_circle"
-                tools:visibility="visible"
-                android:padding="15dp"
-                android:layout_margin="15dp"
-                android:contentDescription="TODO" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/incident_image"
-                android:orientation="vertical"
-                android:padding="12dp"
-                android:layout_centerVertical="true">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/last_incident"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#000000"/>
-
-                <TextView
-                    android:id="@+id/incident_card_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:text="30 Jan 2018, 15:38:23"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/incident_card_info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Call to +306976162949"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <ImageButton
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ic_place_black_24dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:id="@+id/incident_card_location"/>
-
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+    </ScrollView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/start_detection"
