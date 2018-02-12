@@ -14,8 +14,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -93,13 +91,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public Button warningOkButton;
     public Button warningEmergencyButton;
 
-
-    /** Handles playback of all the sound files */
-    private MediaPlayer mMediaPlayer;
-
-    /** Handles audio focus when playing a sound file */
-    private AudioManager mAudioManager;
-
     private AppDatabase db;
 
     @Override
@@ -111,7 +102,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         setContentView(R.layout.activity_read_data_from_accelerometer);
         ReadDataFromAccelerometer.context = getApplicationContext();
 
-        //TODO async this
         db = AppDatabase.getInstance(this);
 
         mContext = this;
@@ -128,7 +118,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         triggerButton = findViewById(R.id.btn_trigger);
         initTriggerFunctionality();
-        mAudioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
 
         quitButton = findViewById(R.id.btn_quit);
         initQuitFunctionality();
@@ -246,8 +235,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     }
 
-
-
     public void checkPosture(long timeSinceFall){
         //wait for 15 seconds (setting the time randomly) to see if user stands up during this time
 
@@ -353,64 +340,61 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
      */
 
     //TODO Handle the case where the user has set no emergency contact. Maybe play an alarm, instead of calling null.
-    //TODO Add siren and SMS functionality
 
     public void triggerEmergency(){
-//        mLabelTextView.setText("User fell and didn't stand up");
         mLabelTextView.setText("Fall Detected!");
         showAToast("User fell and didn't stand up");
-        Intent callingIntent = new Intent(Intent.ACTION_CALL);
 
-        SharedPreferences sharedPref = getSharedPreferences("PREF_PHONE",Context.MODE_PRIVATE);
-        String mNumber = sharedPref.getString(getString(R.string.emergency_number), null);
+        SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean smsPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS, false);
+        String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
+        boolean locationPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
+        String mNumber = getSharedPreferences("PREF_PHONE",Context.MODE_PRIVATE).getString(getString(R.string.emergency_number), null);
 
-        callingIntent.setData(Uri.parse("tel:" + mNumber));
         //initialize state values to prevent multiple calling events.
         initValues();
 
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CALL_PHONE);
-
-        if (permissionCheck==PERMISSION_GRANTED){ //TODO Check for the correct permissions
-            try{
-                //TODO correctly implement this :P
-
-                SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
-                boolean smsPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS, false);
-                String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
-                boolean locationPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
-
-                //TODO enable speakerphone
-                if(!smsPref){
+        try{
+            if(!smsPref){
+                int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
+                if (permissionCheck==PERMISSION_GRANTED){
+                    Intent callingIntent = new Intent(Intent.ACTION_CALL);
+                    callingIntent.setData(Uri.parse("tel:" + mNumber));
                     db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1, 0, 0));
                     mContext.startActivity(callingIntent);
                 }
-                else if(smsPref && !locationPref){
+                else{
+                    Log.d("Place emergency call", "User didn't give permission (phone)");
+                }
+            }else if(smsPref && !locationPref){
+                int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+                if (permissionCheck==PERMISSION_GRANTED) {
                     StringBuffer smsBodyBuilder = new StringBuffer();
                     smsBodyBuilder.append(smsBody);
 
                     db.incidentDao().insertIncidents(new Incident(new Date(), "SMS to " + mNumber, 2, 0, 0));
                     SmsManager manager = SmsManager.getDefault();
                     manager.sendTextMessage(mNumber, null, smsBodyBuilder.toString(), null, null);
-                    Log.d("Trigger",smsBodyBuilder.toString());
+                    Log.d("Trigger", smsBodyBuilder.toString());
 
                     showAToast("SMS sent to " + mNumber);
-
-                }else if(smsPref && locationPref){
-
+                }else{
+                    Log.d("Place emergency call", "User didn't give permission (SMS)");
+                }
+            }else if(smsPref && locationPref){
+                int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+                int permissionCheck2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+                if (permissionCheck==PERMISSION_GRANTED && permissionCheck2==PERMISSION_GRANTED){
                     new LocationRetrieving().execute(new String[] {mNumber,smsBody});
-
+                }else{
+                    Log.d("Place emergency call", "User didn't give permission (SMS/Location)");
                 }
-                else{
-                    //play alarm
-                    db.incidentDao().insertIncidents(new Incident(new Date(), "Alarm played", 3, 0, 0));
-                }
-            }catch (Exception e){
-                e.printStackTrace();
+            }else{ //TODO review if we want this
+                //play alarm
+                db.incidentDao().insertIncidents(new Incident(new Date(), "Alarm played", 3, 0, 0));
             }
-        }
-        else {
-            Log.d("Place emergency call", "User didn't give permission");
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -541,96 +525,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public static void toastingBoom(String msg){
         Log.d("Activity Detected",msg);
     }
-
-    public void siren(){
-        // Release the media player if it currently exists because we are about to
-        // play a different sound file
-        releaseMediaPlayer();
-
-        // Request audio focus so in order to play the audio file. The app needs to play a
-        // short audio file, so we will request audio focus with a short amount of time
-        // with AUDIOFOCUS_GAIN_TRANSIENT.
-        int result = mAudioManager.requestAudioFocus(mOnAudioFocusChangeListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            // We have audio focus now.
-
-            // Create and setup the {@link MediaPlayer} for the audio resource associated
-            // with the current word
-            mMediaPlayer = MediaPlayer.create(this, R.raw.alarm);
-
-            // Start the audio file
-            mMediaPlayer.start();
-
-            // Setup a listener on the media player, so that we can stop and release the
-            // media player once the sound has finished playing.
-            mMediaPlayer.setOnCompletionListener(mCompletionListener);
-        }
-    }
-
-    /**
-     * Clean up the media player by releasing its resources.
-     */
-    private void releaseMediaPlayer() {
-        // If the media player is not null, then it may be currently playing a sound.
-        if (mMediaPlayer != null) {
-            // Regardless of the current state of the media player, release its resources
-            // because we no longer need it.
-            mMediaPlayer.release();
-
-            // Set the media player back to null. For our code, we've decided that
-            // setting the media player to null is an easy way to tell that the media player
-            // is not configured to play an audio file at the moment.
-            mMediaPlayer = null;
-
-            // Regardless of whether or not we were granted audio focus, abandon it. This also
-            // unregisters the AudioFocusChangeListener so we don't get anymore callbacks.
-            mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
-        }
-    }
-
-    /**
-     * This listener gets triggered whenever the audio focus changes
-     * (i.e., we gain or lose audio focus because of another app or device).
-     */
-    private AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
-        @Override
-        public void onAudioFocusChange(int focusChange) {
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
-                    focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-                // The AUDIOFOCUS_LOSS_TRANSIENT case means that we've lost audio focus for a
-                // short amount of time. The AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK case means that
-                // our app is allowed to continue playing sound but at a lower volume. We'll treat
-                // both cases the same way because our app is playing short sound files.
-
-                // Pause playback and reset player to the start of the file. That way, we can
-                // play the word from the beginning when we resume playback.
-                mMediaPlayer.pause();
-                mMediaPlayer.seekTo(0);
-            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                // The AUDIOFOCUS_GAIN case means we have regained focus and can resume playback.
-                mMediaPlayer.start();
-            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                // The AUDIOFOCUS_LOSS case means we've lost audio focus and
-                // Stop playback and clean up resources
-                releaseMediaPlayer();
-            }
-        }
-    };
-
-    /**
-     * This listener gets triggered when the {@link MediaPlayer} has completed
-     * playing the audio file.
-     */
-    private MediaPlayer.OnCompletionListener mCompletionListener = new MediaPlayer.OnCompletionListener() {
-        @Override
-        public void onCompletion(MediaPlayer mediaPlayer) {
-            // Now that the sound file has finished playing, release the media player resources.
-            releaseMediaPlayer();
-        }
-    };
-
 
     private class LocationRetrieving extends AsyncTask<String, Void, String[]> implements LocationListener{
         Location currentLocation;

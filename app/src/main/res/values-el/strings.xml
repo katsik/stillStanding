@@ -33,4 +33,6 @@
     <string name="warning_card_text">Μοιάζει να πέσατε και να σηκωθήκατε. Χρείαζεστε βοήθεια;</string>
     <string name="warning_card_action_ok">Είμαι εντάξει</string>
     <string name="warning_card_action_fall">Βοήθεια</string>
+    <string name="shortcut_label_short">Ανίχνευση</string>
+    <string name="shortcut_label_long">Ανίχνευση Πτώσης</string>
 </resources>

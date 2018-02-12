@@ -38,4 +38,6 @@
     <string name="warning_card_text">It seems like you fell and stood up. Do you need assistance?</string>
     <string name="warning_card_action_ok">I\'m OK</string>
     <string name="warning_card_action_fall">Emergency</string>
+    <string name="shortcut_label_short">Detection</string>
+    <string name="shortcut_label_long">Start Detection</string>
 </resources>

@@ -38,7 +38,6 @@ public class IncidentHistory extends AppCompatActivity {
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
 
-        //TODO async this
         AppDatabase db = AppDatabase.getInstance(this);
 
         final ArrayList<Incident> incidents = new ArrayList<Incident>();

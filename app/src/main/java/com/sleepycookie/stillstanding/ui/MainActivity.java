@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.sleepycookie.stillstanding.PickContactFragment;
 import com.sleepycookie.stillstanding.R;
+import com.sleepycookie.stillstanding.SettingsFragment;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //TODO check for specific permissions when needed.
     void checkForPermissions() {
         int MY_PERMISSIONS_REQUEST_ALL = 1;
 
@@ -392,6 +394,14 @@ public class MainActivity extends AppCompatActivity
         return input.replaceAll(" ", "");
     }
 
+
+    /**
+     * Returns the URI of the contact's photo. It checks of there is an image associated with the
+     * URI, and if there is none, it returns null.
+     *
+     * @param contactId
+     * @return
+     */
     public Uri getPhotoUri(long contactId) {
         Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
 
@@ -416,10 +426,14 @@ public class MainActivity extends AppCompatActivity
         return null;
     }
 
+    /**
+     * This method is responsible for showing the last incident card in the UI. It puts the last fall's
+     * data every time this screen is brought back. It hides the card if the database is empty.
+     */
+
     public void setIncidentCard(){
         incidentCard = findViewById(R.id.incident_card);
 
-        //TODO Async this
         final Incident lastIncident = AppDatabase.getInstance(this).incidentDao().loadLastIncident();
 
         if (lastIncident != null){
@@ -464,5 +478,22 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         setIncidentCard();
+
+        SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean smsPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS, false);
+        String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
+        boolean locationPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
+
+        //Check for additional permissions after returning from settings
+        int MY_PERMISSIONS_REQUEST_ALL = 2;
+
+        if(smsPref &&  ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+            String[] PERMISSIONS = {Manifest.permission.SEND_SMS};
+            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
+        }
+        if(locationPref && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
+        }
     }
 }
