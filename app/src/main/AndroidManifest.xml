@@ -48,6 +48,8 @@
             android:label="@string/label_preferences"></activity>
 
         <service android:name=".ActivityRecognizedService" />
+        <service android:name=".AnalyzeDataFromAccelerometer"
+            android:exported="false"></service>
     </application>
 
 </manifest>
