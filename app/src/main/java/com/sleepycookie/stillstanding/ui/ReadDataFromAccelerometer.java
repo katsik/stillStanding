@@ -3,7 +3,6 @@ package com.sleepycookie.stillstanding.ui;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
@@ -259,24 +258,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             }else if(getStoodUp() && (currentTime - timeSinceFall <= 15 * MILLISECONDS_PER_SECOND)){
 
                 warningCard.setVisibility(View.VISIBLE);
-
-//                if(alertDialog==null){
-//                    alertDialog = new AlertDialog.Builder(ReadDataFromAccelerometer.this).create();
-//                    alertDialog.setTitle("Are you OK?");
-//                    alertDialog.setMessage("It seems like you had a fall but stood up are you ok?");
-//                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-//                            new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    dialog.dismiss();
-//                                    initValues();
-//                                }
-//                            });
-//                    alertDialog.show();
-//                }else{
-//                    if(!alertDialog.isShowing()){
-//                        alertDialog.show();
-//                    }
-//                }
             }
         }
     }
