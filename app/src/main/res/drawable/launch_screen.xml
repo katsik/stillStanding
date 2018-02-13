@@ -8,18 +8,10 @@
     <!-- The background color -->
     <item android:drawable="@color/colorPrimary"/>
 
-    <!-- Your splash image - 144dp color version of your app icon -->
-    <item
-        android:height="166dp"
-        android:width="166dp"
-        android:drawable="@drawable/shape_circle"
-        android:gravity="center"/>
-    <item
-        android:height="144dp"
-        android:width="144dp"
-        android:drawable="@drawable/ic_accessibility_white_144dp"
-        android:gravity="center" />
-
-    <!--TODO Fix stretching issue - myabe it needs bitmap-->
+    <!-- The foreground icon -->
+    <item>
+        <bitmap android:src="@drawable/ic_splash_image"
+            android:gravity="center"/>
+    </item>
 
 </layer-list>
