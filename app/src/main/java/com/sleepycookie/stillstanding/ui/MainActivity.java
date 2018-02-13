@@ -35,6 +35,7 @@ import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkForPermissions();
+        checkForPermissions(PreferenceManager.getDefaultSharedPreferences(this));
 
         //Sets preferences (from settings UI) to the default values, unless the user has changed them.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -155,10 +156,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     //TODO check for specific permissions when needed.
-    void checkForPermissions() {
+    void checkForPermissions(SharedPreferences prefs) {
         int MY_PERMISSIONS_REQUEST_ALL = 1;
 
-        String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE, Manifest.permission.SEND_SMS};
+        String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE};
+        if(prefs.getBoolean(SettingsFragment.KEY_SMS,false)){
+            ArrayList<String> permissions = new ArrayList<>(Arrays.asList(PERMISSIONS));
+            permissions.add(Manifest.permission.SEND_SMS);
+            PERMISSIONS = permissions.toArray(new String[0]);
+        }
 
         if (forbiddenToCallOrReadContacts(this)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
@@ -487,7 +493,7 @@ public class MainActivity extends AppCompatActivity
         //Check for additional permissions after returning from settings
         int MY_PERMISSIONS_REQUEST_ALL = 2;
 
-        if(smsPref &&  ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+        if((smsPref) &&  (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)){
             String[] PERMISSIONS = {Manifest.permission.SEND_SMS};
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
         }

@@ -1,6 +1,11 @@
 package com.sleepycookie.stillstanding.ui;
 
+import android.Manifest;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
@@ -23,6 +28,13 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED){
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(SettingsFragment.KEY_SMS,false);
+            editor.commit();
+        }
 
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
