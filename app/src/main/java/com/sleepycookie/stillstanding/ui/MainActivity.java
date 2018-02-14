@@ -492,13 +492,27 @@ public class MainActivity extends AppCompatActivity
 
         //Check for additional permissions after returning from settings
         int MY_PERMISSIONS_REQUEST_ALL = 2;
+        int i = 0;
 
         if((smsPref) &&  (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)){
+            i = i + 1;
             String[] PERMISSIONS = {Manifest.permission.SEND_SMS};
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
         }
         if(locationPref && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            i = i + 2;
             String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
+        }
+
+        if(i == 1) {
+            String[] PERMISSIONS = {Manifest.permission.SEND_SMS};
+            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
+        }else if(i == 2) {
+            String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
+        }else if(i == 3){
+            String[] PERMISSIONS = {Manifest.permission.SEND_SMS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
         }
     }
