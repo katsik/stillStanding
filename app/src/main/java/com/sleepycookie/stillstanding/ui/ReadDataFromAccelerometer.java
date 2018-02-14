@@ -234,6 +234,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     }
 
+    /**
+     * This method checks weather the user stood up or is still down, assuming he/she has already fell.
+     *
+     * If a fall of user is detected the next thing to monitor will be whether the user will stand up
+     * or will remain on the ground. If the user stands up we check the acceleration the device has and we
+     * determine weather the user is up, and therefore there is no need for automatic emergency triggering
+     * or if he/she cannot stand up and therefore there is an emergency triggering.
+     */
+
     public void checkPosture(long timeSinceFall){
         //wait for 15 seconds (setting the time randomly) to see if user stands up during this time
 
@@ -275,42 +284,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mToast.show();
     }
 
-    /**
-     * This method checks weather the user is still, walking, running etc.
-     *
-     * If a fall of user is detected the next thing to monitor will be whether the user will stand up
-     * or will remain on the ground. If the user stands up and starts walking/running this means that
-     * either we had a FP fall detection or the user fell and stood up again so no need to trigger an
-     * emergency event.
-     */
-
-    //TODO cleanup code
-    //TODO optimize code
-    public void checkPosture(){
-        //check from the state array to see if the "fell" state became "still"
-        //if so the user fell and is laid down
-        //else the user fell and stood up so no need to worry.
-        boolean flag = false;
-        for (int i=0 ; i< states.length; i++){
-            if(!flag){
-                if(states[i] == "fell"){
-                    flag = true;
-                    Log.d("Check Posture","State is " + states[i] + " and flag is " + Boolean.toString(flag));
-                }
-            }else{
-                Log.d("Check Posture","Hey I'm in!");
-                Log.d("Check Posture", "State is " + states[i]);
-                flag = false;
-
-                if(states[i] == "still"){
-                    //turn off the flag
-                    //TODO triggerEmergency function which will handle the calling emergContact or the SMS sending
-                    triggerEmergency();
-                }
-            }
-        }
-
-    }
 
     /**
      * This method will be used to trigger the actions needed to be done in case user falls.
@@ -507,7 +480,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         Log.d("Activity Detected",msg);
     }
 
-    private class LocationRetrieving extends AsyncTask<String, Void, String[]> implements LocationListener{
+    public class LocationRetrieving extends AsyncTask<String, Void, String[]> implements LocationListener{
         Location currentLocation;
         Double currentLatitude, currentLongitude;
 //        ProgressDialog dialog = new ProgressDialog(mContext);
