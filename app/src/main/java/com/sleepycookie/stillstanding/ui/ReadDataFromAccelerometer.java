@@ -1,9 +1,10 @@
 package com.sleepycookie.stillstanding.ui;
 
 import android.Manifest;
-import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,9 +17,9 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -30,11 +31,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognition;
-import com.google.android.gms.location.ActivityRecognitionClient;
-import com.sleepycookie.stillstanding.ActivityRecognizedService;
+import com.sleepycookie.stillstanding.AnalyzeDataFromAccelerometer;
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.SettingsFragment;
 import com.sleepycookie.stillstanding.data.AppDatabase;
@@ -44,11 +41,12 @@ import java.util.Date;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-public class ReadDataFromAccelerometer extends AppCompatActivity implements SensorEventListener,
-                                                            GoogleApiClient.ConnectionCallbacks,
-                                                            GoogleApiClient.OnConnectionFailedListener{
+public class ReadDataFromAccelerometer extends AppCompatActivity implements SensorEventListener{
 
     private SensorManager mSensorManager;
+
+    AnalyzeDataFromAccelerometer mService;
+    Boolean mBound;
 
     public static final int MILLISECONDS_PER_SECOND = 1000;
     public static final int DETECTION_INTERVAL_SECONDS = 20;
@@ -70,9 +68,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     static public String currentState = "";
 
-    public GoogleApiClient mApiClient;
-    public ActivityRecognitionClient activityRecognitionClient;
-    private PendingIntent pendingIntent;
     
     public Button quitButton;
     public Button triggerButton;
@@ -81,6 +76,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     private Boolean accelerationBalanced;
     private Boolean stoodUp;
+    private Boolean userFell;
+    private Boolean acceleratorStarted = false;
 
     private Context mContext;
 
@@ -132,14 +129,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         initWarningButtonFunctionality();
 
         initValues();
-
-        mApiClient = new GoogleApiClient.Builder(this)
-                .addApi(ActivityRecognition.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-        mApiClient.connect();
     }
 
     /**
@@ -150,6 +139,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             samples[i] = 0;
         }
         currentState = "none";
+        setUserFell(false);
         setAccelerationBalanced(false);
         setStoodUp(false);
         setTimeOfFall(null);
@@ -190,13 +180,13 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             }
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
 
-            if(fallDetected()){
-                //update user state table
-                currentState = "fell";
-                setTimeOfFall(System.currentTimeMillis());
-            }
+//            if(userFell){
+//                //update user state table
+//                currentState = "fell";
+////                setTimeOfFall(System.currentTimeMillis());
+//            }
 
-            if(getTimeOfFall()!=null){
+            if(userFell && getTimeOfFall()!=null){
                 checkPosture(timeOfFall);
             }
         }
@@ -245,17 +235,20 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     public void checkPosture(long timeSinceFall){
         //wait for 15 seconds (setting the time randomly) to see if user stands up during this time
-
+        Log.d("checkPosture:", "time since fall in ms: "+timeSinceFall);
         long currentTime = System.currentTimeMillis();
 
+        Log.d("checkPosture: ","time passed from fall: "+(currentTime-timeSinceFall));
+
         if(!getAccelerationBalanced()){
+            Log.d("checkPosture","in acceleration balanced if statement");
             // we check for the last measurement to see if it's between the following limits
             accelerationBalanced = (samples[SAMPLES_BUFFER_SIZE-1] >= 9.6 && samples[SAMPLES_BUFFER_SIZE-1] <= 10.0);
             Log.d("checkPosture","accelerationBalanced: " + accelerationBalanced);
         }else{
             //acceleration has balanced between (9.5,10) so now we assume user is lying down
             Log.d("checkPosture","stoodup: "+stoodUp);
-            if(!getStoodUp() && (currentTime - timeSinceFall < 15* MILLISECONDS_PER_SECOND)){
+            if(!getStoodUp() && (currentTime - timeSinceFall < 5* MILLISECONDS_PER_SECOND)){
                 //check to see if he stood up
                 stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= 0.65 * GRAVITY_ACCELERATION);
                 Log.d("CheckPosture", "Not stood up yet.");
@@ -358,31 +351,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     }
 
     @Override
-    public void onConnected(Bundle bundle) {
-        Intent intent = new Intent(context, ActivityRecognizedService.class);
-        intent.setAction(Long.toString(System.currentTimeMillis()));
-        pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        activityRecognitionClient = ActivityRecognition.getClient(this);
-        activityRecognitionClient.requestActivityUpdates(DETECTION_INTERVAL_ASAP,pendingIntent);
-    }
-
-    /**
-     * We won't be using this.
-     * @param i
-     */
-    @Override
-    public void onConnectionSuspended(int i) {}
-
-    /**
-     * Method called in case the connection to Google Play cannot be achieved.
-     * @param connectionResult
-     */
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e("ActivityDetector","Connection to Google Play Services failed.");
-    }
-
-    @Override
     protected void onResume(){
         super.onResume();
 
@@ -400,21 +368,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        try{
-            //unbind client and stop receiving updates according his/her activity
-            activityRecognitionClient.removeActivityUpdates(pendingIntent);
-            Log.d("Activity Recognition","ActivityRecognitionClient Removed.");
-        }catch (IllegalStateException e){
-            //the client probably was not initialized or something, just ignore and exit
-            Log.e("Activity Recognition","IllegalStateException caused: "+ e.getMessage());
-        }
+        setAccelerationStrated(false);
 
-        if (mApiClient.isConnected()) {
-            Intent intent2 = new Intent(this.getApplicationContext(), ActivityRecognizedService.class);
-            PendingIntent pendingIntent = PendingIntent.getService(this.getApplicationContext(), 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
-            activityRecognitionClient.removeActivityUpdates(pendingIntent);
-            mApiClient.disconnect();
-        }
+        unbindService(mConnection);
+        mBound = false;
+
     }
 
     /**
@@ -461,6 +419,32 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         });
     }
 
+    //TODO add startAccelerometer service somewhere for the detection to start.
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Boolean fell;
+        Bundle extras = getIntent().getExtras();
+
+        if(mBound==null || !mBound){
+            Intent intent = new Intent(this,AnalyzeDataFromAccelerometer.class);
+            bindService(intent, mConnection,BIND_AUTO_CREATE);
+        }
+
+        if(extras!=null){
+            fell = extras.getBoolean(getString(R.string.fall_detected_key));
+            setUserFell(fell);
+            if(fell){
+                long time = extras.getLong(getString(R.string.fall_deteciton_time_key));
+                setTimeOfFall(time);
+            }
+        }
+    }
+
+    public void setAccelerationStrated(Boolean accelerationStrated){this.acceleratorStarted = accelerationStrated;}
+    private void setUserFell(Boolean fell){this.userFell = fell;}
+
     private Long getTimeOfFall(){
         return timeOfFall;
     }
@@ -479,6 +463,26 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public static void toastingBoom(String msg){
         Log.d("Activity Detected",msg);
     }
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            AnalyzeDataFromAccelerometer.AnalyzeDataBinder binder = (AnalyzeDataFromAccelerometer.AnalyzeDataBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            mService.startAccelerometer();
+            setAccelerationStrated(true);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     public class LocationRetrieving extends AsyncTask<String, Void, String[]> implements LocationListener{
         Location currentLocation;

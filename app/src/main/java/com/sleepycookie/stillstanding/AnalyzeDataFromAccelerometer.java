@@ -78,7 +78,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
      * runs in the same process as its clients, we don't need to deal with IPC.
      */
     public class AnalyzeDataBinder extends Binder{
-        AnalyzeDataFromAccelerometer getService(){
+        public AnalyzeDataFromAccelerometer getService(){
             //Return the instance so clients can call public methods
             return AnalyzeDataFromAccelerometer.this;
         }
