@@ -9,8 +9,6 @@ import android.preference.PreferenceManager;
  * Created by George Katsikopoulos on 1/18/2018.
  */
 
-//TODO Evaluate if this is needed. Currently not in use.
-
 public final class Preferences {
 
     public static final String KEY_CONTACT = "contact_pref";
@@ -21,37 +19,37 @@ public final class Preferences {
     public static final String KEY_SMS_LOCATION = "location_preference";
     public static final String COMPLETED_ONBOARDING_PREF = "onboard_key";
 
-    public static final boolean getSmsPref(Context context){
+    public static boolean getSmsPref(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(KEY_SMS, false);
     }
 
-    public static final String getSmsBody(Context context){
+    public static String getSmsBody(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(KEY_SMS_BODY, "");
     }
 
-    public static final boolean getLocationPref(Context context){
+    public static boolean getLocationPref(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(KEY_SMS_LOCATION,false);
     }
 
-    public static final String getNumber(Context context){
+    public static String getNumber(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(KEY_PHONE,null);
     }
 
-    public static final String getContact(Context context){
+    public static String getContact(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(KEY_CONTACT,null);
     }
 
-    public static final String getPhoto(Context context){
+    public static String getPhoto(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(KEY_PHOTO, null);
     }
 
-    public static final boolean getIntroPref(Context context){
+    public static boolean getIntroPref(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(COMPLETED_ONBOARDING_PREF, false);
     }

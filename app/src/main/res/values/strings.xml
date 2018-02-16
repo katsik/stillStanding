@@ -45,14 +45,17 @@
     <string name="label_intro">Intro</string>
 
    <!-- Menu items -->
-    <string name="action_about">About</string>
-    <string name="action_history">History</string>
-    <string name="action_feedback">Feedback</string>
+   <string name="action_about">About</string>
+   <string name="action_history">History</string>
+   <string name="action_feedback">Feedback</string>
 
    <!-- Shortcuts -->
-    <string name="shortcut_label_short">Detection</string>
-    <string name="shortcut_label_long">Start Detection</string>
+   <string name="shortcut_label_short">Detection</string>
+   <string name="shortcut_label_long">Start Detection</string>
 
-    <string name="fall_detected_key">FALL_DETECTED_TOKEN</string>
-    <string name="fall_deteciton_time_key">TIME_OF_FALL</string>
+   <!-- Intro-->
+   <!--TODO Add intro strings and translate them-->
+
+   <string name="fall_detected_key">FALL_DETECTED_TOKEN</string>
+   <string name="fall_deteciton_time_key">TIME_OF_FALL</string>
 </resources>

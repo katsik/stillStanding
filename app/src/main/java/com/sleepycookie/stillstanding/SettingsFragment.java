@@ -20,10 +20,6 @@ public class SettingsFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.preferences);
     }
 
-    public static final String KEY_SMS = "sms_preference";
-    public static final String KEY_SMS_BODY = "sms_body_preference";
-    public static final String KEY_SMS_LOCATION = "location_preference";
-
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                           String key) {
         if (key.equals(Preferences.KEY_SMS)) {
