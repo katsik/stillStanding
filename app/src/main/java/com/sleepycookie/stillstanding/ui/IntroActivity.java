@@ -1,15 +1,14 @@
 package com.sleepycookie.stillstanding.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.sleepycookie.stillstanding.R;
+import com.sleepycookie.stillstanding.data.Preferences;
 
 /**
  * Created by geotsam on 15/02/2018.
@@ -49,9 +48,7 @@ public class IntroActivity extends AppIntro2 {
         super.onDonePressed(currentFragment);
         // Do something when users tap on Done button.
 
-        SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(IntroActivity.this).edit();
-        sharedPreferencesEditor.putBoolean(COMPLETED_ONBOARDING_PREF, true);
-        sharedPreferencesEditor.apply();
+        Preferences.setIntroPref(IntroActivity.this, true);
 
         Intent goToMain = new Intent(IntroActivity.this, MainActivity.class);
         startActivity(goToMain);

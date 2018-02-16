@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import com.sleepycookie.stillstanding.data.Preferences;
+
 /**
  * Created by geotsam on 05/02/2018.
  */
@@ -24,15 +26,15 @@ public class SettingsFragment extends PreferenceFragment {
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                           String key) {
-        if (key.equals(KEY_SMS)) {
+        if (key.equals(Preferences.KEY_SMS)) {
             Preference smsPref = findPreference(key);
         }
 
-        if (key.equals(KEY_SMS_BODY)){
+        if (key.equals(Preferences.KEY_SMS_BODY)){
             Preference smsBodyPref = findPreference(key);
         }
 
-        if(key.equals(KEY_SMS_LOCATION)){
+        if(key.equals(Preferences.KEY_SMS_LOCATION)){
             Preference locationPref = findPreference(key);
         }
     }

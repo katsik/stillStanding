@@ -30,9 +30,9 @@ import android.widget.Toast;
 
 import com.sleepycookie.stillstanding.PickContactFragment;
 import com.sleepycookie.stillstanding.R;
-import com.sleepycookie.stillstanding.SettingsFragment;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
+import com.sleepycookie.stillstanding.data.Preferences;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,10 +52,6 @@ public class MainActivity extends AppCompatActivity
     android.support.v7.widget.CardView incidentCard;
     String tempName;
 
-    public static final String KEY_CONTACT = "contact_pref";
-    public static final String KEY_PHONE = "phone_pref";
-    public static final String KEY_PHOTO = "photo_pref";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -69,7 +65,7 @@ public class MainActivity extends AppCompatActivity
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Check if we need to display our Intro Activity
-        if (!sharedPreferences.getBoolean(IntroActivity.COMPLETED_ONBOARDING_PREF, false)) {
+        if (!Preferences.getIntroPref(this)) {
             // The user hasn't seen the Intro yet, so show it
             startActivity(new Intent(this, IntroActivity.class));
         }
@@ -86,10 +82,9 @@ public class MainActivity extends AppCompatActivity
          * In case there is no saved number the color of the card changes to orange to grab attention.
          */
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String mName = sharedPref.getString(KEY_CONTACT, null);
-        String mNumber = sharedPref.getString(KEY_PHONE, null);
-        String mPhoto = sharedPref.getString(KEY_PHOTO, null);
+        String mName = Preferences.getContact(this);
+        String mNumber = Preferences.getNumber(this);
+        String mPhoto = Preferences.getPhoto(this);
 
         if (mName != null) emergencyContact.setText(mName);
         if (mNumber != null) {
@@ -124,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         startDetection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(getEmergencyNumber() == null){
+                if(Preferences.getNumber(MainActivity.this) == null){
                     triggerDialogBox();
                 }else{
                     Intent readData = new Intent(MainActivity.this, ReadDataFromAccelerometer.class);
@@ -134,12 +129,6 @@ public class MainActivity extends AppCompatActivity
         });
 
         setIncidentCard();
-    }
-
-
-    public String getEmergencyNumber(){
-        SharedPreferences sharedPreferences = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
-        return sharedPreferences.getString(getString(R.string.emergency_number),null);
     }
 
     @Override
@@ -226,21 +215,6 @@ public class MainActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
 
         }
-    }
-
-    /**
-     * This method prints in the log the stored values for emergency contact/phone.
-     * FOR DEBUGGING PURPOSES
-     */
-
-    public void checkStoredValues() {
-        SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
-        String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
-        SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
-        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
-
-        Log.d("name:", "n - " + mName);
-        Log.d("phone:", "p - " + mNumber);
     }
 
     /**
@@ -336,12 +310,8 @@ public class MainActivity extends AppCompatActivity
                                 selectedNumber = selectedNumber.replace("-", "");
                                 Log.v("Selected Number:", selectedNumber);
 
-                                SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
-                                sharedPreferencesEditor.putString(KEY_PHONE, selectedNumber);
-                                sharedPreferencesEditor.apply();
-
-                                sharedPreferencesEditor.putString(KEY_CONTACT, tempName);
-                                sharedPreferencesEditor.apply();
+                                Preferences.setNumber(MainActivity.this, selectedNumber);
+                                Preferences.setContact(MainActivity.this, tempName);
 
                                 emergencyNumber.setText(selectedNumber);
                                 emergencyContact.setText(tempName);
@@ -350,16 +320,14 @@ public class MainActivity extends AppCompatActivity
 
 
                                 if (photoUri != null) {
-                                    sharedPreferencesEditor.putString(KEY_PHOTO, photoUri.toString());
-                                    sharedPreferencesEditor.apply();
+                                    Preferences.setPhoto(MainActivity.this, photoUri);
                                     emergencyPhoto.setVisibility(View.VISIBLE);
                                     emergencyPhoto.setImageURI(photoUri);
                                     Log.v("Photo URI", photoUri.toString());
                                 }
                                 else{
                                     emergencyPhoto.setVisibility(View.GONE);
-                                    sharedPreferencesEditor.putString(KEY_PHOTO, null);
-                                    sharedPreferencesEditor.apply();
+                                    Preferences.setPhoto(MainActivity.this, null);
                                 }
                             }
                         });
@@ -483,9 +451,8 @@ public class MainActivity extends AppCompatActivity
     void checkForPermissions() {
         int MY_PERMISSIONS_REQUEST_ALL = 1;
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean smsPref = sharedPref.getBoolean(SettingsFragment.KEY_SMS, false);
-        boolean locationPref = sharedPref.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
+        boolean smsPref = Preferences.getSmsPref(this);
+        boolean locationPref = Preferences.getLocationPref(this);
 
         String[] PERMISSIONS;
         ArrayList<String> permissions = new ArrayList<>();

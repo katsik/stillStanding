@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.SettingsFragment;
+import com.sleepycookie.stillstanding.data.Preferences;
 
 /**
  * Created by geotsam on 05/02/2018.
@@ -31,9 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)!= PackageManager.PERMISSION_GRANTED){
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(SettingsFragment.KEY_SMS,false);
-            editor.commit();
+            Preferences.setSmsPref(this, false);
         }
 
         // Display the fragment as the main content.

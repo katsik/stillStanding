@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,7 +16,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -36,9 +34,9 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.sleepycookie.stillstanding.ActivityRecognizedService;
 import com.sleepycookie.stillstanding.R;
-import com.sleepycookie.stillstanding.SettingsFragment;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
+import com.sleepycookie.stillstanding.data.Preferences;
 
 import java.util.Date;
 
@@ -299,11 +297,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mLabelTextView.setText("Fall Detected!");
         showAToast("User fell and didn't stand up");
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean smsPref = sharedPreferences.getBoolean(SettingsFragment.KEY_SMS, false);
-        String smsBody = sharedPreferences.getString(SettingsFragment.KEY_SMS_BODY, "");
-        boolean locationPref = sharedPreferences.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
-        String mNumber = sharedPreferences.getString(MainActivity.KEY_PHONE,null);
+
+        boolean smsPref = Preferences.getSmsPref(this);
+        String smsBody = Preferences.getSmsBody(this);
+        boolean locationPref = Preferences.getLocationPref(this);
+        String mNumber = Preferences.getNumber(this);
 
         //initialize state values to prevent multiple calling events.
         initValues();
