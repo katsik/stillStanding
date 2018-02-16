@@ -60,7 +60,9 @@
     <string name="intro_title_welcome">Welcome to Still Standing</string>
     <string name="intro_title_how_to">How it works</string>
     <string name="intro_title_setup">Set it up</string>
-    <string name="intro_desc_welcome">This app might save your life :)</string>
+    <string name="intro_desc_welcome">This app will detect a potential fall and will call or text your
+        emergency contact. Make sure you accept the requested permissions in order for the
+        app to be able to contact your family or friend.</string>
     <string name="intro_desc_pocket">Have your phone on you. For example, you can put it in
         your pocket.</string>
     <string name="intro_desc_fall">In case you fall the app detects it and it takes action in
