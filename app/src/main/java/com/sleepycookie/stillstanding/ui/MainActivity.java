@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity
         if (!Preferences.getIntroPref(this)) {
             // The user hasn't seen the Intro yet, so show it
             startActivity(new Intent(this, IntroActivity.class));
+            finish();
         }
 
         startDetection = findViewById(R.id.start_detection);

@@ -17,8 +17,6 @@ import com.sleepycookie.stillstanding.utils.PermssionsManager;
 
 public class IntroActivity extends AppIntro2 {
 
-    public static final String COMPLETED_ONBOARDING_PREF = "onboard_key";
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +52,7 @@ public class IntroActivity extends AppIntro2 {
 
         Intent goToMain = new Intent(IntroActivity.this, MainActivity.class);
         startActivity(goToMain);
+        finish();
     }
 
     @Override
