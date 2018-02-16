@@ -35,7 +35,6 @@ import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -53,6 +52,10 @@ public class MainActivity extends AppCompatActivity
     android.support.v7.widget.CardView incidentCard;
     String tempName;
 
+    public static final String KEY_CONTACT = "contact_pref";
+    public static final String KEY_PHONE = "phone_pref";
+    public static final String KEY_PHOTO = "photo_pref";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -61,10 +64,15 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkForPermissions(PreferenceManager.getDefaultSharedPreferences(this));
-
         //Sets preferences (from settings UI) to the default values, unless the user has changed them.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        // Check if we need to display our Intro Activity
+        if (!sharedPreferences.getBoolean(IntroActivity.COMPLETED_ONBOARDING_PREF, false)) {
+            // The user hasn't seen the Intro yet, so show it
+            startActivity(new Intent(this, IntroActivity.class));
+        }
 
         startDetection = findViewById(R.id.start_detection);
         phoneContactsButton = findViewById(R.id.set_contact);
@@ -78,12 +86,10 @@ public class MainActivity extends AppCompatActivity
          * In case there is no saved number the color of the card changes to orange to grab attention.
          */
 
-        SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
-        String mName = sharedPrefName.getString(getString(R.string.emergency_name), null);
-        SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
-        String mNumber = sharedPrefPhone.getString(getString(R.string.emergency_number), null);
-        SharedPreferences sharedPrefPhoto = getSharedPreferences("PREF_PHOTO", Context.MODE_PRIVATE);
-        String mPhoto = sharedPrefPhoto.getString(getString(R.string.emergency_photo), null);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String mName = sharedPref.getString(KEY_CONTACT, null);
+        String mNumber = sharedPref.getString(KEY_PHONE, null);
+        String mPhoto = sharedPref.getString(KEY_PHOTO, null);
 
         if (mName != null) emergencyContact.setText(mName);
         if (mNumber != null) {
@@ -105,8 +111,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 // The two lines below are needed to open the contact list of  mobile
-                Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(contactPickerIntent, 1);
+                if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
+                    Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                    startActivityForResult(contactPickerIntent, 1);
+                } else {
+                    new Toast(getApplicationContext()).makeText(MainActivity.this, "Accept permission first", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -134,8 +144,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPickContactPositive() {
-        Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(contactPickerIntent, 1);
+        if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
+            Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+            startActivityForResult(contactPickerIntent, 1);
+        } else {
+            new Toast(getApplicationContext()).makeText(MainActivity.this, "Accept permission first", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -153,22 +167,6 @@ public class MainActivity extends AppCompatActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.app_bar_menu, menu);
         return true;
-    }
-
-    //TODO check for specific permissions when needed.
-    void checkForPermissions(SharedPreferences prefs) {
-        int MY_PERMISSIONS_REQUEST_ALL = 1;
-
-        String[] PERMISSIONS = {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE};
-        if(prefs.getBoolean(SettingsFragment.KEY_SMS,false)){
-            ArrayList<String> permissions = new ArrayList<>(Arrays.asList(PERMISSIONS));
-            permissions.add(Manifest.permission.SEND_SMS);
-            PERMISSIONS = permissions.toArray(new String[0]);
-        }
-
-        if (forbiddenToCallOrReadContacts(this)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
-        }
     }
 
     /**
@@ -338,18 +336,12 @@ public class MainActivity extends AppCompatActivity
                                 selectedNumber = selectedNumber.replace("-", "");
                                 Log.v("Selected Number:", selectedNumber);
 
-                                SharedPreferences sharedPrefName = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE);
-                                SharedPreferences sharedPrefPhone = getSharedPreferences("PREF_PHONE", Context.MODE_PRIVATE);
-                                SharedPreferences sharedPrefPhoto = getSharedPreferences("PREF_PHOTO", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
+                                sharedPreferencesEditor.putString(KEY_PHONE, selectedNumber);
+                                sharedPreferencesEditor.apply();
 
-                                SharedPreferences.Editor editorN = sharedPrefName.edit();
-                                SharedPreferences.Editor editorP = sharedPrefPhone.edit();
-                                SharedPreferences.Editor editorPhoto = sharedPrefPhoto.edit();
-
-                                editorP.putString(getString(R.string.emergency_number), selectedNumber);
-                                editorP.commit();
-                                editorN.putString(getString(R.string.emergency_name), tempName);
-                                editorN.commit();
+                                sharedPreferencesEditor.putString(KEY_CONTACT, tempName);
+                                sharedPreferencesEditor.apply();
 
                                 emergencyNumber.setText(selectedNumber);
                                 emergencyContact.setText(tempName);
@@ -358,16 +350,16 @@ public class MainActivity extends AppCompatActivity
 
 
                                 if (photoUri != null) {
-                                    editorPhoto.putString(getString(R.string.emergency_photo), photoUri.toString());
-                                    editorPhoto.commit();
+                                    sharedPreferencesEditor.putString(KEY_PHOTO, photoUri.toString());
+                                    sharedPreferencesEditor.apply();
                                     emergencyPhoto.setVisibility(View.VISIBLE);
                                     emergencyPhoto.setImageURI(photoUri);
                                     Log.v("Photo URI", photoUri.toString());
                                 }
                                 else{
                                     emergencyPhoto.setVisibility(View.GONE);
-                                    editorPhoto.putString(getString(R.string.emergency_photo), null);
-                                    editorPhoto.commit();
+                                    sharedPreferencesEditor.putString(KEY_PHOTO, null);
+                                    sharedPreferencesEditor.apply();
                                 }
                             }
                         });
@@ -484,35 +476,35 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         setIncidentCard();
+        checkForPermissions();
+    }
 
-        SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean smsPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS, false);
-        String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
-        boolean locationPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
 
-        //Check for additional permissions after returning from settings
-        int MY_PERMISSIONS_REQUEST_ALL = 2;
-        int i = 0;
+    void checkForPermissions() {
+        int MY_PERMISSIONS_REQUEST_ALL = 1;
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean smsPref = sharedPref.getBoolean(SettingsFragment.KEY_SMS, false);
+        boolean locationPref = sharedPref.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
+
+        String[] PERMISSIONS;
+        ArrayList<String> permissions = new ArrayList<>();
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+            permissions.add(Manifest.permission.CALL_PHONE);
+        }
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
+            permissions.add(Manifest.permission.READ_CONTACTS);
+        }
         if((smsPref) &&  (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)){
-            i = i + 1;
-            String[] PERMISSIONS = {Manifest.permission.SEND_SMS};
-            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
+            permissions.add(Manifest.permission.SEND_SMS);
         }
         if(locationPref && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            i = i + 2;
-            String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
+            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
-        if(i == 1) {
-            String[] PERMISSIONS = {Manifest.permission.SEND_SMS};
-            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
-        }else if(i == 2) {
-            String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
-        }else if(i == 3){
-            String[] PERMISSIONS = {Manifest.permission.SEND_SMS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        if(permissions.size()>0) {
+            PERMISSIONS = permissions.toArray(new String[0]);
             ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
         }
     }

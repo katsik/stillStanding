@@ -47,6 +47,10 @@
             android:parentActivityName=".ui.MainActivity"
             android:label="@string/label_preferences"></activity>
 
+        <activity android:name=".ui.IntroActivity"
+            android:label="@string/label_intro">
+        </activity>
+
         <service android:name=".ActivityRecognizedService" />
         <service android:name=".AnalyzeDataFromAccelerometer"
             android:exported="false"></service>

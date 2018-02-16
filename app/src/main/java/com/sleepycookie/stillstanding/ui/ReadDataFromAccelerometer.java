@@ -299,11 +299,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mLabelTextView.setText("Fall Detected!");
         showAToast("User fell and didn't stand up");
 
-        SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean smsPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS, false);
-        String smsBody = sharedPref2.getString(SettingsFragment.KEY_SMS_BODY, "");
-        boolean locationPref = sharedPref2.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
-        String mNumber = getSharedPreferences("PREF_PHONE",Context.MODE_PRIVATE).getString(getString(R.string.emergency_number), null);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean smsPref = sharedPreferences.getBoolean(SettingsFragment.KEY_SMS, false);
+        String smsBody = sharedPreferences.getString(SettingsFragment.KEY_SMS_BODY, "");
+        boolean locationPref = sharedPreferences.getBoolean(SettingsFragment.KEY_SMS_LOCATION,false);
+        String mNumber = sharedPreferences.getString(MainActivity.KEY_PHONE,null);
 
         //initialize state values to prevent multiple calling events.
         initValues();

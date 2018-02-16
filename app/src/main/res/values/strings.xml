@@ -1,43 +1,56 @@
 <resources>
     <!--TODO add toast strings here and translate them-->
+
+    <!-- App name -->
     <string name="app_name" translatable="false">Still Standing</string>
-    <string name="collecting">Collecting Accelerometer Data…</string>
-    <string name="quit">Quit</string>
+
+    <!-- Main -->
     <string name="app_description">This app will detect a potential fall and will call your
         emergency contact. Make sure you have accepted the requested permissions in order for the
         app to be able to contact your family or friend.</string>
-    <string name="emergency_name" translatable="false"></string>
-    <string name="emergency_number" translatable="false"></string>
     <string name="placholder_phone">Phone Number</string>
     <string name="placeholder_name">Emergency Contact</string>
     <string name="emergency_contact">Your Emergency Contact</string>
     <string name="pick_contact">Pick Contact</string>
-    <string name="action_about">About</string>
-    <string name="label_read_data">Fall Detection</string>
-    <string name="label_preferences">Settings</string>
-    <string name="label_about">About</string>
-    <string name="emergency_photo" translatable="false"></string>
     <string name="pick_contact_msg">It seems you haven\'t selected your emergency contact yet!</string>
     <string name="pick_contact_pos">Select now</string>
     <string name="pick_contact_neg">Later</string>
-    <string name="action_history">History</string>
-    <string name="label_history">History</string>
-    <string name="settings_label">Settings</string>
-    <string name="sms_notification_summary">If set, your emergency contact will be notified via SMS instead of a phone call.</string>
-    <string name="sms_message_body">Help me! I fell!</string>
     <string name="last_incident">Last Incident</string>
     <string name="choose_number">Choose a number</string>
+
+    <!--Read Data -->
+    <string name="collecting">Collecting Accelerometer Data…</string>
+    <string name="quit">Quit</string>
+    <string name="warning_card_title">Are you OK?</string>
+    <string name="warning_card_text">It seems like you fell and stood up. Do you need assistance?</string>
+    <string name="warning_card_action_ok">I\'m OK</string>
+    <string name="warning_card_action_fall">Emergency</string>
+
+    <!-- Settings -->
+    <string name="sms_notification_summary">If set, your emergency contact will be notified via SMS instead of a phone call.</string>
+    <string name="sms_message_body">Help me! I fell!</string>
     <string name="sms_pref_body_summary">This message will be sent with SMS to your emergency contact</string>
     <string name="send_sms_pref_title">Send SMS</string>
     <string name="sms_body_pref_title">SMS Message</string>
     <string name="location_pref_title">Send Location</string>
     <string name="location_pref_summary">If set, your location will also be sent to your emergency contact.</string>
+    <string name="sms_location_text">"My location is: "</string>
+
+    <!-- Activity labels -->
+    <string name="label_read_data">Fall Detection</string>
+    <string name="label_preferences">Settings</string>
+    <string name="label_about">About</string>
+    <string name="label_history">History</string>
+    <string name="settings_label">Settings</string>
+    <string name="label_intro">Intro</string>
+
+   <!-- Menu items -->
+    <string name="action_about">About</string>
+    <string name="action_history">History</string>
     <string name="action_feedback">Feedback</string>
-    <string name="sms_location_text">My location is: </string>
-    <string name="warning_card_title">Are you OK?</string>
-    <string name="warning_card_text">It seems like you fell and stood up. Do you need assistance?</string>
-    <string name="warning_card_action_ok">I\'m OK</string>
-    <string name="warning_card_action_fall">Emergency</string>
+
+   <!-- Shortcuts -->
     <string name="shortcut_label_short">Detection</string>
     <string name="shortcut_label_long">Start Detection</string>
+
 </resources>

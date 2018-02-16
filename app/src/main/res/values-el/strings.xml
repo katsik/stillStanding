@@ -34,4 +34,5 @@
     <string name="warning_card_action_fall">Βοήθεια</string>
     <string name="shortcut_label_short">Ανίχνευση</string>
     <string name="shortcut_label_long">Ανίχνευση Πτώσης</string>
+    <string name="label_intro">Εισαγωγή</string>
 </resources>
