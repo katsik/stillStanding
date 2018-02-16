@@ -256,13 +256,8 @@ public class MainActivity extends AppCompatActivity
 
                                 Preferences.setNumber(MainActivity.this, selectedNumber);
                                 Preferences.setContact(MainActivity.this, tempName);
+                                Preferences.setPhoto(MainActivity.this, photoUri);
 
-                                if (photoUri != null) {
-                                    Preferences.setPhoto(MainActivity.this, photoUri);
-                                }
-                                else{
-                                    Preferences.setPhoto(MainActivity.this, null);
-                                }
                                 setContactCard();
                             }
                         });

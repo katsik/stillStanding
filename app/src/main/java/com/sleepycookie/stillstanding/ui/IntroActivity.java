@@ -14,6 +14,8 @@ import com.sleepycookie.stillstanding.utils.PermissionManager;
 
 /**
  * Created by geotsam on 15/02/2018.
+ * This activity handles the first experience of the user with the app. It shows information
+ * about how the app works and about how to use it.
  */
 
 public class IntroActivity extends AppIntro2 {

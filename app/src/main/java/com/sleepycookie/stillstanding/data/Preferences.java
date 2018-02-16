@@ -68,7 +68,11 @@ public final class Preferences {
 
     public static void setPhoto(Context context, Uri photoUri){
         SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        sharedPreferencesEditor.putString(KEY_PHOTO, photoUri.toString());
+        if (photoUri == null){
+            sharedPreferencesEditor.putString(KEY_PHOTO, null);
+        } else {
+            sharedPreferencesEditor.putString(KEY_PHOTO, photoUri.toString());
+        }
         sharedPreferencesEditor.apply();
     }
 
