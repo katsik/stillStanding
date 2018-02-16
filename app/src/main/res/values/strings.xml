@@ -8,7 +8,7 @@
     <string name="app_description">This app will detect a potential fall and will call your
         emergency contact. Make sure you have accepted the requested permissions in order for the
         app to be able to contact your family or friend.</string>
-    <string name="placholder_phone">Phone Number</string>
+    <string name="placeholder_phone">Phone Number</string>
     <string name="placeholder_name">Emergency Contact</string>
     <string name="emergency_contact">Your Emergency Contact</string>
     <string name="pick_contact">Pick Contact</string>
@@ -17,6 +17,8 @@
     <string name="pick_contact_neg">Later</string>
     <string name="last_incident">Last Incident</string>
     <string name="choose_number">Choose a number</string>
+    <string name="main_toast_set_permission">Accept permission first</string>
+    <string name="main_toast_no_number">This contact has no phone number</string>
 
     <!--Read Data -->
     <string name="collecting">Collecting Accelerometer Data…</string>
@@ -25,6 +27,10 @@
     <string name="warning_card_text">It seems like you fell and stood up. Do you need assistance?</string>
     <string name="warning_card_action_ok">I\'m OK</string>
     <string name="warning_card_action_fall">Emergency</string>
+    <string name="toast_sms_sent_to">SMS sent to %s</string>
+    <string name="toast_potential_fall">It seems like you fell</string>
+    <string name="toast_fall_detected">User fell and didn\'t stand up</string>
+    <string name="toast_sending_sms">Sending SMS to emergency contact...</string>
 
     <!-- Settings -->
     <string name="sms_notification_summary">If set, your emergency contact will be notified via SMS

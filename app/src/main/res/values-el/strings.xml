@@ -3,7 +3,7 @@
     <string name="collecting">Συλλογή Δεδομένων…</string>
     <string name="quit">Έξοδος</string>
     <string name="app_description">H εφαρμογή αυτή ανιχνεύει πιθανές πτώσεις και καλεί την επαφή έκτακτης ανάγκης σας. Βεβαιωθείτε ότι έχετε αποδεχτεί τα δικαιώματα που χρειάζεται η εφαρμογή ούτως ώστε να μπορούν να ειδοποιηθούν η οικογένεια ή οι φίλοι σας.</string>
-    <string name="placholder_phone">Τηλέφωνο</string>
+    <string name="placeholder_phone">Τηλέφωνο</string>
     <string name="placeholder_name">Επαφή</string>
     <string name="action_about">Σχετικά</string>
     <string name="label_about">Σχετικά</string>

@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity
             Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
             startActivityForResult(contactPickerIntent, 1);
         } else {
-            new Toast(getApplicationContext()).makeText(MainActivity.this, "Accept permission first", Toast.LENGTH_SHORT).show();
+            new Toast(getApplicationContext()).makeText(MainActivity.this, getString(R.string.main_toast_set_permission), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity
                         tempName = name;
 
                         if (allNumbers.isEmpty()){
-                            Toast.makeText(this, "This contact has no phone number", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.main_toast_no_number), Toast.LENGTH_SHORT).show();
                             phoneCur.close();
                             break;
                         }
@@ -424,7 +424,7 @@ public class MainActivity extends AppCompatActivity
                     Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
                     startActivityForResult(contactPickerIntent, 1);
                 } else {
-                    new Toast(getApplicationContext()).makeText(MainActivity.this, "Accept permission first", Toast.LENGTH_SHORT).show();
+                    new Toast(getApplicationContext()).makeText(MainActivity.this, getString(R.string.main_toast_set_permission), Toast.LENGTH_SHORT).show();
                 }
             }
         });

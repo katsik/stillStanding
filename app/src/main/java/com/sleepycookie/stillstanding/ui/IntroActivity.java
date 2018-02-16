@@ -23,7 +23,7 @@ public class IntroActivity extends AppIntro2 {
 
         // Note here that we DO NOT use setContentView();
 
-        // Just set a title, description, background and image. AppIntro will do the rest.
+        // Set a title, description, background and image. AppIntro will do the rest.
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_welcome), getString(R.string.intro_desc_welcome), R.drawable.ic_splash_image, getResources().getColor(R.color.colorPrimary)));
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_how_to), getString(R.string.intro_desc_pocket), R.drawable.ic_stillstandingonboardxp_pocket, getResources().getColor(R.color.colorPrimaryDark)));
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_how_to), getString(R.string.intro_desc_fall), R.drawable.ic_stillstandingonboardxp_fall, getResources().getColor(R.color.atterntionColor)));

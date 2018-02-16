@@ -213,7 +213,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2.5 * GRAVITY_ACCELERATION){
 //            Log.d("Fall Detection","Fall Detected!");
-            showAToast("It seems like you fell");
+            showAToast(getString(R.string.toast_potential_fall));
 
             return true;
         }
@@ -288,7 +288,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     public void triggerEmergency(){
         mLabelTextView.setText("Fall Detected!");
-        showAToast("User fell and didn't stand up");
+        showAToast(getString(R.string.toast_fall_detected));
 
 
         boolean smsPref = Preferences.getSmsPref(this);
@@ -322,7 +322,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                     manager.sendTextMessage(mNumber, null, smsBodyBuilder.toString(), null, null);
                     Log.d("Trigger", smsBodyBuilder.toString());
 
-                    showAToast("SMS sent to " + mNumber);
+                    showAToast(getString(R.string.toast_sms_sent_to, mNumber));
                 }else{
                     Log.d("Place emergency call", "User didn't give permission (SMS)");
                 }
@@ -489,7 +489,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         @Override
         protected void onPreExecute() {
-            Toast.makeText(context,"Sending SMS to emergency contact...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,getString(R.string.toast_sending_sms), Toast.LENGTH_SHORT).show();
         }
 
         /**
@@ -523,7 +523,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             SmsManager manager = SmsManager.getDefault();
             manager.sendTextMessage(number, null, smsBodyBuilder.toString(), null, null);
 
-            Toast.makeText(context,"SMS sent to "+ number,Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,getString(R.string.toast_sms_sent_to, number),Toast.LENGTH_SHORT).show();
         }
 
         /**
