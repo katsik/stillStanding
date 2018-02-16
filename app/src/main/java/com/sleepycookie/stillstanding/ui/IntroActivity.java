@@ -25,7 +25,7 @@ public class IntroActivity extends AppIntro2 {
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
 
-        // Enable the Up button
+        // Hide the ActionBar
         ab.hide();
 
         // Note here that we DO NOT use setContentView();
