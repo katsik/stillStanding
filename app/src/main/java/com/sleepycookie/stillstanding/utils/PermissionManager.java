@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Created by geotsam on 16/02/2018.
  */
 
-public class PermssionsManager {
+public class PermissionManager {
     public static void checkForPermissions(Context context, Activity activity) {
         int MY_PERMISSIONS_REQUEST_ALL = 1;
 

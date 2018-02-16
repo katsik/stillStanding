@@ -31,7 +31,7 @@ import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 import com.sleepycookie.stillstanding.data.Preferences;
-import com.sleepycookie.stillstanding.utils.PermssionsManager;
+import com.sleepycookie.stillstanding.utils.PermissionManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -177,7 +176,6 @@ public class MainActivity extends AppCompatActivity
      * @param resultCode
      * @param data
      */
-
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
@@ -197,8 +195,6 @@ public class MainActivity extends AppCompatActivity
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
 
                         //Gets contact photo URI
-                        Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long
-                                .parseLong(id));
                         final Uri photoUri = getPhotoUri(Long.parseLong(id));
 
                         String phoneNumber = "";
@@ -383,9 +379,10 @@ public class MainActivity extends AppCompatActivity
         super.onStart();
         setContactCard();
         setIncidentCard();
-        // Check if to displayed our Intro Activity
+
+        //If we just showed the intro, we have asked for the initial permissions
         if (Preferences.getIntroPref(this)) {
-            PermssionsManager.checkForPermissions(this, this);
+            PermissionManager.checkForPermissions(this, this);
         }
     }
 
@@ -422,7 +419,7 @@ public class MainActivity extends AppCompatActivity
         phoneContactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // The two lines below are needed to open the contact list of  mobile
+                // The two lines below are needed to open the contact list of mobile
                 if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
                     Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
                     startActivityForResult(contactPickerIntent, 1);
