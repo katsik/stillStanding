@@ -43,7 +43,9 @@
             android:id="@+id/person_mail"
             tools:text="geotsam@gmail.com"
             android:layout_weight="1"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            android:linksClickable="true"
+            android:autoLink="email"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -51,7 +53,8 @@
             android:id="@+id/person_website"
             tools:text="github.com/geotsam"
             android:layout_weight="1"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            android:autoLink="web"/>
 
     </LinearLayout>
 
