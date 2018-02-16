@@ -27,13 +27,16 @@
     <string name="warning_card_action_fall">Emergency</string>
 
     <!-- Settings -->
-    <string name="sms_notification_summary">If set, your emergency contact will be notified via SMS instead of a phone call.</string>
+    <string name="sms_notification_summary">If set, your emergency contact will be notified via SMS
+        instead of a phone call.</string>
     <string name="sms_message_body">Help me! I fell!</string>
-    <string name="sms_pref_body_summary">This message will be sent with SMS to your emergency contact</string>
+    <string name="sms_pref_body_summary">This message will be sent with SMS to your emergency
+        contact</string>
     <string name="send_sms_pref_title">Send SMS</string>
     <string name="sms_body_pref_title">SMS Message</string>
     <string name="location_pref_title">Send Location</string>
-    <string name="location_pref_summary">If set, your location will also be sent to your emergency contact.</string>
+    <string name="location_pref_summary">If set, your location will also be sent to your emergency
+        contact.</string>
     <string name="sms_location_text">"My location is: "</string>
 
     <!-- Activity labels -->
@@ -44,18 +47,31 @@
     <string name="settings_label">Settings</string>
     <string name="label_intro">Intro</string>
 
-   <!-- Menu items -->
-   <string name="action_about">About</string>
-   <string name="action_history">History</string>
-   <string name="action_feedback">Feedback</string>
+    <!-- Menu items -->
+    <string name="action_about">About</string>
+    <string name="action_history">History</string>
+    <string name="action_feedback">Feedback</string>
 
-   <!-- Shortcuts -->
-   <string name="shortcut_label_short">Detection</string>
-   <string name="shortcut_label_long">Start Detection</string>
+    <!-- Shortcuts -->
+    <string name="shortcut_label_short">Detection</string>
+    <string name="shortcut_label_long">Start Detection</string>
 
-   <!-- Intro-->
-   <!--TODO Add intro strings and translate them-->
+    <!-- Intro-->
+    <string name="intro_title_welcome">Welcome to Still Standing</string>
+    <string name="intro_title_how_to">How it works</string>
+    <string name="intro_title_setup">Set it up</string>
+    <string name="intro_desc_welcome">This app might save your life :)</string>
+    <string name="intro_desc_pocket">Have your phone on you. For example, you can put it in
+        your pocket.</string>
+    <string name="intro_desc_fall">In case you fall the app detects it and it takes action in
+        order to help you.</string>
+    <string name="intro_desc_action">After it detects a fall, the app calls your emergency contact
+        or notifies them with an SMS, depending on your settings.</string>
+    <string name="intro_desc_contact">In the main screen you can pick your emergency contact.</string>
+    <string name="intro_desc_settings">Tap the Settings icon in the main screen to go to your
+        preferences. Select if your contact will be called, or if they will get an SMS. You can
+        also add your location to message.</string>
 
-   <string name="fall_detected_key">FALL_DETECTED_TOKEN</string>
-   <string name="fall_deteciton_time_key">TIME_OF_FALL</string>
+    <string name="fall_detected_key">FALL_DETECTED_TOKEN</string>
+    <string name="fall_deteciton_time_key">TIME_OF_FALL</string>
 </resources>
