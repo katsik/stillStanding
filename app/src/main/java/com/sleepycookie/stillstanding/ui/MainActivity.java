@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Sets preferences (from settings UI) to the default values, unless the user has changed them.
+        //Sets preferences to the default values the first time, just to be sure.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // Check if we need to display our Intro Activity
@@ -142,13 +142,13 @@ public class MainActivity extends AppCompatActivity
                 return true;
 
             case R.id.action_settings:
-                //User chose the "Settings" item, show the "settings" UI...
+                // User chose the "Settings" item, show the "settings" UI...
                 Intent seeSettings = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(seeSettings);
                 return true;
 
             case R.id.action_feedback:
-                //User chose the "Feedback" item, go to email app...
+                // User chose the "Feedback" item, go to email app...
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("mailto:sleepy.cookie.studios@gmail.com")); // only email apps should handle this
                 intent.putExtra(Intent.EXTRA_SUBJECT, "[Still Standing] App Feedback");
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity
                         Cursor phoneCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
 
-                        //Gets contact photo URI
+                        // Gets contact photo URI
                         final Uri photoUri = getPhotoUri(Long.parseLong(id));
 
                         String phoneNumber = "";
@@ -241,8 +241,8 @@ public class MainActivity extends AppCompatActivity
                             break;
                         }
 
-                        //Removes duplicate numbers
-                        //TODO check if it does that consistently
+                        // Removes duplicate numbers
+                        // TODO check if it does that consistently
                         allNumbers = new ArrayList<>(new HashSet<>(allNumbers));
 
                         final CharSequence[] items = allNumbers.toArray(new String[allNumbers.size()]);
@@ -301,8 +301,8 @@ public class MainActivity extends AppCompatActivity
     public Uri getPhotoUri(long contactId) {
         Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
 
-        //TODO get high quality image if available
-        //Thumbnail photo uri
+        // TODO get high quality image if available
+        // Thumbnail photo uri
         Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
         Cursor cursor = getContentResolver().query(photoUri,
                 new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity
         phoneContactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // The two lines below are needed to open the contact list of mobile
+                // This opens the contact list
                 if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
                     Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
                     startActivityForResult(contactPickerIntent, 1);
