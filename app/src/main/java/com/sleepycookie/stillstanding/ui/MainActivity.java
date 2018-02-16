@@ -7,7 +7,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,7 +14,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -33,6 +31,7 @@ import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 import com.sleepycookie.stillstanding.data.Preferences;
+import com.sleepycookie.stillstanding.utils.PermssionsManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity
         //Sets preferences (from settings UI) to the default values, unless the user has changed them.
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Check if we need to display our Intro Activity
         if (!Preferences.getIntroPref(this)) {
             // The user hasn't seen the Intro yet, so show it
@@ -77,58 +75,8 @@ public class MainActivity extends AppCompatActivity
         emergencyPhoto = findViewById(R.id.contact_image);
         contactCard = findViewById(R.id.card_view);
 
-        /**
-         * Show the saved preferences or the placeholder text if there is nothing saved.
-         * In case there is no saved number the color of the card changes to orange to grab attention.
-         */
-
-        String mName = Preferences.getContact(this);
-        String mNumber = Preferences.getNumber(this);
-        String mPhoto = Preferences.getPhoto(this);
-
-        if (mName != null) emergencyContact.setText(mName);
-        if (mNumber != null) {
-            emergencyNumber.setText(mNumber);
-            contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
-            phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
-        }
-        else{
-            contactCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
-            phoneContactsButton.setImageResource(R.drawable.ic_person_add_black_24dp);
-        }
-        if (mPhoto != null) {
-            emergencyPhoto.setVisibility(View.VISIBLE);
-            emergencyPhoto.setImageURI(Uri.parse(mPhoto));
-        }
-        else emergencyPhoto.setVisibility(View.GONE);
-
-        phoneContactsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // The two lines below are needed to open the contact list of  mobile
-                if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
-                    Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                    startActivityForResult(contactPickerIntent, 1);
-                } else {
-                    new Toast(getApplicationContext()).makeText(MainActivity.this, "Accept permission first", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-
-        startDetection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(Preferences.getNumber(MainActivity.this) == null){
-                    triggerDialogBox();
-                }else{
-                    Intent readData = new Intent(MainActivity.this, ReadDataFromAccelerometer.class);
-                    startActivity(readData);
-                }
-            }
-        });
-
-        setIncidentCard();
+        initContactButton();
+        initFAB();
     }
 
     @Override
@@ -247,7 +195,6 @@ public class MainActivity extends AppCompatActivity
                         Cursor phoneCur = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
 
-
                         //Gets contact photo URI
                         Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long
                                 .parseLong(id));
@@ -313,22 +260,13 @@ public class MainActivity extends AppCompatActivity
                                 Preferences.setNumber(MainActivity.this, selectedNumber);
                                 Preferences.setContact(MainActivity.this, tempName);
 
-                                emergencyNumber.setText(selectedNumber);
-                                emergencyContact.setText(tempName);
-                                contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
-                                phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
-
-
                                 if (photoUri != null) {
                                     Preferences.setPhoto(MainActivity.this, photoUri);
-                                    emergencyPhoto.setVisibility(View.VISIBLE);
-                                    emergencyPhoto.setImageURI(photoUri);
-                                    Log.v("Photo URI", photoUri.toString());
                                 }
                                 else{
-                                    emergencyPhoto.setVisibility(View.GONE);
                                     Preferences.setPhoto(MainActivity.this, null);
                                 }
+                                setContactCard();
                             }
                         });
                         AlertDialog alert = builder.create();
@@ -396,7 +334,6 @@ public class MainActivity extends AppCompatActivity
      * This method is responsible for showing the last incident card in the UI. It puts the last fall's
      * data every time this screen is brought back. It hides the card if the database is empty.
      */
-
     public void setIncidentCard(){
         incidentCard = findViewById(R.id.incident_card);
 
@@ -443,36 +380,69 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+        setContactCard();
         setIncidentCard();
-        checkForPermissions();
+        // Check if to displayed our Intro Activity
+        if (Preferences.getIntroPref(this)) {
+            PermssionsManager.checkForPermissions(this, this);
+        }
     }
 
+    /**
+     * Shows the saved preferences or the placeholder text (if there is nothing saved) in the contact card.
+     * In case there is no saved number the color of the card changes to orange to grab attention.
+     */
+    private void setContactCard(){
 
-    void checkForPermissions() {
-        int MY_PERMISSIONS_REQUEST_ALL = 1;
+        String mName = Preferences.getContact(this);
+        String mNumber = Preferences.getNumber(this);
+        String mPhoto = Preferences.getPhoto(this);
 
-        boolean smsPref = Preferences.getSmsPref(this);
-        boolean locationPref = Preferences.getLocationPref(this);
+        if (mName != null) emergencyContact.setText(mName);
+        if (mNumber != null) {
+            emergencyNumber.setText(mNumber);
+            contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
+            phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
+        }
+        else{
+            contactCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
+            phoneContactsButton.setImageResource(R.drawable.ic_person_add_black_24dp);
+        }
+        if (mPhoto != null) {
+            emergencyPhoto.setVisibility(View.VISIBLE);
+            emergencyPhoto.setImageURI(Uri.parse(mPhoto));
+        }
+        else {
+            emergencyPhoto.setVisibility(View.GONE);
+        }
+    }
 
-        String[] PERMISSIONS;
-        ArrayList<String> permissions = new ArrayList<>();
+    private void initContactButton(){
+        phoneContactsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // The two lines below are needed to open the contact list of  mobile
+                if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
+                    Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                    startActivityForResult(contactPickerIntent, 1);
+                } else {
+                    new Toast(getApplicationContext()).makeText(MainActivity.this, "Accept permission first", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-            permissions.add(Manifest.permission.CALL_PHONE);
-        }
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
-            permissions.add(Manifest.permission.READ_CONTACTS);
-        }
-        if((smsPref) &&  (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)){
-            permissions.add(Manifest.permission.SEND_SMS);
-        }
-        if(locationPref && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-
-        if(permissions.size()>0) {
-            PERMISSIONS = permissions.toArray(new String[0]);
-            ActivityCompat.requestPermissions(this, PERMISSIONS, MY_PERMISSIONS_REQUEST_ALL);
-        }
+    private void initFAB(){
+        startDetection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Preferences.getNumber(MainActivity.this) == null){
+                    triggerDialogBox();
+                }else{
+                    Intent readData = new Intent(MainActivity.this, ReadDataFromAccelerometer.class);
+                    startActivity(readData);
+                }
+            }
+        });
     }
 }

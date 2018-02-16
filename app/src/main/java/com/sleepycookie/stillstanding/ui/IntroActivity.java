@@ -9,6 +9,7 @@ import com.github.paolorotolo.appintro.AppIntro2;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.Preferences;
+import com.sleepycookie.stillstanding.utils.PermssionsManager;
 
 /**
  * Created by geotsam on 15/02/2018.
@@ -49,6 +50,7 @@ public class IntroActivity extends AppIntro2 {
         // Do something when users tap on Done button.
 
         Preferences.setIntroPref(IntroActivity.this, true);
+        PermssionsManager.checkForPermissions(this, this);
 
         Intent goToMain = new Intent(IntroActivity.this, MainActivity.class);
         startActivity(goToMain);
