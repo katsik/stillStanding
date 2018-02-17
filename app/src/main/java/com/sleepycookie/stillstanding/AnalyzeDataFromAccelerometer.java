@@ -1,5 +1,8 @@
 package com.sleepycookie.stillstanding;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +13,7 @@ import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.sleepycookie.stillstanding.ui.ReadDataFromAccelerometer;
 
@@ -37,6 +41,8 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
 
     final static double GRAVITY_ACCELERATION = 9.81;
 
+    private NotificationManager notificationManager;
+
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
@@ -59,10 +65,14 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
 
             if(fallDetected()){
                 Intent readDataIntent = new Intent(AnalyzeDataFromAccelerometer.this, ReadDataFromAccelerometer.class);
+                if(ReadDataFromAccelerometer.getActiveStatus()){
+                    readDataIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                }
+                readDataIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 readDataIntent.putExtra(getString(R.string.fall_detected_key),true);
                 readDataIntent.putExtra(getString(R.string.fall_deteciton_time_key),System.currentTimeMillis());
-                readDataIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(readDataIntent);
+
             }
 
         }
@@ -107,12 +117,34 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        //start tracking and storing acceleration values from accelerometer
+        //add a notification
+        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        // prepare intent which is triggered if the
+        // notification is selected
+
+        Intent notifIntent = new Intent(this, ReadDataFromAccelerometer.class);
+        // use System.currentTimeMillis() to have a unique ID for the pending intent
+        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+
+        // build notification
+// the addAction re-use the same intent to keep the example short
+        Notification n  = new Notification.Builder(this)
+                .setContentTitle("Fall Detection")
+                .setContentText("Collecting data from accelerometer...")
+                .setSmallIcon(R.drawable.ic_accessibility_white_24dp)
+                .setContentIntent(pIntent)
+                .setAutoCancel(true)
+                .build();
+
+
+        notificationManager.notify(0, n);
         return mBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
+        notificationManager.cancelAll();
         return super.onUnbind(intent);
     }
 
@@ -145,8 +177,8 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
         //1. compare acceleration amplitude with lower threshold
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
-
         if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2.5 * GRAVITY_ACCELERATION){
+            Log.d("fallDetected","FALL DETECTED!");
             return true;
         }
 

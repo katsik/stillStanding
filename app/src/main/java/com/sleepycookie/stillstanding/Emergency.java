@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 import com.sleepycookie.stillstanding.data.Preferences;
+import com.sleepycookie.stillstanding.ui.ReadDataFromAccelerometer;
 
 import java.util.Date;
 
@@ -62,6 +63,7 @@ public class Emergency {
             if(!smsPref){
                 int permissionCheck = ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE);
                 if (permissionCheck==PERMISSION_GRANTED){
+                    ReadDataFromAccelerometer.setOnCall(true);
                     Intent callingIntent = new Intent(Intent.ACTION_CALL);
                     callingIntent.setData(Uri.parse("tel:" + mNumber));
                     db.incidentDao().insertIncidents(new Incident(new Date(), "Call to " + mNumber, 1, 0, 0));

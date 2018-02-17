@@ -1,6 +1,5 @@
 package com.sleepycookie.stillstanding.ui;
 
-import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,20 +8,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Looper;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,12 +23,6 @@ import com.sleepycookie.stillstanding.AnalyzeDataFromAccelerometer;
 import com.sleepycookie.stillstanding.Emergency;
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
-import com.sleepycookie.stillstanding.data.Incident;
-import com.sleepycookie.stillstanding.data.Preferences;
-
-import java.util.Date;
-
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class ReadDataFromAccelerometer extends AppCompatActivity implements SensorEventListener{
 
@@ -76,7 +60,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     private Boolean accelerationBalanced;
     private Boolean stoodUp;
     private Boolean userFell;
-    private Boolean acceleratorStarted = false;
+    private static Boolean onCall = false;
+    private static Boolean active;
 
     private Context mContext;
 
@@ -359,7 +344,14 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d("onPause","I'm heree");
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        setActiveStatus(false);
+        Log.d("onStop","I'm heree in on Stop");
         // Don't receive any more updates from sensor.
         mSensorManager.unregisterListener(this);
     }
@@ -367,7 +359,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        setAccelerationStrated(false);
+
 
         unbindService(mConnection);
         mBound = false;
@@ -427,13 +419,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         Boolean fell;
         Bundle extras = getIntent().getExtras();
+        setActiveStatus(true);
 
         if(mBound==null || !mBound){
             Intent intent = new Intent(this,AnalyzeDataFromAccelerometer.class);
             bindService(intent, mConnection,BIND_AUTO_CREATE);
         }
 
-        if(extras!=null){
+        if(extras!=null && !onCall){
+            Log.d("onStart","Hey there!!");
             fell = extras.getBoolean(getString(R.string.fall_detected_key));
             setUserFell(fell);
             if(fell){
@@ -441,9 +435,15 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 setTimeOfFall(time);
             }
         }
+        setOnCall(false);
     }
 
-    public void setAccelerationStrated(Boolean accelerationStrated){this.acceleratorStarted = accelerationStrated;}
+    @Override
+    protected void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
     private void setUserFell(Boolean fell){this.userFell = fell;}
 
     private Long getTimeOfFall(){
@@ -464,6 +464,11 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public static void toastingBoom(String msg){
         Log.d("Activity Detected",msg);
     }
+    public static void setActiveStatus(Boolean status){active = status;}
+    public static Boolean getActiveStatus(){return active;}
+
+    public static void setOnCall(Boolean onCall){ReadDataFromAccelerometer.onCall = onCall;}
+    public static Boolean getOnCall(){return ReadDataFromAccelerometer.onCall;}
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -476,7 +481,6 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             mService = binder.getService();
             mBound = true;
             mService.startAccelerometer();
-            setAccelerationStrated(true);
         }
 
         @Override
