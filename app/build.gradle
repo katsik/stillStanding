@@ -41,4 +41,7 @@ dependencies {
 
     //Intro Screens
     compile 'com.github.apl-devs:appintro:v4.2.3'
+
+    //Graph
+    compile 'com.jjoe64:graphview:4.2.1'
 }

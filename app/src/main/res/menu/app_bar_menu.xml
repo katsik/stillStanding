@@ -7,14 +7,8 @@
         android:id="@+id/action_settings"
         android:orderInCategory="1"
         android:icon="@drawable/ic_settings_white_24dp"
-        android:title="@string/settings_label"
+        android:title="@string/action_settings"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_about"
-        android:orderInCategory="3"
-        android:icon="@drawable/ic_info_white_24dp"
-        android:title="@string/action_about"
-        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_history"
@@ -24,8 +18,22 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/action_feedback"
+        android:id="@+id/action_graph"
+        android:orderInCategory="3"
+        android:title="@string/action_graph"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_graph_white_24dp"/>
+
+    <item
+        android:id="@+id/action_about"
         android:orderInCategory="4"
+        android:icon="@drawable/ic_info_white_24dp"
+        android:title="@string/action_about"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_feedback"
+        android:orderInCategory="5"
         android:title="@string/action_feedback"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_feedback_white_24dp"/>

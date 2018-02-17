@@ -50,13 +50,16 @@
     <string name="label_preferences">Settings</string>
     <string name="label_about">About</string>
     <string name="label_history">History</string>
-    <string name="settings_label">Settings</string>
     <string name="label_intro">Intro</string>
+    <string name="label_graph">Graph</string>
 
     <!-- Menu items -->
     <string name="action_about">About</string>
     <string name="action_history">History</string>
     <string name="action_feedback">Feedback</string>
+    <string name="action_graph">Graph</string>
+    <string name="action_settings">Settings</string>
+
 
     <!-- Shortcuts -->
     <string name="shortcut_label_short">Detection</string>
@@ -80,6 +83,6 @@
         preferences. Select if your contact will be called, or if they will get an SMS. You can
         also add your location to message.</string>
 
-    <string name="fall_detected_key">FALL_DETECTED_TOKEN</string>
-    <string name="fall_deteciton_time_key">TIME_OF_FALL</string>
+    <string name="fall_detected_key" translatable="false">FALL_DETECTED_TOKEN</string>
+    <string name="fall_deteciton_time_key" translatable="false">TIME_OF_FALL</string>
 </resources>

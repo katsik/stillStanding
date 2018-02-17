@@ -11,7 +11,7 @@
     <string name="pick_contact_neg">Αργότερα</string>
     <string name="action_history">Ιστορικό</string>
     <string name="label_history">Ιστορικό</string>
-    <string name="settings_label">Ρυθμίσεις</string>
+    <string name="action_settings">Ρυθμίσεις</string>
     <string name="sms_message_body">Βοήθεια! Έπεσα!</string>
     <string name="sms_notification_summary">Αν η ρύθμιση αυτή είναι ενεργοποιημένη, η επαφή σας θα ενημερωθεί με SMS αντί για τηλέφωνο</string>
     <string name="label_read_data">Ανίχνευση Πτώσης</string>
@@ -35,4 +35,21 @@
     <string name="shortcut_label_short">Ανίχνευση</string>
     <string name="shortcut_label_long">Ανίχνευση Πτώσης</string>
     <string name="label_intro">Εισαγωγή</string>
+    <string name="main_toast_no_number">Η επαφή αυτή δεν έχει τηλέφωνο</string>
+    <string name="toast_sms_sent_to">Στάλθηκε SMS στο %s</string>
+    <string name="toast_potential_fall">Μοιάζει να πέσατε</string>
+    <string name="toast_fall_detected">Ανιχνεύτηκε πτώση, αλλά όχι σήκωμα</string>
+    <string name="toast_sending_sms">Αποστολή SMS στην επαφή έκτακτης ανάγκης...</string>
+    <string name="label_graph">Γράφημα</string>
+    <string name="action_graph">Γράφημα</string>
+    <string name="intro_title_welcome">Καλώς ορίσατε στο Still Standing</string>
+    <string name="intro_title_how_to">Πώς λειτουργεί</string>
+    <string name="intro_title_setup">Προετοιμασία</string>
+    <string name="intro_desc_welcome">H εφαρμογή αυτή ανιχνεύει πιθανές πτώσεις και καλεί την επαφή έκτακτης ανάγκης σας ή την ειδοποιεί με μήνυμα. Βεβαιωθείτε ότι έχετε αποδεχτεί τα δικαιώματα που χρειάζεται η εφαρμογή ούτως ώστε να μπορούν να ειδοποιηθούν η οικογένεια ή οι φίλοι σας.</string>
+    <string name="intro_desc_pocket">Έχετε το κινητό πάνω σας. Για παράδειγμα, τοποθετήστε το στην τσέπη σας.</string>
+    <string name="intro_desc_fall">Σε περίπτωση που πέσετε η εφαρμογή το ανιχνεύει και δραστηριοποιείται για να σας βοηθήσει.</string>
+    <string name="intro_desc_action">Μετά από την ανίχνευση μιας πτώσης, η εφαρμογή καλεί την επαφή έκτακτης ανάγκης σας ή την ειδοποιεί με SMS, ανάλογα με τις ρυθμίσεις σας.</string>
+    <string name="intro_desc_contact">Στην κύρια οθόνη μπορείτε να επιλέξετε την επαφή έκτακτης ανάγκης σας.</string>
+    <string name="intro_desc_settings">Πατήστε το εικονίδιο των Ρυθμίσεων για να μεταβείτε στις Ρυθμίσεις. Επιλέξτε αν η επαφή σας θα καλείται ή δέχεται SMS. Μπορείτε επίσης να ορίσετε το περίέχομεν του μηνύματος καθώς και αν θα στέλνεται και η τοποθεσία σας.</string>
+    <string name="main_toast_set_permission">Δώστε τα κατάλληλα δικαιώματα πρώτα</string>
 </resources>

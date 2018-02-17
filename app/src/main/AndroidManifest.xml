@@ -51,6 +51,11 @@
             android:label="@string/label_intro">
         </activity>
 
+        <activity android:name=".ui.GraphActivity"
+            android:label="@string/label_graph"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait" />
+
         <service android:name=".ActivityRecognizedService" />
         <service android:name=".AnalyzeDataFromAccelerometer"
             android:exported="false"></service>
