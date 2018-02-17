@@ -11,6 +11,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -127,18 +128,26 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
         // use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
 
-        // build notification
-// the addAction re-use the same intent to keep the example short
-        Notification n  = new Notification.Builder(this)
-                .setContentTitle("Fall Detection")
-                .setContentText("Collecting data from accelerometer...")
-                .setSmallIcon(R.drawable.ic_accessibility_white_24dp)
-                .setContentIntent(pIntent)
-                .setAutoCancel(true)
-                .build();
+        //TODO check how notifications work
 
-
-        notificationManager.notify(0, n);
+        if(Integer.valueOf(Build.VERSION.SDK_INT) < 26) {
+            // build notification
+            // the addAction re-use the same intent to keep the example short
+            Notification n = new Notification.Builder(this)
+                    .setContentTitle("Fall Detection")
+                    .setContentText("Collecting data from accelerometer...")
+                    .setSmallIcon(R.drawable.ic_accessibility_white_24dp)
+                    .setContentIntent(pIntent)
+                    .setAutoCancel(true)
+                    .setOngoing(true)
+                    .build();
+            notificationManager.notify(0, n);
+        } else {
+            NotificationHelper noti = new NotificationHelper(this);
+            Notification.Builder nb = null;
+            nb = noti.getNotification1("Fall Detection", "Collecting data from accelerometer...", pIntent);
+            noti.notify(0, nb);
+        }
         return mBinder;
     }
 

@@ -83,6 +83,9 @@
         preferences. Select if your contact will be called, or if they will get an SMS. You can
         also add your location to message.</string>
 
+    <!-- Notifications -->
+    <string name="noti_channel_default">Default</string>
+
     <string name="fall_detected_key" translatable="false">FALL_DETECTED_TOKEN</string>
     <string name="fall_deteciton_time_key" translatable="false">TIME_OF_FALL</string>
 </resources>
