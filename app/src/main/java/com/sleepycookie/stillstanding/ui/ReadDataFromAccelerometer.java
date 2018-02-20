@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -71,6 +72,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     private AppDatabase db;
 
+    private CountDownTimer timer;
+    private TextView timerTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -100,6 +104,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
         mLabelTextView = findViewById(R.id.tv_collecting);
         mLabelTextView.setText("Analyzing Data...");
+
+        timerTextView = findViewById(R.id.tv_emergency_timer);
 
         warningCard = findViewById(R.id.warning_card);
         warningEmergencyButton = findViewById(R.id.warning_action_fell);
@@ -159,6 +165,25 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
 
             if(userFell && getTimeOfFall()!=null){
+                if(timer==null){
+                    Log.d("userFell","timer initialized");
+                    timerTextView.setVisibility(View.VISIBLE);
+                    timer = new CountDownTimer(15000,MILLISECONDS_PER_SECOND) {
+                        @Override
+                        public void onTick(long l) {
+                            timerTextView.setText((l/1000)+" seconds remaining until emergency triggered");
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            timerTextView.setVisibility(View.GONE);
+                        }
+                    };
+                    timer.start();
+                }
+                if(!mLabelTextView.getText().toString().equals(getString(R.string.fall_detected))){
+                    mLabelTextView.setText(getString(R.string.fall_detected));
+                }
                 checkPosture(timeOfFall);
             }
         }

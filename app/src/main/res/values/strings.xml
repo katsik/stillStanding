@@ -31,6 +31,7 @@
     <string name="toast_potential_fall">It seems like you fell</string>
     <string name="toast_fall_detected">User fell and didn\'t stand up</string>
     <string name="toast_sending_sms">Sending SMS to emergency contact...</string>
+    <string name="fall_detected">Fall Detected!</string>
 
     <!-- Settings -->
     <string name="sms_notification_summary">If set, your emergency contact will be notified via SMS
