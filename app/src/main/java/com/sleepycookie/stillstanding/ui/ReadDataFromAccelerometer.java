@@ -1,8 +1,10 @@
 package com.sleepycookie.stillstanding.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,6 +13,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -75,6 +78,20 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     private CountDownTimer timer;
     private TextView timerTextView;
 
+    //used for receiving messages from fall detection service.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("OnReceive","Hey I got something!");
+            Boolean fell = intent.getExtras().getBoolean(getString(R.string.fall_detected_key));
+            setUserFell(fell);
+            if(fell){
+                long timeOfFall = intent.getExtras().getLong(getString(R.string.fall_deteciton_time_key));
+                setTimeOfFall(timeOfFall);
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -131,6 +148,10 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
             states[j] = currentState;
         }
         warningCard.setVisibility(View.GONE);
+        if(timer!=null){
+            timer.cancel();
+            timerTextView.setVisibility(View.INVISIBLE);
+        }
         mLabelTextView.setText("Analyzing Data...");
     }
 
@@ -272,29 +293,25 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         mToast.show();
     }
 
-    public static void setUsersState(String setState){
-        ReadDataFromAccelerometer.currentState = setState;
-//        Log.d("setUsersState","currentState = " + currentState);
-    }
-
     @Override
     protected void onResume(){
         super.onResume();
-
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mMessageReceiver,
+                                new IntentFilter("broadcastIntent"));
         mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
     protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onPause();
-        Log.d("onPause","I'm heree");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         setActiveStatus(false);
-        Log.d("onStop","I'm heree in on Stop");
         // Don't receive any more updates from sensor.
         mSensorManager.unregisterListener(this);
     }
@@ -303,9 +320,43 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     protected void onDestroy() {
         super.onDestroy();
 
-
         unbindService(mConnection);
         mBound = false;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Boolean fell;
+        Bundle extras = getIntent().getExtras();
+        setActiveStatus(true);
+
+        if(mBound==null || !mBound){
+            Intent intent = new Intent(this,AnalyzeDataFromAccelerometer.class);
+            startService(intent);
+            bindService(intent, mConnection,BIND_AUTO_CREATE);
+        }
+
+        if(extras!=null && !onCall){
+            Log.d("onStart","Hey there!!");
+            fell = extras.getBoolean(getString(R.string.fall_detected_key));
+            setUserFell(fell);
+            if(fell){
+                long time = extras.getLong(getString(R.string.fall_deteciton_time_key));
+                setTimeOfFall(time);
+            }
+        }
+        setOnCall(false);
+    }
+
+    /**
+     * Method to get extras when activity is in the foreground.
+     */
+    @Override
+    protected void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     /**
@@ -354,37 +405,26 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         });
     }
 
-    //TODO add startAccelerometer service somewhere for the detection to start.
-    @Override
-    protected void onStart() {
-        super.onStart();
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
 
-        Boolean fell;
-        Bundle extras = getIntent().getExtras();
-        setActiveStatus(true);
-
-        if(mBound==null || !mBound){
-            Intent intent = new Intent(this,AnalyzeDataFromAccelerometer.class);
-            bindService(intent, mConnection,BIND_AUTO_CREATE);
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            AnalyzeDataFromAccelerometer.AnalyzeDataBinder binder = (AnalyzeDataFromAccelerometer.AnalyzeDataBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            mService.startAccelerometer();
         }
 
-        if(extras!=null && !onCall){
-            Log.d("onStart","Hey there!!");
-            fell = extras.getBoolean(getString(R.string.fall_detected_key));
-            setUserFell(fell);
-            if(fell){
-                long time = extras.getLong(getString(R.string.fall_deteciton_time_key));
-                setTimeOfFall(time);
-            }
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
         }
-        setOnCall(false);
-    }
+    };
 
-    @Override
-    protected void onNewIntent(Intent intent){
-        super.onNewIntent(intent);
-        setIntent(intent);
-    }
+    /**---------------------SETTERS/GETTERS---------------------------*/
 
     private void setUserFell(Boolean fell){this.userFell = fell;}
 
@@ -412,22 +452,8 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     public static void setOnCall(Boolean onCall){ReadDataFromAccelerometer.onCall = onCall;}
     public static Boolean getOnCall(){return ReadDataFromAccelerometer.onCall;}
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
+    public static void setUsersState(String setState){
+        ReadDataFromAccelerometer.currentState = setState;
+    }
 
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            AnalyzeDataFromAccelerometer.AnalyzeDataBinder binder = (AnalyzeDataFromAccelerometer.AnalyzeDataBinder) service;
-            mService = binder.getService();
-            mBound = true;
-            mService.startAccelerometer();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
 }

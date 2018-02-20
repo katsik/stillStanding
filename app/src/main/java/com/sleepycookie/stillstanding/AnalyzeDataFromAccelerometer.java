@@ -14,6 +14,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.sleepycookie.stillstanding.ui.ReadDataFromAccelerometer;
@@ -65,14 +66,18 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
 
             if(fallDetected()){
-                Intent readDataIntent = new Intent(AnalyzeDataFromAccelerometer.this, ReadDataFromAccelerometer.class);
                 if(ReadDataFromAccelerometer.getActiveStatus()){
-                    readDataIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    Intent broadcastIntent = new Intent("broadcastIntent");
+                    broadcastIntent.putExtra(getString(R.string.fall_detected_key),true);
+                    broadcastIntent.putExtra(getString(R.string.fall_deteciton_time_key),System.currentTimeMillis());
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+                }else{
+                    Intent readDataIntent = new Intent(AnalyzeDataFromAccelerometer.this, ReadDataFromAccelerometer.class);
+                    readDataIntent.putExtra(getString(R.string.fall_detected_key),true);
+                    readDataIntent.putExtra(getString(R.string.fall_deteciton_time_key),System.currentTimeMillis());
+                    readDataIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(readDataIntent);
                 }
-                readDataIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                readDataIntent.putExtra(getString(R.string.fall_detected_key),true);
-                readDataIntent.putExtra(getString(R.string.fall_deteciton_time_key),System.currentTimeMillis());
-                startActivity(readDataIntent);
 
             }
 

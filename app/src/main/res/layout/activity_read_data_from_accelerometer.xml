@@ -149,7 +149,6 @@
         android:layout_below="@+id/warning_card"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="110dp"
-        android:text="text"
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
 
