@@ -53,7 +53,7 @@
         android:layout_below="@+id/pb_collecting_data"
         android:backgroundTint="@color/warningColor"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <RelativeLayout
             android:layout_width="match_parent"

@@ -17,7 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.sleepycookie.stillstanding.ui.ReadDataFromAccelerometer;
+import com.sleepycookie.stillstanding.ui.MainActivity;
 
 import java.util.Random;
 
@@ -66,13 +66,13 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
 
             if(fallDetected()){
-                if(ReadDataFromAccelerometer.getActiveStatus()){
+                if(MainActivity.getActiveStatus()){
                     Intent broadcastIntent = new Intent("broadcastIntent");
                     broadcastIntent.putExtra(getString(R.string.fall_detected_key),true);
                     broadcastIntent.putExtra(getString(R.string.fall_deteciton_time_key),System.currentTimeMillis());
                     LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
                 }else{
-                    Intent readDataIntent = new Intent(AnalyzeDataFromAccelerometer.this, ReadDataFromAccelerometer.class);
+                    Intent readDataIntent = new Intent(AnalyzeDataFromAccelerometer.this, MainActivity.class);
                     readDataIntent.putExtra(getString(R.string.fall_detected_key),true);
                     readDataIntent.putExtra(getString(R.string.fall_deteciton_time_key),System.currentTimeMillis());
                     readDataIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -129,7 +129,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
         // prepare intent which is triggered if the
         // notification is selected
 
-        Intent notifIntent = new Intent(this, ReadDataFromAccelerometer.class);
+        Intent notifIntent = new Intent(this, MainActivity.class);
         // use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
 

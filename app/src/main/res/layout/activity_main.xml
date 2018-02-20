@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:background="@color/white"
-    tools:context="com.sleepycookie.stillstanding.ui.MainActivity">
+    tools:context="com.sleepycookie.stillstanding.ui.MainActivity"
+    android:animateLayoutChanges="true">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -16,16 +17,24 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/app_description"
-                android:layout_width="match_parent"
+                android:id="@+id/tv_collecting"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/incident_card"
                 android:layout_centerHorizontal="true"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="@string/app_description"
-                android:layout_marginBottom="96dp"
-                android:visibility="gone"/>
+                android:layout_marginTop="24dp"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                tools:text="Analyzing Data..." />
+
+            <TextView
+                android:id="@+id/tv_emergency_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_collecting"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="24dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
             <android.support.v7.widget.CardView
                 xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -38,9 +47,9 @@
                 android:layout_marginTop="8dp"
                 android:elevation="2dp"
                 android:layout_centerHorizontal="true"
-                android:backgroundTint="@color/warningColor"
+                tools:backgroundTint="@color/warningColor"
                 android:visibility="gone"
-                tools:visibility="gone">
+                tools:visibility="visible">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -69,6 +78,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/warning_title"
                             android:text="@string/warning_card_title"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -282,4 +292,24 @@
         android:layout_margin="24dp"
         android:src="@drawable/ic_accessibility_white_24dp"
         app:fabSize="normal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_trigger"
+        android:text="Trigger"
+        android:layout_toLeftOf="@id/start_detection"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="visible"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_quit"
+        android:text="@string/quit"
+        android:layout_toRightOf="@id/start_detection"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"/>
 </RelativeLayout>

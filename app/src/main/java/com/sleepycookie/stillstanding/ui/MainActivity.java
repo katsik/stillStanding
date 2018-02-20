@@ -3,29 +3,44 @@ package com.sleepycookie.stillstanding.ui;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sleepycookie.stillstanding.AnalyzeDataFromAccelerometer;
+import com.sleepycookie.stillstanding.Emergency;
 import com.sleepycookie.stillstanding.PickContactFragment;
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
@@ -40,7 +55,7 @@ import java.util.List;
 
 //TODO clean & organize this activity
 public class MainActivity extends AppCompatActivity
-                          implements PickContactFragment.PickContactListener {
+                          implements PickContactFragment.PickContactListener, SensorEventListener {
 
     FloatingActionButton startDetection;
     ImageButton phoneContactsButton;
@@ -50,6 +65,72 @@ public class MainActivity extends AppCompatActivity
     android.support.v7.widget.CardView contactCard;
     android.support.v7.widget.CardView incidentCard;
     String tempName;
+
+    // ReadData variables:
+    private SensorManager mSensorManager;
+
+    AnalyzeDataFromAccelerometer mService;
+    Boolean mBound;
+
+    public static final int MILLISECONDS_PER_SECOND = 1000;
+    public static final int DETECTION_INTERVAL_SECONDS = 20;
+    public static final int DETECTION_INTERVAL_MILLISECONDS =
+            MILLISECONDS_PER_SECOND * DETECTION_INTERVAL_SECONDS;
+
+    public static final int DETECTION_INTERVAL_ASAP = 0;
+    static public Context context;
+    public TextView mLabelTextView;
+    public double ax,ay,az;
+    public double svTotalAcceleration;
+    static int BUFFER_SIZE = 50;
+    static int SAMPLES_BUFFER_SIZE = 10;
+    static public double[] samples = new double[SAMPLES_BUFFER_SIZE];
+    public String[] states = new String[BUFFER_SIZE];
+
+    private double[] location = new double[2];
+    final static double GRAVITY_ACCELERATION = 9.81;
+
+    static public String currentState = "";
+
+    public Button quitButton;
+    public Button triggerButton;
+    public Toast mToast;
+
+    private Boolean accelerationBalanced;
+    private Boolean stoodUp;
+    private Boolean userFell;
+    private static Boolean onCall = false;
+    private static Boolean active;
+
+    private Context mContext;
+
+    private Long timeOfFall;
+
+    public android.support.v7.widget.CardView warningCard;
+    public Button warningOkButton;
+    public Button warningEmergencyButton;
+
+    private AppDatabase db;
+
+    private TextView warningText;
+    private TextView warningTitle;
+
+    private CountDownTimer timer;
+    private TextView timerTextView;
+
+    //used for receiving messages from fall detection service.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("OnReceive","Hey I got something!");
+            Boolean fell = intent.getExtras().getBoolean(getString(R.string.fall_detected_key));
+            setUserFell(fell);
+            if(fell){
+                long timeOfFall = intent.getExtras().getLong(getString(R.string.fall_deteciton_time_key));
+                setTimeOfFall(timeOfFall);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +147,7 @@ public class MainActivity extends AppCompatActivity
         if (!Preferences.getIntroPref(this)) {
             // The user hasn't seen the Intro yet, so show it
             startActivity(new Intent(this, IntroActivity.class));
+            mBound = false;
             finish();
         }
 
@@ -78,6 +160,35 @@ public class MainActivity extends AppCompatActivity
 
         initContactButton();
         initFAB();
+
+        //ReadData onCreate:
+
+        db = AppDatabase.getInstance(this);
+
+        mContext = this;
+
+        triggerButton = findViewById(R.id.btn_trigger);
+        initTriggerFunctionality();
+
+        quitButton = findViewById(R.id.btn_quit);
+        initQuitFunctionality();
+        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
+
+        mLabelTextView = findViewById(R.id.tv_collecting);
+        mLabelTextView.setText("Analyzing Data...");
+
+        timerTextView = findViewById(R.id.tv_emergency_timer);
+
+        warningCard = findViewById(R.id.warning_card);
+        warningEmergencyButton = findViewById(R.id.warning_action_fell);
+        warningOkButton = findViewById(R.id.warning_action_ok);
+        warningText = findViewById(R.id.warning_text);
+        warningTitle = findViewById(R.id.warning_title);
+
+        initWarningButtonFunctionality();
+
+        initValues();
     }
 
     @Override
@@ -381,10 +492,32 @@ public class MainActivity extends AppCompatActivity
         setContactCard();
         setIncidentCard();
 
-        //If we just showed the intro, we have asked for the initial permissions
+        // If we just showed the intro, we have asked for the initial permissions
         if (Preferences.getIntroPref(this)) {
             PermissionManager.checkForPermissions(this, this);
         }
+
+        // ReadData onStart:
+        Boolean fell;
+        Bundle extras = getIntent().getExtras();
+        setActiveStatus(true);
+
+        if(mBound==null || !mBound){
+            Intent intent = new Intent(this,AnalyzeDataFromAccelerometer.class);
+            startService(intent);
+            bindService(intent, mConnection,BIND_AUTO_CREATE);
+        }
+
+        if(extras!=null && !onCall){
+            Log.d("onStart","Hey there!!");
+            fell = extras.getBoolean(getString(R.string.fall_detected_key));
+            setUserFell(fell);
+            if(fell){
+                long time = extras.getLong(getString(R.string.fall_deteciton_time_key));
+                setTimeOfFall(time);
+            }
+        }
+        setOnCall(false);
     }
 
     /**
@@ -443,5 +576,324 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    // -------------------- ReadData methods: ------------------------
+
+    /**
+     * This method initializes the arrays used for keeping track of the states and the acceleration values.
+     */
+    public void initValues(){
+        for(int i=0;i<samples.length;i++){
+            samples[i] = 0;
+        }
+        currentState = "none";
+        setUserFell(false);
+        setAccelerationBalanced(false);
+        setStoodUp(false);
+        setTimeOfFall(null);
+        for (int j = 0; j< states.length; j++){
+            states[j] = currentState;
+        }
+        warningCard.setVisibility(View.GONE);
+        if(timer!=null){
+            timer.cancel();
+            timerTextView.setVisibility(View.INVISIBLE);
+        }
+        mLabelTextView.setText("Analyzing Data...");
+        if(timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    /**
+     * Method triggered every time the accelerometer sensor detects a change and calculates the total acceleration
+     * the device has.
+     *
+     * Maybe we could pass a high-pass filter to make the acceleration values smoother as indicated
+     * in https://developer.android.com/reference/android/hardware/SensorEvent.html but definitely not
+     * a low-pass filter cause this will filter out the sudden quick movements which literally define a fall.
+     * @param sensorEvent
+     */
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            float [] events = sensorEvent.values;
+
+            ax = events[0];
+            ay = events[1];
+            az = events[2];
+
+            // calculate the sum of vector of acceleration
+            svTotalAcceleration = Math.sqrt(Math.pow(ax,2)
+                    +Math.pow(ay,2)
+                    +Math.pow(az,2));
+
+            for (int i =0 ; i<SAMPLES_BUFFER_SIZE-1 ; i++ ){
+                //last place of buffer cleared
+                samples[i] = samples[i+1];
+            }
+            samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
+
+            if(userFell && getTimeOfFall()!=null){
+                if(timer==null){
+                    Log.d("userFell","timer initialized");
+                    timerTextView.setVisibility(View.VISIBLE);
+                    timer = new CountDownTimer(Preferences.getTimeForTriggering(this),MILLISECONDS_PER_SECOND) {
+                        @Override
+                        public void onTick(long l) {
+                            //timerTextView.setText((l/1000)+" seconds remaining until emergency triggered");
+                            if(getStoodUp() == false)
+                            warningText.setText((l/1000)+" seconds remaining until emergency triggered");
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            timerTextView.setVisibility(View.GONE);
+                        }
+                    };
+                    timer.start();
+                }
+                fallWarning();
+
+                checkPosture(timeOfFall);
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+        //TODO ?
+    }
+
+    /**
+     * This method is used to detect a fall of the user.
+     *
+     * What we do here is the following. We already have a collection of the 10 latest acceleration
+     * values. We, then, make a comparison between the newest and the oldest value of the accelerations.
+     * If the difference is greater or equal than 2.5 * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
+     * this indicates a fall and a true value is returned. In any other case a false value is returned.
+     *
+     * TL;DR
+     * @return true in case a fall was detected false otherwise.
+     */
+    public boolean fallDetected(){
+        //1. compare acceleration amplitude with lower threshold
+        //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
+        //3. if true fall detected!
+
+        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2.5 * GRAVITY_ACCELERATION){
+//            Log.d("Fall Detection","Fall Detected!");
+            showAToast(getString(R.string.toast_potential_fall));
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * This method checks weather the user stood up or is still down, assuming he/she has already fell.
+     *
+     * If a fall of user is detected the next thing to monitor will be whether the user will stand up
+     * or will remain on the ground. If the user stands up we check the acceleration the device has and we
+     * determine weather the user is up, and therefore there is no need for automatic emergency triggering
+     * or if he/she cannot stand up and therefore there is an emergency triggering.
+     */
+
+    public void checkPosture(long timeSinceFall){
+        //wait for 15 seconds (setting the time randomly) to see if user stands up during this time
+        Log.d("checkPosture:", "time since fall in ms: "+timeSinceFall);
+        long currentTime = System.currentTimeMillis();
+
+        Log.d("checkPosture: ","time passed from fall: "+(currentTime-timeSinceFall));
+
+        if(!getAccelerationBalanced()){
+            Log.d("checkPosture","in acceleration balanced if statement");
+            // we check for the last measurement to see if it's between the following limits
+            accelerationBalanced = (samples[SAMPLES_BUFFER_SIZE-1] >= 9.6 && samples[SAMPLES_BUFFER_SIZE-1] <= 10.0);
+            Log.d("checkPosture","accelerationBalanced: " + accelerationBalanced);
+        }else{
+            //acceleration has balanced between (9.5,10) so now we assume user is lying down
+            Log.d("checkPosture","stoodup: "+stoodUp);
+            if(!getStoodUp() && (currentTime - timeSinceFall < 5* MILLISECONDS_PER_SECOND)){
+                //check to see if he stood up
+                stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= 0.65 * GRAVITY_ACCELERATION);
+                Log.d("CheckPosture", "Not stood up yet.");
+            }else if(!getStoodUp() && (currentTime - timeSinceFall >= 15* MILLISECONDS_PER_SECOND)){
+                //user didn't stand up since fall and there's been 15 seconds => trigger action
+                Log.d("checkPosture","not stood up and gonna trigger emergency");
+                initValues();
+                new Emergency(this, db, mToast).triggerEmergency();
+            }else if(getStoodUp() && (currentTime - timeSinceFall <= 15 * MILLISECONDS_PER_SECOND)){
+                getUpWarning();
+            }
+        }
+    }
+
+    /**
+     * Use this to prevent multiple Toasts spamming the UI
+     *
+     * @param message
+     */
+    public void showAToast(String message){
+        if(mToast != null){
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(context,message,Toast.LENGTH_LONG);
+        mToast.show();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mMessageReceiver,
+                        new IntentFilter("broadcastIntent"));
+        mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        setActiveStatus(false);
+        mSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(mBound) {
+            unbindService(mConnection);
+        }
+        mBound = false;
+    }
+
+    /**
+     * Method to get extras when activity is in the foreground.
+     */
+    @Override
+    protected void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    /**
+     *Method used to initialize functionality of Quit button
+     **/
+    public void initQuitFunctionality(){
+        quitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finishAffinity();
+
+            }
+        });
+    }
+
+    /**
+     *Method used to initialize functionality of Trigger button
+     **/
+    public void initTriggerFunctionality(){
+        triggerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initValues();
+                new Emergency(MainActivity.this, db, mToast).triggerEmergency();
+            }
+        });
+    }
+
+    /**
+     *Method used to initialize functionality of Warning card buttons
+     **/
+    public void initWarningButtonFunctionality(){
+        warningEmergencyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initValues();
+                new Emergency(MainActivity.this, db, mToast).triggerEmergency();
+            }
+        });
+
+        warningOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initValues();
+            }
+        });
+    }
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            AnalyzeDataFromAccelerometer.AnalyzeDataBinder binder = (AnalyzeDataFromAccelerometer.AnalyzeDataBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            mService.startAccelerometer();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    private void fallWarning(){
+        warningTitle.setText("Fall Detected");
+        warningCard.setCardBackgroundColor(getResources().getColor(R.color.warningColor));
+        warningCard.setVisibility(View.VISIBLE);
+    }
+
+    private void getUpWarning(){
+        warningTitle.setText(getString(R.string.warning_card_title));
+        warningText.setText(getString(R.string.warning_card_text));
+        warningCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
+        warningCard.setVisibility(View.VISIBLE);
+    }
+
+
+    /**---------------------SETTERS/GETTERS---------------------------*/
+
+    private void setUserFell(Boolean fell){this.userFell = fell;}
+
+    private Long getTimeOfFall(){
+        return timeOfFall;
+    }
+
+    private void setTimeOfFall(Long time){
+        timeOfFall = time;
+    }
+
+    public void setAccelerationBalanced(Boolean accelerationBalanced) {this.accelerationBalanced = accelerationBalanced;}
+    public Boolean getAccelerationBalanced(){return accelerationBalanced;}
+
+    public void setStoodUp(Boolean stoodUp) {this.stoodUp = stoodUp;}
+    public Boolean getStoodUp(){return stoodUp;}
+
+    //for debugging purposes
+    public static void toastingBoom(String msg){
+        Log.d("Activity Detected",msg);
+    }
+    public static void setActiveStatus(Boolean status){active = status;}
+    public static Boolean getActiveStatus(){return active;}
+
+    public static void setOnCall(Boolean onCall){MainActivity.onCall = onCall;}
+    public static Boolean getOnCall(){return MainActivity.onCall;}
+
+    public static void setUsersState(String setState){
+        MainActivity.currentState = setState;
     }
 }
