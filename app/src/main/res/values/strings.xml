@@ -45,6 +45,7 @@
     <string name="location_pref_summary">If set, your location will also be sent to your emergency
         contact.</string>
     <string name="sms_location_text">"My location is: "</string>
+    <string name="pick_time_for_trigger">Number of seconds to wait for standing up.</string>
 
     <!-- Activity labels -->
     <string name="label_read_data">Fall Detection</string>

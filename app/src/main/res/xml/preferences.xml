@@ -21,4 +21,9 @@
         android:summary="@string/location_pref_summary"
         android:dependency="sms_preference"/>
 
+    <com.sleepycookie.stillstanding.data.NumberPickerPreference
+        android:key="time_for_triggering_preference"
+        android:title="@string/pick_time_for_trigger"
+        android:defaultValue="15"/>
+
 </PreferenceScreen>

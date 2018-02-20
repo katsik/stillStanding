@@ -18,6 +18,7 @@ public final class Preferences {
     public static final String KEY_SMS_BODY = "sms_body_preference";
     public static final String KEY_SMS_LOCATION = "location_preference";
     public static final String COMPLETED_ONBOARDING_PREF = "onboard_key";
+    public static final String TIME_FOR_EMERGENCY_TRIGGERING = "time_for_triggering_preference";
 
     public static boolean getSmsPref(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -52,6 +53,11 @@ public final class Preferences {
     public static boolean getIntroPref(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(COMPLETED_ONBOARDING_PREF, false);
+    }
+
+    public static int getTimeForTriggering(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getInt(TIME_FOR_EMERGENCY_TRIGGERING,15);
     }
 
     public static void setNumber(Context context, String number){

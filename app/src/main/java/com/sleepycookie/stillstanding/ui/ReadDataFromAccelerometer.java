@@ -26,6 +26,7 @@ import com.sleepycookie.stillstanding.AnalyzeDataFromAccelerometer;
 import com.sleepycookie.stillstanding.Emergency;
 import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
+import com.sleepycookie.stillstanding.data.Preferences;
 
 public class ReadDataFromAccelerometer extends AppCompatActivity implements SensorEventListener{
 
@@ -189,7 +190,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 if(timer==null){
                     Log.d("userFell","timer initialized");
                     timerTextView.setVisibility(View.VISIBLE);
-                    timer = new CountDownTimer(15000,MILLISECONDS_PER_SECOND) {
+                    timer = new CountDownTimer(Preferences.getTimeForTriggering(this)*MILLISECONDS_PER_SECOND,MILLISECONDS_PER_SECOND) {
                         @Override
                         public void onTick(long l) {
                             timerTextView.setText((l/1000)+" seconds remaining until emergency triggered");
@@ -268,12 +269,12 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
                 //check to see if he stood up
                 stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= 0.65 * GRAVITY_ACCELERATION);
                 Log.d("CheckPosture", "Not stood up yet.");
-            }else if(!getStoodUp() && (currentTime - timeSinceFall >= 15* MILLISECONDS_PER_SECOND)){
+            }else if(!getStoodUp() && (currentTime - timeSinceFall >= Preferences.getTimeForTriggering(this)* MILLISECONDS_PER_SECOND)){
                 //user didn't stand up since fall and there's been 15 seconds => trigger action
                 Log.d("checkPosture","not stood up and gonna trigger emergency");
                 initValues();
                 new Emergency(this, db, mToast).triggerEmergency();
-            }else if(getStoodUp() && (currentTime - timeSinceFall <= 15 * MILLISECONDS_PER_SECOND)){
+            }else if(getStoodUp() && (currentTime - timeSinceFall <= Preferences.getTimeForTriggering(this) * MILLISECONDS_PER_SECOND)){
 
                 warningCard.setVisibility(View.VISIBLE);
             }
@@ -313,7 +314,9 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         super.onStop();
         setActiveStatus(false);
         // Don't receive any more updates from sensor.
-        mSensorManager.unregisterListener(this);
+        if(mSensorManager!=null){
+            mSensorManager.unregisterListener(this);
+        }
     }
 
     @Override
