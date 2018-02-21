@@ -44,7 +44,7 @@
         contact.</string>
     <string name="sms_location_text">"My location is: "</string>
     <string name="timer_title">Emergency Delay</string>
-    <string name="timer_summary">After its duration, your contact will be notified, if you haven\'t got up.</string>
+    <string name="timer_summary">After its duration (in seconds), your contact will be notified, if you haven\'t got up.</string>
 
     <!-- Activity labels -->
     <string name="label_read_data">Fall Detection</string>
