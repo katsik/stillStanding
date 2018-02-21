@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity
 
     private TextView warningText;
     private TextView warningTitle;
+    private TextView warningTimer;
+    private ImageView warningImage;
 
     private CountDownTimer timer;
 //    private TextView timerTextView;
@@ -182,6 +184,8 @@ public class MainActivity extends AppCompatActivity
         warningOkButton = findViewById(R.id.warning_action_ok);
         warningText = findViewById(R.id.warning_text);
         warningTitle = findViewById(R.id.warning_title);
+        warningTimer = findViewById(R.id.warning_countdown);
+        warningImage = findViewById(R.id.warning_image);
 
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 
@@ -348,12 +352,17 @@ public class MainActivity extends AppCompatActivity
 
     private void fallWarning(){
         warningTitle.setText("Fall Detected");
+        warningImage.setVisibility(View.INVISIBLE);
+        warningTimer.setVisibility(View.VISIBLE);
+        warningText.setText("seconds remaining until emergency triggered");
         warningCard.setCardBackgroundColor(getResources().getColor(R.color.warningColor));
         warningCard.setVisibility(View.VISIBLE);
     }
 
     private void getUpWarning(){
         warningTitle.setText(getString(R.string.warning_card_title));
+        warningImage.setVisibility(View.VISIBLE);
+        warningTimer.setVisibility(View.GONE);
         warningText.setText(getString(R.string.warning_card_text));
         warningCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
         warningCard.setVisibility(View.VISIBLE);
@@ -706,7 +715,7 @@ public class MainActivity extends AppCompatActivity
                         public void onTick(long l) {
                             //timerTextView.setText((l/1000)+" seconds remaining until emergency triggered");
                             if(getStoodUp() == false)
-                            warningText.setText((l/1000)+" seconds remaining until emergency triggered");
+                            warningTimer.setText(Long.toString(l/1000));
                         }
 
                         @Override
@@ -728,32 +737,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * This method is used to detect a fall of the user.
-     *
-     * What we do here is the following. We already have a collection of the 10 latest acceleration
-     * values. We, then, make a comparison between the newest and the oldest value of the accelerations.
-     * If the difference is greater or equal than 2.5 * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
-     * this indicates a fall and a true value is returned. In any other case a false value is returned.
-     *
-     * TL;DR
-     * @return true in case a fall was detected false otherwise.
-     */
-    public boolean fallDetected(){
-        //1. compare acceleration amplitude with lower threshold
-        //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
-        //3. if true fall detected!
-
-        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2.5 * GRAVITY_ACCELERATION){
-//            Log.d("Fall Detection","Fall Detected!");
-            MainHelper.showAToast(getString(R.string.toast_potential_fall), this, mToast);
-
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * This method checks weather the user stood up or is still down, assuming he/she has already fell.
+     * This method checks whether the user stood up or is still down, assuming he/she has already fell.
      *
      * If a fall of user is detected the next thing to monitor will be whether the user will stand up
      * or will remain on the ground. If the user stands up we check the acceleration the device has and we

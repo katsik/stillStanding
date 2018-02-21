@@ -1,6 +1,4 @@
 <resources>
-    <!--TODO add toast strings here and translate them-->
-
     <!-- App name -->
     <string name="app_name" translatable="false">Still Standing</string>
 
@@ -45,7 +43,8 @@
     <string name="location_pref_summary">If set, your location will also be sent to your emergency
         contact.</string>
     <string name="sms_location_text">"My location is: "</string>
-    <string name="pick_time_for_trigger">Number of seconds to wait for standing up.</string>
+    <string name="timer_title">Emergency Delay</string>
+    <string name="timer_summary">After its duration, your contact will be notified, if you haven\'t got up.</string>
 
     <!-- Activity labels -->
     <string name="label_read_data">Fall Detection</string>

@@ -23,7 +23,8 @@
 
     <com.sleepycookie.stillstanding.data.NumberPickerPreference
         android:key="time_for_triggering_preference"
-        android:title="@string/pick_time_for_trigger"
+        android:title="@string/timer_title"
+        android:summary = "@string/timer_summary"
         android:defaultValue="15"/>
 
 </PreferenceScreen>
