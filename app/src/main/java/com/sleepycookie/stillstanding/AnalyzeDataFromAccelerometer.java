@@ -205,7 +205,9 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
 
     public void startAccelerometer(){
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-        mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_UI);
     }
 
     public void stopAccelerometer(){

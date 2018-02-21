@@ -356,10 +356,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fallWarning(){
-        warningTitle.setText("Fall Detected");
+        warningTitle.setText(getString(R.string.warning_card_title_fall));
         warningImage.setVisibility(View.INVISIBLE);
         warningTimer.setVisibility(View.VISIBLE);
-        warningText.setText("seconds remaining until emergency triggered");
+        warningText.setText(getString(R.string.warning_card_text_seconds_left));
         warningCard.setCardBackgroundColor(getResources().getColor(R.color.warningColor));
         warningCard.setVisibility(View.VISIBLE);
     }
@@ -434,9 +434,7 @@ public class MainActivity extends AppCompatActivity
         mSensorManager.unregisterListener(this);
 
 
-        if(mBound) {
-            unbindService(mConnection);
-        }
+        if(mBound) { unbindService(mConnection); }
         mBound = false;
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);

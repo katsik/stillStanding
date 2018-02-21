@@ -17,6 +17,8 @@
     <string name="choose_number">Choose a number</string>
     <string name="main_toast_set_permission">Accept permission first</string>
     <string name="main_toast_no_number">This contact has no phone number</string>
+    <string name="warning_card_title_fall">Fall Detected!</string>
+    <string name="warning_card_text_seconds_left">seconds remaining until your emergency contact gets notified.</string>
 
     <!--Read Data -->
     <string name="collecting">Collecting Accelerometer Data…</string>

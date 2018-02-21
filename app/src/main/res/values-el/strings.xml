@@ -56,4 +56,6 @@
     <string name="timer_title">Καθυστέρηση Έκτακτης Ανάγκης</string>
     <string name="timer_summary">Μετά το πέρας αυτού του χρόνου (σε δευτερόλεπτα), η επαφή σας θα ειδοποιηθεί για την πτώση σας.</string>
     <string name="noti_channel_default">Προκαθορισμένο</string>
+    <string name="warning_card_title_fall">Ανιχνεύτηκε Πτώση!</string>
+    <string name="warning_card_text_seconds_left">δευτερόλεπτα απομένουν μέχρι να ειδοποιηθεί η επαφή σας.</string>
 </resources>
