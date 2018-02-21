@@ -265,7 +265,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
         }else{
             //acceleration has balanced between (9.5,10) so now we assume user is lying down
             Log.d("checkPosture","stoodup: "+stoodUp);
-            if(!getStoodUp() && (currentTime - timeSinceFall < 5* MILLISECONDS_PER_SECOND)){
+            if(!getStoodUp() && (currentTime - timeSinceFall < Preferences.getTimeForTriggering(this    )* MILLISECONDS_PER_SECOND)){
                 //check to see if he stood up
                 stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= 0.65 * GRAVITY_ACCELERATION);
                 Log.d("CheckPosture", "Not stood up yet.");

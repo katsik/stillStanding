@@ -80,6 +80,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
                     readDataIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(readDataIntent);
                 }
+                initSamples();
             }
         }
     }
@@ -233,6 +234,12 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
 
         return false;
 
+    }
+
+    public void initSamples(){
+        for(int i=0; i < samples.length; i++){
+            samples[i] = 0;
+        }
     }
 
 }

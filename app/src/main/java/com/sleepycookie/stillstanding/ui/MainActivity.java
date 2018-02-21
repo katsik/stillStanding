@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity
             Log.d("OnReceive","Hey I got something!");
             Boolean fell = intent.getExtras().getBoolean(getString(R.string.fall_detected_key));
             setUserFell(fell);
+            Log.d("onReceive","fell = "+ userFell);
             if(fell){
                 long timeOfFall = intent.getExtras()
                     .getLong(getString(R.string.fall_deteciton_time_key));
@@ -236,13 +237,18 @@ public class MainActivity extends AppCompatActivity
             setFabStatus(false);
 
         } else {
+
             bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
+//            startService(serviceIntent);
             setFabStatus(true);
         }
     }
 
     @Override
     protected void onResume(){
+        if(!MainActivity.active){
+            setActiveStatus(true);
+        }
         super.onResume();
     }
 
@@ -263,12 +269,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
 
         if(fabOn){
             unbindService(mConnection);
+//            stopService(serviceIntent);
         }
         mBound = false;
+        super.onDestroy();
     }
 
     /**----------------------------------- UI setup ---------------------------------------------**/
@@ -416,7 +423,7 @@ public class MainActivity extends AppCompatActivity
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 
-        startService(serviceIntent);
+//        startService(serviceIntent);
         bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
 
         LocalBroadcastManager.getInstance(this)
@@ -429,12 +436,12 @@ public class MainActivity extends AppCompatActivity
     private void fabStop(){
         mSensorManager.unregisterListener(this);
 
+//        stopService(serviceIntent);
+
         if(mBound) {
             unbindService(mConnection);
         }
         mBound = false;
-
-        stopService(serviceIntent);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
@@ -703,6 +710,7 @@ public class MainActivity extends AppCompatActivity
             }
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
 
+            Log.d("onSensorChanged","Spamming. userFell: "+ userFell+ " time of fall: "+getTimeOfFall());
             if(userFell && getTimeOfFall()!=null){
                 fallWarning();
                 if(timer==null){
@@ -725,6 +733,7 @@ public class MainActivity extends AppCompatActivity
                     };
                     timer.start();
                 }
+                removeExtrasFromIntent();
                 fabOn = true;
                 checkPosture(timeOfFall);
             }
@@ -801,6 +810,9 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+            if(mService!=null){
+                mService.stopAccelerometer();
+            }
             mBound = false;
         }
     };
@@ -857,6 +869,13 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         return false;
+    }
+
+    private void removeExtrasFromIntent(){
+        if(getIntent().getExtras()!=null){
+            getIntent().removeExtra(getString(R.string.fall_detected_key));
+            getIntent().removeExtra(getString(R.string.fall_deteciton_time_key));
+        }
     }
 
     /**--------------------------------- App Bar Options ----------------------------------------**/

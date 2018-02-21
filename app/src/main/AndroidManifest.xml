@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
 
+
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
         android:required="true" />
@@ -21,7 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Launcher">
 
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MainActivity"
+                  android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
