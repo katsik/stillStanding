@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item_height"
-    android:minHeight="@dimen/list_item_height">
+    android:minHeight="@dimen/list_item_height"
+    tools:background="@color/white">
 
     <ImageView
         android:layout_width="@dimen/list_item_height"
         android:layout_height="@dimen/list_item_height"
         android:id="@+id/person_image"
         tools:src="@drawable/ic_tsamis"
-        android:layout_alignParentLeft="true"
-        android:contentDescription="TODO" />
+        android:layout_alignParentLeft="true" />
 
     <LinearLayout
         android:id="@+id/item_text"
