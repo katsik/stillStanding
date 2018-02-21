@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,7 +25,6 @@ import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -36,6 +34,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +45,7 @@ import com.sleepycookie.stillstanding.R;
 import com.sleepycookie.stillstanding.data.AppDatabase;
 import com.sleepycookie.stillstanding.data.Incident;
 import com.sleepycookie.stillstanding.data.Preferences;
+import com.sleepycookie.stillstanding.utils.MainHelper;
 import com.sleepycookie.stillstanding.utils.PermissionManager;
 
 import java.util.ArrayList;
@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity
     android.support.v7.widget.CardView contactCard;
     android.support.v7.widget.CardView incidentCard;
     String tempName;
+    ProgressBar pvAnalysis;
 
     // ReadData variables:
     private SensorManager mSensorManager;
@@ -116,7 +117,12 @@ public class MainActivity extends AppCompatActivity
     private TextView warningTitle;
 
     private CountDownTimer timer;
-    private TextView timerTextView;
+//    private TextView timerTextView;
+
+    public static Boolean fabOn = false;
+
+    Intent serviceIntent;
+
 
     //used for receiving messages from fall detection service.
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -126,11 +132,14 @@ public class MainActivity extends AppCompatActivity
             Boolean fell = intent.getExtras().getBoolean(getString(R.string.fall_detected_key));
             setUserFell(fell);
             if(fell){
-                long timeOfFall = intent.getExtras().getLong(getString(R.string.fall_deteciton_time_key));
+                long timeOfFall = intent.getExtras()
+                    .getLong(getString(R.string.fall_deteciton_time_key));
                 setTimeOfFall(timeOfFall);
             }
         }
     };
+
+    /**--------------------------------- Activity Lifecycle Methods -----------------------------**/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,34 +160,22 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
-        startDetection = findViewById(R.id.start_detection);
-        phoneContactsButton = findViewById(R.id.set_contact);
-        emergencyContact = findViewById(R.id.contact_name);
-        emergencyNumber = findViewById(R.id.contact_phone);
-        emergencyPhoto = findViewById(R.id.contact_image);
-        contactCard = findViewById(R.id.card_view);
-
-        initContactButton();
-        initFAB();
-
-        //ReadData onCreate:
-
         db = AppDatabase.getInstance(this);
 
         mContext = this;
 
+        emergencyContact = findViewById(R.id.contact_name);
+        emergencyNumber = findViewById(R.id.contact_phone);
+        emergencyPhoto = findViewById(R.id.contact_image);
+        contactCard = findViewById(R.id.card_view);
+        phoneContactsButton = findViewById(R.id.set_contact);
+        startDetection = findViewById(R.id.start_detection);
         triggerButton = findViewById(R.id.btn_trigger);
-        initTriggerFunctionality();
-
         quitButton = findViewById(R.id.btn_quit);
-        initQuitFunctionality();
-        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-        mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 
-        mLabelTextView = findViewById(R.id.tv_collecting);
-        mLabelTextView.setText("Analyzing Data...");
+//        timerTextView = findViewById(R.id.tv_emergency_timer);
 
-        timerTextView = findViewById(R.id.tv_emergency_timer);
+        pvAnalysis = findViewById(R.id.pb_collecting_data);
 
         warningCard = findViewById(R.id.warning_card);
         warningEmergencyButton = findViewById(R.id.warning_action_fell);
@@ -186,10 +183,324 @@ public class MainActivity extends AppCompatActivity
         warningText = findViewById(R.id.warning_text);
         warningTitle = findViewById(R.id.warning_title);
 
+        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+
+        initContactButton();
+        initFAB();
+        initTriggerFunctionality();
+        initQuitFunctionality();
         initWarningButtonFunctionality();
 
         initValues();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setContactCard();
+        setIncidentCard();
+
+        // If we just showed the intro, we have asked for the initial permissions
+        if (Preferences.getIntroPref(this)) {
+            PermissionManager.checkForPermissions(this, this);
+        }
+
+        Boolean fell;
+        Bundle extras = getIntent().getExtras();
+        setActiveStatus(true);
+
+        if(extras!=null && !onCall){
+            Log.d("onStart","Hey there!!");
+            fell = extras.getBoolean(getString(R.string.fall_detected_key));
+            setUserFell(fell);
+
+            setFabStatus(true);
+
+            mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
+
+
+            if(fell){
+                long time = extras.getLong(getString(R.string.fall_deteciton_time_key));
+                setTimeOfFall(time);
+            }
+        }
+        setOnCall(false);
+
+        serviceIntent = new Intent(this, AnalyzeDataFromAccelerometer.class);
+
+        if(!AnalyzeDataFromAccelerometer.serviceRunning || AnalyzeDataFromAccelerometer.serviceRunning == null){
+            setFabStatus(false);
+
+        } else {
+            bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
+            setFabStatus(true);
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        setActiveStatus(false);
+        if(fabOn == true) {
+            mSensorManager.unregisterListener(this);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(fabOn){
+            unbindService(mConnection);
+        }
+        mBound = false;
+    }
+
+    /**----------------------------------- UI setup ---------------------------------------------**/
+
+    /**
+     * This method is responsible for showing the last incident card in the UI. It puts the last fall's
+     * data every time this screen is brought back. It hides the card if the database is empty.
+     */
+    public void setIncidentCard(){
+
+        final Incident lastIncident = db.incidentDao().loadLastIncident();
+
+        incidentCard = findViewById(R.id.incident_card);
+
+        if (lastIncident != null){
+            incidentCard.setVisibility(View.VISIBLE);
+
+            TextView incidentDate = findViewById(R.id.incident_card_date);
+            incidentDate.setText(lastIncident.getDateText());
+
+            TextView incidentInfo = findViewById(R.id.incident_card_info);
+            incidentInfo.setText(lastIncident.getInfo());
+
+            ImageView incidentImage = findViewById(R.id.incident_image);
+            incidentImage.setImageResource(lastIncident.getIcon());
+
+            ImageButton incidentLocationButton = findViewById(R.id.incident_card_location);
+
+            if(lastIncident.hasLocation() == false){
+                incidentLocationButton.setVisibility(View.GONE);
+            }
+            else {
+                incidentLocationButton.setVisibility(View.VISIBLE);
+                incidentLocationButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // The two lines below are needed to open location
+                        StringBuffer url = new StringBuffer();
+                        url.append( "http://maps.google.com?q=");
+                        url.append(String.format ("%.7f", lastIncident.getLatitude()).replaceAll(",", "."));
+                        url.append(",");
+                        url.append(String.format ("%.7f", lastIncident.getLongitude()).replaceAll(",", "."));
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url.toString()));
+                        startActivity(i);
+                    }
+                });
+            }
+
+        }
+    }
+
+    /**
+     * Shows the saved preferences or the placeholder text (if there is nothing saved) in the contact card.
+     * In case there is no saved number the color of the card changes to orange to grab attention.
+     */
+    private void setContactCard(){
+
+        String mName = Preferences.getContact(this);
+        String mNumber = Preferences.getNumber(this);
+        String mPhoto = Preferences.getPhoto(this);
+
+        if (mName != null) emergencyContact.setText(mName);
+        if (mNumber != null) {
+            emergencyNumber.setText(mNumber);
+            contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
+            phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
+        }
+        else{
+            contactCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
+            phoneContactsButton.setImageResource(R.drawable.ic_person_add_black_24dp);
+        }
+        if (mPhoto != null) {
+            emergencyPhoto.setVisibility(View.VISIBLE);
+            emergencyPhoto.setImageURI(Uri.parse(mPhoto));
+        }
+        else {
+            emergencyPhoto.setVisibility(View.GONE);
+        }
+    }
+
+    private void fallWarning(){
+        warningTitle.setText("Fall Detected");
+        warningCard.setCardBackgroundColor(getResources().getColor(R.color.warningColor));
+        warningCard.setVisibility(View.VISIBLE);
+    }
+
+    private void getUpWarning(){
+        warningTitle.setText(getString(R.string.warning_card_title));
+        warningText.setText(getString(R.string.warning_card_text));
+        warningCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
+        warningCard.setVisibility(View.VISIBLE);
+    }
+
+    /**------------------------------------- Buttons --------------------------------------------**/
+
+    private void initContactButton(){
+        phoneContactsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // This opens the contact list
+                if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
+                    Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                    startActivityForResult(contactPickerIntent, 1);
+                } else {
+                    new Toast(getApplicationContext()).makeText(MainActivity.this, getString(R.string.main_toast_set_permission), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void initFAB(){
+        if(fabOn){
+            startDetection.setImageDrawable(getResources().getDrawable(R.drawable.ic_stop_white_24dp));
+        }
+        else{
+            startDetection.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_arrow_white_24dp));
+        }
+
+        startDetection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Preferences.getNumber(MainActivity.this) == null){
+                    triggerDialogBox();
+                }else{
+//                    Intent readData = new Intent(MainActivity.this, ReadDataFromAccelerometer.class);
+//                    startActivity(readData);
+                    if(fabOn){
+                        fabStop();
+                    }
+                    else{
+                        fabStart();
+                    }
+                }
+            }
+        });
+    }
+
+    private void fabStart(){
+        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
+
+        startService(serviceIntent);
+        bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
+
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mMessageReceiver,
+                        new IntentFilter("broadcastIntent"));
+
+        setFabStatus(true);
+    }
+
+    private void fabStop(){
+        mSensorManager.unregisterListener(this);
+
+        if(mBound) {
+            unbindService(mConnection);
+        }
+        mBound = false;
+
+        stopService(serviceIntent);
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+
+        setFabStatus(false);
+
+        initValues();
+    }
+
+    private void setFabIcon(Boolean fabOn){
+        if(fabOn){
+            startDetection.setImageDrawable(getResources().getDrawable(R.drawable.ic_stop_white_24dp));
+        } else {
+            startDetection.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_arrow_white_24dp));
+        }
+    }
+
+    private void setFabStatus(Boolean input){
+        if(input){
+            fabOn = true;
+            setFabIcon(input);
+            pvAnalysis.setVisibility(View.VISIBLE);
+        } else {
+            fabOn = false;
+            setFabIcon(input);
+            pvAnalysis.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     *Method used to initialize functionality of Quit button
+     **/
+    public void initQuitFunctionality(){
+        quitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finishAffinity();
+
+            }
+        });
+    }
+
+    /**
+     *Method used to initialize functionality of Trigger button
+     **/
+    public void initTriggerFunctionality(){
+        triggerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initValues();
+                new Emergency(MainActivity.this, db, mToast).triggerEmergency();
+            }
+        });
+    }
+
+    /**
+     *Method used to initialize functionality of Warning card buttons
+     **/
+    public void initWarningButtonFunctionality(){
+        warningEmergencyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initValues();
+                new Emergency(MainActivity.this, db, mToast).triggerEmergency();
+            }
+        });
+
+        warningOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initValues();
+            }
+        });
+    }
+
+    /**------------------------------------- Pick Contact ---------------------------------------**/
 
     @Override
     public void onPickContactPositive() {
@@ -209,77 +520,6 @@ public class MainActivity extends AppCompatActivity
     public void triggerDialogBox(){
         PickContactFragment pickContact = new PickContactFragment();
         pickContact.show(getSupportFragmentManager(),"PickContactFragment");
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.app_bar_menu, menu);
-        return true;
-    }
-
-    /**
-     * Used to check for permissions to access contacts or call phone or send SMS
-     * @param context
-     *
-     * @return
-     * true if either one of the three permissions is NOT granted
-     * false in any other case
-     */
-    private boolean forbiddenToCallOrReadContacts(Context context){
-        if(ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-            return true;
-        }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
-            return true;
-        }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_about:
-                // User chose the "About" item, show the app "about" UI...
-                Intent seeInfo = new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(seeInfo);
-                return true;
-
-            case R.id.action_history:
-                // User chose the "History" item, show the app "history" UI...
-                Intent seeHistory = new Intent(MainActivity.this, IncidentHistory.class);
-                startActivity(seeHistory);
-                return true;
-
-            case R.id.action_settings:
-                // User chose the "Settings" item, show the "settings" UI...
-                Intent seeSettings = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(seeSettings);
-                return true;
-
-            case R.id.action_feedback:
-                // User chose the "Feedback" item, go to email app...
-                Intent intent = new Intent(Intent.ACTION_SENDTO);
-                intent.setData(Uri.parse("mailto:sleepy.cookie.studios@gmail.com")); // only email apps should handle this
-                intent.putExtra(Intent.EXTRA_SUBJECT, "[Still Standing] App Feedback");
-
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
-                return true;
-
-            case R.id.action_graph:
-                // User chose the "Graph" item, show the "graph" UI...
-                Intent seeGraph = new Intent(MainActivity.this, GraphActivity.class);
-                startActivity(seeGraph);
-                return true;
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     /**
@@ -312,7 +552,7 @@ public class MainActivity extends AppCompatActivity
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
 
                         // Gets contact photo URI
-                        final Uri photoUri = getPhotoUri(Long.parseLong(id));
+                        final Uri photoUri = MainHelper.getPhotoUri(Long.parseLong(id), this);
 
                         String phoneNumber = "";
 
@@ -324,27 +564,27 @@ public class MainActivity extends AppCompatActivity
                             switch (type) {
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
                                     Log.v("Home", name + ": " + number);
-                                    number = removeClutter(number);
+                                    number = MainHelper.removeClutter(number);
                                     allNumbers.add(number);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
                                     Log.v("Mobile", name + ": " + number);
-                                    number = removeClutter(number);
+                                    number = MainHelper.removeClutter(number);
                                     allNumbers.add(number);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
                                     Log.v("Work", name + ": " + number);
-                                    number = removeClutter(number);
+                                    number = MainHelper.removeClutter(number);
                                     allNumbers.add(number);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
                                     Log.v("Other", name + ": " + number);
-                                    number = removeClutter(number);
+                                    number = MainHelper.removeClutter(number);
                                     allNumbers.add(number);
                                     break;
                                 case ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM:
                                     Log.v("Custom", name + ": " + number);
-                                    number = removeClutter(number);
+                                    number = MainHelper.removeClutter(number);
                                     allNumbers.add(number);
                                     break;
                             }
@@ -395,190 +635,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Removes all space, "-", "/" characters from input string
-     *
-     * @param input
-     * @return
-     */
-    private static String removeClutter(String input) {
-        input = input.replaceAll("-", "");
-        input = input.replaceAll("/","");
-        return input.replaceAll(" ", "");
-    }
-
-
-    /**
-     * Returns the URI of the contact's photo. It checks of there is an image associated with the
-     * URI, and if there is none, it returns null.
-     *
-     * @param contactId
-     * @return
-     */
-    public Uri getPhotoUri(long contactId) {
-        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
-
-        // TODO get high quality image if available
-        // Thumbnail photo uri
-        Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-        Cursor cursor = getContentResolver().query(photoUri,
-                new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
-        if (cursor == null) {
-            return null;
-        }
-        try {
-            if (cursor.moveToFirst()) {
-                byte[] data = cursor.getBlob(0);
-                if (data != null) {
-                    return photoUri;
-                }
-            }
-        } finally {
-            cursor.close();
-        }
-        return null;
-    }
-
-    /**
-     * This method is responsible for showing the last incident card in the UI. It puts the last fall's
-     * data every time this screen is brought back. It hides the card if the database is empty.
-     */
-    public void setIncidentCard(){
-        incidentCard = findViewById(R.id.incident_card);
-
-        final Incident lastIncident = AppDatabase.getInstance(this).incidentDao().loadLastIncident();
-
-        if (lastIncident != null){
-            incidentCard.setVisibility(View.VISIBLE);
-
-            TextView incidentDate = findViewById(R.id.incident_card_date);
-            incidentDate.setText(lastIncident.getDateText());
-
-            TextView incidentInfo = findViewById(R.id.incident_card_info);
-            incidentInfo.setText(lastIncident.getInfo());
-
-            ImageView incidentImage = findViewById(R.id.incident_image);
-            incidentImage.setImageResource(lastIncident.getIcon());
-
-            ImageButton incidentLocationButton = findViewById(R.id.incident_card_location);
-
-            if(lastIncident.hasLocation() == false){
-                incidentLocationButton.setVisibility(View.GONE);
-            }
-            else {
-                incidentLocationButton.setVisibility(View.VISIBLE);
-                incidentLocationButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // The two lines below are needed to open location
-                        StringBuffer url = new StringBuffer();
-                        url.append( "http://maps.google.com?q=");
-                        url.append(String.format ("%.7f", lastIncident.getLatitude()).replaceAll(",", "."));
-                        url.append(",");
-                        url.append(String.format ("%.7f", lastIncident.getLongitude()).replaceAll(",", "."));
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(url.toString()));
-                        startActivity(i);
-                    }
-                });
-            }
-
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        setContactCard();
-        setIncidentCard();
-
-        // If we just showed the intro, we have asked for the initial permissions
-        if (Preferences.getIntroPref(this)) {
-            PermissionManager.checkForPermissions(this, this);
-        }
-
-        // ReadData onStart:
-        Boolean fell;
-        Bundle extras = getIntent().getExtras();
-        setActiveStatus(true);
-
-        if(mBound==null || !mBound){
-            Intent intent = new Intent(this,AnalyzeDataFromAccelerometer.class);
-            startService(intent);
-            bindService(intent, mConnection,BIND_AUTO_CREATE);
-        }
-
-        if(extras!=null && !onCall){
-            Log.d("onStart","Hey there!!");
-            fell = extras.getBoolean(getString(R.string.fall_detected_key));
-            setUserFell(fell);
-            if(fell){
-                long time = extras.getLong(getString(R.string.fall_deteciton_time_key));
-                setTimeOfFall(time);
-            }
-        }
-        setOnCall(false);
-    }
-
-    /**
-     * Shows the saved preferences or the placeholder text (if there is nothing saved) in the contact card.
-     * In case there is no saved number the color of the card changes to orange to grab attention.
-     */
-    private void setContactCard(){
-
-        String mName = Preferences.getContact(this);
-        String mNumber = Preferences.getNumber(this);
-        String mPhoto = Preferences.getPhoto(this);
-
-        if (mName != null) emergencyContact.setText(mName);
-        if (mNumber != null) {
-            emergencyNumber.setText(mNumber);
-            contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
-            phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
-        }
-        else{
-            contactCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
-            phoneContactsButton.setImageResource(R.drawable.ic_person_add_black_24dp);
-        }
-        if (mPhoto != null) {
-            emergencyPhoto.setVisibility(View.VISIBLE);
-            emergencyPhoto.setImageURI(Uri.parse(mPhoto));
-        }
-        else {
-            emergencyPhoto.setVisibility(View.GONE);
-        }
-    }
-
-    private void initContactButton(){
-        phoneContactsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // This opens the contact list
-                if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
-                    Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                    startActivityForResult(contactPickerIntent, 1);
-                } else {
-                    new Toast(getApplicationContext()).makeText(MainActivity.this, getString(R.string.main_toast_set_permission), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    private void initFAB(){
-        startDetection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(Preferences.getNumber(MainActivity.this) == null){
-                    triggerDialogBox();
-                }else{
-                    Intent readData = new Intent(MainActivity.this, ReadDataFromAccelerometer.class);
-                    startActivity(readData);
-                }
-            }
-        });
-    }
-
-    // -------------------- ReadData methods: ------------------------
+    /**------------------------------------ Accelerometer ---------------------------------------**/
 
     /**
      * This method initializes the arrays used for keeping track of the states and the acceleration values.
@@ -598,9 +655,9 @@ public class MainActivity extends AppCompatActivity
         warningCard.setVisibility(View.GONE);
         if(timer!=null){
             timer.cancel();
-            timerTextView.setVisibility(View.INVISIBLE);
+//            timerTextView.setVisibility(View.INVISIBLE);
         }
-        mLabelTextView.setText("Analyzing Data...");
+//        mLabelTextView.setText("Analyzing Data...");
         if(timer != null) {
             timer.cancel();
             timer = null;
@@ -628,8 +685,8 @@ public class MainActivity extends AppCompatActivity
 
             // calculate the sum of vector of acceleration
             svTotalAcceleration = Math.sqrt(Math.pow(ax,2)
-                    +Math.pow(ay,2)
-                    +Math.pow(az,2));
+                    + Math.pow(ay,2)
+                    + Math.pow(az,2));
 
             for (int i =0 ; i<SAMPLES_BUFFER_SIZE-1 ; i++ ){
                 //last place of buffer cleared
@@ -638,10 +695,13 @@ public class MainActivity extends AppCompatActivity
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
 
             if(userFell && getTimeOfFall()!=null){
+                fallWarning();
                 if(timer==null){
                     Log.d("userFell","timer initialized");
-                    timerTextView.setVisibility(View.VISIBLE);
-                    timer = new CountDownTimer(Preferences.getTimeForTriggering(this),MILLISECONDS_PER_SECOND) {
+//                    timerTextView.setVisibility(View.VISIBLE);
+                    timer = new CountDownTimer(
+                            Preferences.getTimeForTriggering(this)*MILLISECONDS_PER_SECOND,
+                            MILLISECONDS_PER_SECOND) {
                         @Override
                         public void onTick(long l) {
                             //timerTextView.setText((l/1000)+" seconds remaining until emergency triggered");
@@ -651,13 +711,12 @@ public class MainActivity extends AppCompatActivity
 
                         @Override
                         public void onFinish() {
-                            timerTextView.setVisibility(View.GONE);
+//                            timerTextView.setVisibility(View.GONE);
                         }
                     };
                     timer.start();
                 }
-                fallWarning();
-
+                fabOn = true;
                 checkPosture(timeOfFall);
             }
         }
@@ -686,7 +745,7 @@ public class MainActivity extends AppCompatActivity
 
         if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 2.5 * GRAVITY_ACCELERATION){
 //            Log.d("Fall Detection","Fall Detected!");
-            showAToast(getString(R.string.toast_potential_fall));
+            MainHelper.showAToast(getString(R.string.toast_potential_fall), this, mToast);
 
             return true;
         }
@@ -732,50 +791,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Use this to prevent multiple Toasts spamming the UI
-     *
-     * @param message
-     */
-    public void showAToast(String message){
-        if(mToast != null){
-            mToast.cancel();
-        }
-        mToast = Toast.makeText(context,message,Toast.LENGTH_LONG);
-        mToast.show();
-    }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(mMessageReceiver,
-                        new IntentFilter("broadcastIntent"));
-        mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
-    }
-
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        setActiveStatus(false);
-        mSensorManager.unregisterListener(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if(mBound) {
-            unbindService(mConnection);
-        }
-        mBound = false;
-    }
+    /**---------------------------------------- Service -----------------------------------------**/
 
     /**
      * Method to get extras when activity is in the foreground.
@@ -784,52 +800,6 @@ public class MainActivity extends AppCompatActivity
     protected void onNewIntent(Intent intent){
         super.onNewIntent(intent);
         setIntent(intent);
-    }
-
-    /**
-     *Method used to initialize functionality of Quit button
-     **/
-    public void initQuitFunctionality(){
-        quitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finishAffinity();
-
-            }
-        });
-    }
-
-    /**
-     *Method used to initialize functionality of Trigger button
-     **/
-    public void initTriggerFunctionality(){
-        triggerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initValues();
-                new Emergency(MainActivity.this, db, mToast).triggerEmergency();
-            }
-        });
-    }
-
-    /**
-     *Method used to initialize functionality of Warning card buttons
-     **/
-    public void initWarningButtonFunctionality(){
-        warningEmergencyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initValues();
-                new Emergency(MainActivity.this, db, mToast).triggerEmergency();
-            }
-        });
-
-        warningOkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initValues();
-            }
-        });
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -850,19 +820,6 @@ public class MainActivity extends AppCompatActivity
             mBound = false;
         }
     };
-
-    private void fallWarning(){
-        warningTitle.setText("Fall Detected");
-        warningCard.setCardBackgroundColor(getResources().getColor(R.color.warningColor));
-        warningCard.setVisibility(View.VISIBLE);
-    }
-
-    private void getUpWarning(){
-        warningTitle.setText(getString(R.string.warning_card_title));
-        warningText.setText(getString(R.string.warning_card_text));
-        warningCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
-        warningCard.setVisibility(View.VISIBLE);
-    }
 
 
     /**---------------------SETTERS/GETTERS---------------------------*/
@@ -895,5 +852,80 @@ public class MainActivity extends AppCompatActivity
 
     public static void setUsersState(String setState){
         MainActivity.currentState = setState;
+    }
+
+    /**---------------------------------------- Misc --------------------------------------------**/
+
+    /**
+     * Used to check for permissions to access contacts or call phone or send SMS
+     * @param context
+     *
+     * @return
+     * true if either one of the three permissions is NOT granted
+     * false in any other case
+     */
+    private boolean forbiddenToCallOrReadContacts(Context context){
+        if(ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else if(ContextCompat.checkSelfPermission(context,Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        return false;
+    }
+
+    /**--------------------------------- App Bar Options ----------------------------------------**/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.app_bar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_about:
+                // User chose the "About" item, show the app "about" UI...
+                Intent seeInfo = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(seeInfo);
+                return true;
+
+            case R.id.action_history:
+                // User chose the "History" item, show the app "history" UI...
+                Intent seeHistory = new Intent(MainActivity.this, IncidentHistory.class);
+                startActivity(seeHistory);
+                return true;
+
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the "settings" UI...
+                Intent seeSettings = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(seeSettings);
+                return true;
+
+            case R.id.action_feedback:
+                // User chose the "Feedback" item, go to email app...
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:sleepy.cookie.studios@gmail.com")); // only email apps should handle this
+                intent.putExtra(Intent.EXTRA_SUBJECT, "[Still Standing] App Feedback");
+
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+                return true;
+
+            case R.id.action_graph:
+                // User chose the "Graph" item, show the "graph" UI...
+                Intent seeGraph = new Intent(MainActivity.this, GraphActivity.class);
+                startActivity(seeGraph);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

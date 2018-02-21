@@ -45,6 +45,8 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
 
     private NotificationManager notificationManager;
 
+    public static Boolean serviceRunning = false;
+
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
@@ -78,9 +80,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
                     readDataIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(readDataIntent);
                 }
-
             }
-
         }
     }
 
@@ -104,19 +104,22 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
     public void onCreate() {
         //make a connection with accelerometer and see if we are having a fall
         super.onCreate();
+        serviceRunning = true;
     }
 
     //not needed probably
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
-        //stop getting info from accelerometer
-        stopAccelerometer();
+        if(mSensorManager != null) {
+            //stop getting info from accelerometer
+            stopAccelerometer();
+        }
+        serviceRunning = false;
         super.onDestroy();
     }
 
@@ -150,7 +153,8 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
         } else {
             NotificationHelper noti = new NotificationHelper(this);
             Notification.Builder nb = null;
-            nb = noti.getNotification1("Fall Detection", "Collecting data from accelerometer...", pIntent);
+            nb = noti.getNotification1("Fall Detection",
+                    "Collecting data from accelerometer...", pIntent);
             noti.notify(0, nb);
         }
         return mBinder;
@@ -165,6 +169,37 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
     @Override
     public void onRebind(Intent intent) {
         super.onRebind(intent);
+        //add a notification
+        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        // prepare intent which is triggered if the
+        // notification is selected
+
+        Intent notifIntent = new Intent(this, MainActivity.class);
+        // use System.currentTimeMillis() to have a unique ID for the pending intent
+        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+
+        //TODO check how notifications work
+
+        if(Integer.valueOf(Build.VERSION.SDK_INT) < 26) {
+            // build notification
+            // the addAction re-use the same intent to keep the example short
+            Notification n = new Notification.Builder(this)
+                    .setContentTitle("Fall Detection")
+                    .setContentText("Collecting data from accelerometer...")
+                    .setSmallIcon(R.drawable.ic_accessibility_white_24dp)
+                    .setContentIntent(pIntent)
+                    .setAutoCancel(true)
+                    .setOngoing(true)
+                    .build();
+            notificationManager.notify(0, n);
+        } else {
+            NotificationHelper noti = new NotificationHelper(this);
+            Notification.Builder nb = null;
+            nb = noti.getNotification1("Fall Detection",
+                    "Collecting data from accelerometer...", pIntent);
+            noti.notify(0, nb);
+        }
     }
 
     public void startAccelerometer(){

@@ -16,26 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/tv_collecting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/incident_card"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="24dp"
-                android:gravity="center_horizontal"
-                android:textSize="22sp"
-                tools:text="Analyzing Data..." />
-
-            <TextView
-                android:id="@+id/tv_emergency_timer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tv_collecting"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="24dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
             <android.support.v7.widget.CardView
                 xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/warning_card"
@@ -47,7 +27,7 @@
                 android:layout_marginTop="8dp"
                 android:elevation="2dp"
                 android:layout_centerHorizontal="true"
-                tools:backgroundTint="@color/warningColor"
+                tools:backgroundTint="@color/atterntionColor"
                 android:visibility="gone"
                 tools:visibility="visible">
 
@@ -290,8 +270,24 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="24dp"
-        android:src="@drawable/ic_accessibility_white_24dp"
+        android:src="@drawable/ic_play_arrow_white_24dp"
         app:fabSize="normal" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"/>
+    <ProgressBar
+        android:id="@+id/pb_collecting_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="true"
+        android:layout_alignParentBottom="true"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        android:visibility="gone"
+        android:layout_marginRight="4dp"
+        android:layout_marginLeft="4dp"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -300,9 +296,12 @@
         android:text="Trigger"
         android:layout_toLeftOf="@id/start_detection"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
+        android:layout_margin="8dp"
         android:layout_centerHorizontal="true"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        android:color="@android:color/transparent"
+        style="?attr/buttonBarButtonStyle"
+        android:textColor="@color/white"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -311,5 +310,8 @@
         android:text="@string/quit"
         android:layout_toRightOf="@id/start_detection"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"/>
+        android:layout_margin="8dp"
+        android:color="@android:color/transparent"
+        style="?attr/buttonBarButtonStyle"
+        android:textColor="@color/white"/>
 </RelativeLayout>
