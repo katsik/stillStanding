@@ -239,7 +239,6 @@ public class MainActivity extends AppCompatActivity
         } else {
 
             bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
-//            startService(serviceIntent);
             setFabStatus(true);
         }
     }
@@ -272,7 +271,6 @@ public class MainActivity extends AppCompatActivity
 
         if(fabOn){
             unbindService(mConnection);
-//            stopService(serviceIntent);
         }
         mBound = false;
         super.onDestroy();
@@ -423,7 +421,6 @@ public class MainActivity extends AppCompatActivity
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 
-//        startService(serviceIntent);
         bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
 
         LocalBroadcastManager.getInstance(this)
@@ -436,7 +433,6 @@ public class MainActivity extends AppCompatActivity
     private void fabStop(){
         mSensorManager.unregisterListener(this);
 
-//        stopService(serviceIntent);
 
         if(mBound) {
             unbindService(mConnection);
@@ -710,7 +706,6 @@ public class MainActivity extends AppCompatActivity
             }
             samples[SAMPLES_BUFFER_SIZE-1] = svTotalAcceleration;
 
-            Log.d("onSensorChanged","Spamming. userFell: "+ userFell+ " time of fall: "+getTimeOfFall());
             if(userFell && getTimeOfFall()!=null){
                 fallWarning();
                 if(timer==null){
@@ -836,10 +831,7 @@ public class MainActivity extends AppCompatActivity
     public void setStoodUp(Boolean stoodUp) {this.stoodUp = stoodUp;}
     public Boolean getStoodUp(){return stoodUp;}
 
-    //for debugging purposes
-    public static void toastingBoom(String msg){
-        Log.d("Activity Detected",msg);
-    }
+
     public static void setActiveStatus(Boolean status){active = status;}
     public static Boolean getActiveStatus(){return active;}
 
