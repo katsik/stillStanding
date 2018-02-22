@@ -214,6 +214,8 @@ public class MainActivity extends AppCompatActivity
         Bundle extras = getIntent().getExtras();
         setActiveStatus(true);
 
+        if(fabOn) mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
+
         if(extras!=null && !onCall){
             Log.d("onStart","Hey there!!");
             fell = extras.getBoolean(getString(R.string.fall_detected_key));
@@ -221,8 +223,7 @@ public class MainActivity extends AppCompatActivity
 
             setFabStatus(true);
 
-            mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
-
+            //mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);
 
             if(fell){
                 long time = extras.getLong(getString(R.string.fall_deteciton_time_key));
@@ -237,7 +238,6 @@ public class MainActivity extends AppCompatActivity
             setFabStatus(false);
 
         } else {
-
             bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
             setFabStatus(true);
         }

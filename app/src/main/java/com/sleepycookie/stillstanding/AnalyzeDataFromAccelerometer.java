@@ -11,7 +11,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -127,37 +126,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        //add a notification
-        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
-        // prepare intent which is triggered if the
-        // notification is selected
-
-        Intent notifIntent = new Intent(this, MainActivity.class);
-        // use System.currentTimeMillis() to have a unique ID for the pending intent
-        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
-
-        //TODO check how notifications work
-
-        if(Integer.valueOf(Build.VERSION.SDK_INT) < 26) {
-            // build notification
-            // the addAction re-use the same intent to keep the example short
-            Notification n = new Notification.Builder(this)
-                    .setContentTitle("Fall Detection")
-                    .setContentText("Collecting data from accelerometer...")
-                    .setSmallIcon(R.drawable.ic_accessibility_white_24dp)
-                    .setContentIntent(pIntent)
-                    .setAutoCancel(true)
-                    .setOngoing(true)
-                    .build();
-            notificationManager.notify(0, n);
-        } else {
-            NotificationHelper noti = new NotificationHelper(this);
-            Notification.Builder nb = null;
-            nb = noti.getNotification1("Fall Detection",
-                    "Collecting data from accelerometer...", pIntent);
-            noti.notify(0, nb);
-        }
+        showNotification();
         return mBinder;
     }
 
@@ -170,37 +139,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
     @Override
     public void onRebind(Intent intent) {
         super.onRebind(intent);
-        //add a notification
-        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
-        // prepare intent which is triggered if the
-        // notification is selected
-
-        Intent notifIntent = new Intent(this, MainActivity.class);
-        // use System.currentTimeMillis() to have a unique ID for the pending intent
-        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
-
-        //TODO check how notifications work
-
-        if(Integer.valueOf(Build.VERSION.SDK_INT) < 26) {
-            // build notification
-            // the addAction re-use the same intent to keep the example short
-            Notification n = new Notification.Builder(this)
-                    .setContentTitle("Fall Detection")
-                    .setContentText("Collecting data from accelerometer...")
-                    .setSmallIcon(R.drawable.ic_accessibility_white_24dp)
-                    .setContentIntent(pIntent)
-                    .setAutoCancel(true)
-                    .setOngoing(true)
-                    .build();
-            notificationManager.notify(0, n);
-        } else {
-            NotificationHelper noti = new NotificationHelper(this);
-            Notification.Builder nb = null;
-            nb = noti.getNotification1("Fall Detection",
-                    "Collecting data from accelerometer...", pIntent);
-            noti.notify(0, nb);
-        }
+        showNotification();
     }
 
     public void startAccelerometer(){
@@ -233,9 +172,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
             Log.d("fallDetected","FALL DETECTED!");
             return true;
         }
-
         return false;
-
     }
 
     public void initSamples(){
@@ -244,4 +181,25 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
         }
     }
 
+    /**
+     * This method is used to show a notification while the service is active.
+     *
+     * If the user taps the notification, MainActivity is shown.
+     */
+    private void showNotification(){
+        //add a notification
+        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        // prepare intent which is triggered if the
+        // notification is selected
+
+        Intent notifIntent = new Intent(this, MainActivity.class);
+        // use System.currentTimeMillis() to have a unique ID for the pending intent
+        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), notifIntent, 0);
+
+        NotificationHelper noti = new NotificationHelper(this);
+        Notification.Builder nb = noti.getNotification1(getString(R.string.noti_title),
+                getString(R.string.noti_body), pIntent);
+        noti.notify(0, nb);
+    }
 }

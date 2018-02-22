@@ -58,4 +58,6 @@
     <string name="noti_channel_default">Προκαθορισμένο</string>
     <string name="warning_card_title_fall">Ανιχνεύτηκε Πτώση!</string>
     <string name="warning_card_text_seconds_left">δευτερόλεπτα απομένουν μέχρι να ειδοποιηθεί η επαφή σας.</string>
+    <string name="noti_title">Ανίχνευση Πτώσεων</string>
+    <string name="noti_body">Γίνεται ανάλυση των δεδομένων κίνησης...</string>
 </resources>

@@ -88,6 +88,8 @@
 
     <!-- Notifications -->
     <string name="noti_channel_default">Default</string>
+    <string name="noti_title">Fall Detection</string>
+    <string name="noti_body">Analyzing movement data...</string>
 
     <string name="fall_detected_key" translatable="false">FALL_DETECTED_TOKEN</string>
     <string name="fall_deteciton_time_key" translatable="false">TIME_OF_FALL</string>

@@ -287,11 +287,12 @@
         android:layout_margin="24dp"
         android:src="@drawable/ic_play_arrow_white_24dp"
         app:fabSize="normal" />
+
     <View
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="52dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorPrimary" />
     <ProgressBar
         android:id="@+id/pb_collecting_data"
         android:layout_width="match_parent"

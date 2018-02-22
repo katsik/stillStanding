@@ -33,5 +33,9 @@ public class SettingsFragment extends PreferenceFragment {
         if(key.equals(Preferences.KEY_SMS_LOCATION)){
             Preference locationPref = findPreference(key);
         }
+
+        if(key.equals(Preferences.TIME_FOR_EMERGENCY_TRIGGERING)){
+            Preference timerPref = findPreference(key);
+        }
     }
 }

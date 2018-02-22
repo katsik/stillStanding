@@ -23,7 +23,6 @@ import android.os.Build;
 class NotificationHelper extends ContextWrapper {
     private NotificationManager manager;
     public static final String PRIMARY_CHANNEL = "default";
-    public static final String SECONDARY_CHANNEL = "second";
 
     /**
      * Registers notification channels, which can be used later by individual notifications.
@@ -51,29 +50,25 @@ class NotificationHelper extends ContextWrapper {
      * @return the builder as it keeps a reference to the notification (since API 24)
      */
     public Notification.Builder getNotification1(String title, String body, PendingIntent pIntent) {
-        return new Notification.Builder(getApplicationContext(), PRIMARY_CHANNEL)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setSmallIcon(getSmallIcon())
-                .setAutoCancel(true)
-                .setOngoing(true)
-                .setContentIntent(pIntent);
+        if(Integer.valueOf(Build.VERSION.SDK_INT) < 26){
+            return new Notification.Builder(getApplicationContext())
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setSmallIcon(getSmallIcon())
+                    .setAutoCancel(false)
+                    .setOngoing(true)
+                    .setContentIntent(pIntent);
+        } else {
+            return new Notification.Builder(getApplicationContext(), PRIMARY_CHANNEL)
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setSmallIcon(getSmallIcon())
+                    .setAutoCancel(false)
+                    .setOngoing(true)
+                    .setContentIntent(pIntent);
+        }
     }
 
-    /**
-     * Build notification for secondary channel.
-     *
-     * @param title Title for notification.
-     * @param body Message for notification.
-     * @return A Notification.Builder configured with the selected channel and details
-     */
-    public Notification.Builder getNotification2(String title, String body) {
-        return new Notification.Builder(getApplicationContext(), SECONDARY_CHANNEL)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setSmallIcon(getSmallIcon())
-                .setAutoCancel(true);
-    }
 
     /**
      * Send a notification.
