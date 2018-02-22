@@ -1,6 +1,5 @@
 package com.sleepycookie.stillstanding;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,16 +8,15 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 
 
 /**
  * Created by geotsam on 17/02/2018.
+ *
+ * Helper class to manage notification channels and create notifications.
  */
-
-/**
- * Helper class to manage notification channels, and create notifications.
- */
-@TargetApi(Build.VERSION_CODES.O)
 class NotificationHelper extends ContextWrapper {
     private NotificationManager manager;
     public static final String PRIMARY_CHANNEL = "default";
@@ -31,11 +29,15 @@ class NotificationHelper extends ContextWrapper {
     public NotificationHelper(Context ctx) {
         super(ctx);
 
-        NotificationChannel chan1 = new NotificationChannel(PRIMARY_CHANNEL,
-                getString(R.string.noti_channel_default), NotificationManager.IMPORTANCE_LOW);
-        chan1.setLightColor(Color.GREEN);
-        chan1.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        getManager().createNotificationChannel(chan1);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create the NotificationChannel, but only on API 26+ because
+            // the NotificationChannel class is new and not in the support library
+            NotificationChannel chan1 = new NotificationChannel(PRIMARY_CHANNEL,
+                    getString(R.string.noti_channel_default), NotificationManager.IMPORTANCE_LOW);
+            chan1.setLightColor(Color.GREEN);
+            chan1.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            getManager().createNotificationChannel(chan1);
+        }
     }
 
     /**
@@ -48,17 +50,8 @@ class NotificationHelper extends ContextWrapper {
      * @param body the body text for the notification
      * @return the builder as it keeps a reference to the notification (since API 24)
      */
-    public Notification.Builder getNotification1(String title, String body, PendingIntent pIntent) {
-        if(Integer.valueOf(Build.VERSION.SDK_INT) < 26){
-            return new Notification.Builder(getApplicationContext())
-                    .setContentTitle(title)
-                    .setContentText(body)
-                    .setSmallIcon(getSmallIcon())
-                    .setAutoCancel(false)
-                    .setOngoing(true)
-                    .setContentIntent(pIntent);
-        } else {
-            return new Notification.Builder(getApplicationContext(), PRIMARY_CHANNEL)
+    public NotificationCompat.Builder getNotification1(String title, String body, PendingIntent pIntent) {
+            return new NotificationCompat.Builder(getApplicationContext(), PRIMARY_CHANNEL)
                     .setContentTitle(title)
                     .setContentText(body)
                     .setSmallIcon(getSmallIcon())
@@ -66,7 +59,6 @@ class NotificationHelper extends ContextWrapper {
                     .setOngoing(true)
                     .setColor(getResources().getColor(R.color.colorPrimary))
                     .setContentIntent(pIntent);
-        }
     }
 
 
@@ -76,8 +68,10 @@ class NotificationHelper extends ContextWrapper {
      * @param id The ID of the notification
      * @param notification The notification object
      */
-    public void notify(int id, Notification.Builder notification) {
-        getManager().notify(id, notification.build());
+    public void notify(int id, NotificationCompat.Builder notification) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(id, notification.build());
     }
 
     /**

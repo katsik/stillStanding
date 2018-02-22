@@ -13,6 +13,7 @@ import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -198,7 +199,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), notifIntent, 0);
 
         NotificationHelper noti = new NotificationHelper(this);
-        Notification.Builder nb = noti.getNotification1(getString(R.string.noti_title),
+        NotificationCompat.Builder nb = noti.getNotification1(getString(R.string.noti_title),
                 getString(R.string.noti_body), pIntent);
         noti.notify(0, nb);
     }
