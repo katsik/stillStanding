@@ -7,7 +7,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 
@@ -33,7 +32,7 @@ class NotificationHelper extends ContextWrapper {
         super(ctx);
 
         NotificationChannel chan1 = new NotificationChannel(PRIMARY_CHANNEL,
-                getString(R.string.noti_channel_default), NotificationManager.IMPORTANCE_DEFAULT);
+                getString(R.string.noti_channel_default), NotificationManager.IMPORTANCE_LOW);
         chan1.setLightColor(Color.GREEN);
         chan1.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         getManager().createNotificationChannel(chan1);
@@ -65,6 +64,7 @@ class NotificationHelper extends ContextWrapper {
                     .setSmallIcon(getSmallIcon())
                     .setAutoCancel(false)
                     .setOngoing(true)
+                    .setColor(getResources().getColor(R.color.colorPrimary))
                     .setContentIntent(pIntent);
         }
     }

@@ -273,7 +273,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="102dp"
+                android:layout_height="80dp"
                 android:layout_below="@id/incident_card"/>
         </RelativeLayout>
     </ScrollView>
