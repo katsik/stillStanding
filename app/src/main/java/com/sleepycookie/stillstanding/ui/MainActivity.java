@@ -504,6 +504,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 initValues();
                 new Emergency(MainActivity.this, db, mToast).triggerEmergency();
+                setIncidentCard();
             }
         });
 
@@ -776,6 +777,7 @@ public class MainActivity extends AppCompatActivity
                 Log.d("checkPosture","not stood up and gonna trigger emergency");
                 initValues();
                 new Emergency(this, db, mToast).triggerEmergency();
+                setIncidentCard();
             }else if(getStoodUp() && (currentTime - timeSinceFall <= 15 * MILLISECONDS_PER_SECOND)){
                 getUpWarning();
             }
