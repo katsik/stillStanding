@@ -47,6 +47,8 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
 
     public static Boolean serviceRunning = false;
 
+    private static double FALL_THRESHOLD = 2.7;
+
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
@@ -159,7 +161,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
      *
      * What we do here is the following. We already have a collection of the 10 latest acceleration
      * values. We, then, make a comparison between the newest and the oldest value of the accelerations.
-     * If the difference is greater or equal than 3 * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
+     * If the difference is greater or equal than FALL_THRESHOLD * GRAVITY_ACCELERATION (9.81 [m/s^2]) then we believe
      * this indicates a fall and a true value is returned. In any other case a false value is returned.
      *
      * TL;DR
@@ -169,7 +171,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
         //1. compare acceleration amplitude with lower threshold
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
-        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= 3 * GRAVITY_ACCELERATION){
+        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= FALL_THRESHOLD * GRAVITY_ACCELERATION){
             Log.d("fallDetected","FALL DETECTED!");
             return true;
         }

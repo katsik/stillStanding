@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity
     String tempName;
     ProgressBar pvAnalysis;
 
-    // ReadData variables:
+    private static double GETUP_THRESHOLD = 0.4;
+
     private SensorManager mSensorManager;
 
     AnalyzeDataFromAccelerometer mService;
@@ -770,7 +771,7 @@ public class MainActivity extends AppCompatActivity
             Log.d("checkPosture","stoodup: "+stoodUp);
             if(!getStoodUp() && (currentTime - timeSinceFall < 5* MILLISECONDS_PER_SECOND)){
                 //check to see if he stood up
-                stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= 0.65 * GRAVITY_ACCELERATION);
+                stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= GETUP_THRESHOLD * GRAVITY_ACCELERATION);
                 Log.d("CheckPosture", "Not stood up yet.");
             }else if(!getStoodUp() && (currentTime - timeSinceFall >= 15* MILLISECONDS_PER_SECOND)){
                 //user didn't stand up since fall and there's been 15 seconds => trigger action
