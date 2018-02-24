@@ -76,6 +76,8 @@ public class GraphActivity extends AppCompatActivity implements SensorEventListe
         graph.getViewport().setMinY(0);
         graph.getViewport().setMaxY(20);
 
+        graph.setTitle(getString(R.string.graph_title));
+
         currentX = 0;
 
         // Start chart thread

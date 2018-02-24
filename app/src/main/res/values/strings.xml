@@ -86,6 +86,9 @@
         preferences. Select if your contact will be called, or if they will get an SMS. You can
         also add your location to message.</string>
 
+    <!-- Graph -->
+    <string name="graph_title">Acceleration of the phone (m/s)</string>
+
     <!-- Notifications -->
     <string name="noti_channel_default">Default</string>
     <string name="noti_title">Fall Detection</string>

@@ -49,6 +49,7 @@ public class IntroActivity extends AppIntro2 {
                 getString(R.string.intro_desc_action),
                 R.drawable.ic_stillstandingonboardxp_trigger,
                 getResources().getColor(R.color.colorPrimaryDark)));
+
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_setup),
                 getString(R.string.intro_desc_contact),
                 R.drawable.ic_stillstandingonboardxp_contact,

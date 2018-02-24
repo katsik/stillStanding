@@ -6,8 +6,8 @@ android {
         applicationId "com.sleepycookie.stillstanding"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 27
-        versionName "2.2"
+        versionCode 28
+        versionName "2.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
