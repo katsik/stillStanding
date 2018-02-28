@@ -377,6 +377,9 @@ public class MainActivity extends AppCompatActivity
         warningText.setText(getString(R.string.warning_card_text));
         warningCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
         warningCard.setVisibility(View.VISIBLE);
+        if(timer != null){
+            timer.cancel();
+        }
     }
 
     /**------------------------------------- Buttons --------------------------------------------**/
@@ -672,9 +675,8 @@ public class MainActivity extends AppCompatActivity
         warningCard.setVisibility(View.GONE);
         if(timer!=null){
             timer.cancel();
-//            timerTextView.setVisibility(View.INVISIBLE);
         }
-//        mLabelTextView.setText("Analyzing Data...");
+
         if(timer != null) {
             timer.cancel();
             timer = null;
@@ -715,7 +717,6 @@ public class MainActivity extends AppCompatActivity
                 fallWarning();
                 if(timer==null){
                     Log.d("userFell","timer initialized");
-//                    timerTextView.setVisibility(View.VISIBLE);
                     timer = new CountDownTimer(
                             Preferences.getTimeForTriggering(this)*MILLISECONDS_PER_SECOND,
                             MILLISECONDS_PER_SECOND) {
@@ -781,6 +782,7 @@ public class MainActivity extends AppCompatActivity
                 setIncidentCard();
             }else if(getStoodUp() && (currentTime - timeSinceFall <= 15 * MILLISECONDS_PER_SECOND)){
                 getUpWarning();
+                userFell = false;
             }
         }
     }

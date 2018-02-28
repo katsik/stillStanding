@@ -20,7 +20,7 @@
                 xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/warning_card"
                 android:layout_width="match_parent"
-                android:layout_height="138dp"
+                android:layout_height="wrap_content"
                 card_view:cardCornerRadius="2dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
@@ -58,17 +58,17 @@
                         android:textColor="@color/white"
                         android:layout_alignParentTop="true"
                         android:gravity="center"
-                        />
+                        android:autoSizeTextType="uniform"/>
 
 
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="90dp"
+                        android:layout_height="wrap_content"
                         android:layout_toRightOf="@id/warning_image"
                         android:layout_alignParentTop="true"
                         android:orientation="vertical"
                         android:padding="12dp"
-                        android:layout_centerVertical="true">
+                        android:id="@+id/warning_text_block">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -103,7 +103,8 @@
                         android:layout_marginRight="12dp"
                         android:color="@android:color/transparent"
                         style="?attr/buttonBarButtonStyle"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white"
+                        android:layout_below="@id/warning_text_block"/>
 
                     <Button
                         android:layout_width="wrap_content"
@@ -115,7 +116,8 @@
                         android:padding="8dp"
                         android:color="@android:color/transparent"
                         style="?attr/buttonBarButtonStyle"
-                        android:textColor="@color/white"/>
+                        android:textColor="@color/white"
+                        android:layout_below="@id/warning_text_block"/>
 
                 </RelativeLayout>
 
@@ -125,7 +127,7 @@
             <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/card_view"
                 android:layout_width="match_parent"
-                android:layout_height="90dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:elevation="2dp"
                 card_view:cardCornerRadius="2dp"
@@ -137,14 +139,15 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/contact_image"
                         android:layout_width="90dp"
                         android:layout_height="90dp"
                         android:layout_alignParentLeft="true"
                         android:contentDescription="TODO"
                         tools:src="@drawable/ic_tsamis"
-                        tools:visibility="visible" />
+                        tools:visibility="visible"
+                        android:padding="10dp"/>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -196,7 +199,7 @@
             <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/incident_card"
                 android:layout_width="match_parent"
-                android:layout_height="90dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/card_view"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="8dp"
@@ -214,10 +217,10 @@
 
                     <ImageView
                         android:id="@+id/incident_image"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
                         android:layout_alignParentLeft="true"
-                        android:layout_margin="15dp"
+                        android:layout_margin="10dp"
                         android:background="@drawable/shape_circle"
                         android:contentDescription="TODO"
                         android:padding="15dp"

@@ -45,7 +45,7 @@ public class AboutActivity extends AppCompatActivity {
 
         PersonAdapter adapter = new PersonAdapter(this, people);
 
-        ListView listView = (ListView) findViewById(R.id.list);
+        ListView listView = findViewById(R.id.list);
 
         listView.setAdapter(adapter);
     }
