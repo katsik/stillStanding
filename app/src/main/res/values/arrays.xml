@@ -7,14 +7,14 @@
     </string-array>
 
     <string-array name="pref_fall_sensitivity_values">
-        <item>2.5</item>
-        <item>2.8</item>
-        <item>3.5</item>
+        <item>@string/fall_sensitivity_more</item>
+        <item>@string/fall_sensitivity_default</item>
+        <item>@string/fall_sensitivity_less</item>
     </string-array>
 
     <string-array name="pref_getup_sensitivity_values">
-        <item>0.8</item>
-        <item>0.55</item>
-        <item>0.4</item>
+        <item>@string/stand_up_sensitivity_more</item>
+        <item>@string/stand_up_sensitivity_default</item>
+        <item>@string/stand_up_sensitivity_less</item>
     </string-array>
 </resources>

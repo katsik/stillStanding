@@ -56,6 +56,12 @@
     <string name="sensitivity_less">Less Sensitive</string>
     <string name="contact_pref_category">CONTACT OPTIONS</string>
     <string name="sensor_pref_category">SENSOR OPTIONS</string>
+    <string name="fall_sensitivity_more" translatable="false">2.5</string>
+    <string name="fall_sensitivity_less" translatable="false">3.5</string>
+    <string name="fall_sensitivity_default" translatable="false">2.8</string>
+    <string name="stand_up_sensitivity_more" translatable="false">0.8</string>
+    <string name="stand_up_sensitivity_less" translatable="false">0.4</string>
+    <string name="stand_up_sensitivity_default" translatable="false">0.55</string>
 
     <!-- Activity labels -->
     <string name="label_read_data">Fall Detection</string>
