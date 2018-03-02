@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
+import com.sleepycookie.stillstanding.R;
+
 /**
  * Created by George Katsikopoulos on 1/18/2018.
  */
@@ -19,6 +21,8 @@ public final class Preferences {
     public static final String KEY_SMS_LOCATION = "location_preference";
     public static final String COMPLETED_ONBOARDING_PREF = "onboard_key";
     public static final String TIME_FOR_EMERGENCY_TRIGGERING = "time_for_triggering_preference";
+    public static final String FALL_THRESHOLD = "fall_sensitivity_preference";
+    public static final String STAND_UP_THRESHOLD = "getup_sensitivity_preference";
 
     public static boolean getSmsPref(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -92,5 +96,15 @@ public final class Preferences {
         SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         sharedPreferencesEditor.putBoolean(COMPLETED_ONBOARDING_PREF, pref);
         sharedPreferencesEditor.apply();
+    }
+
+    public static double getFallThreshold(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return Double.parseDouble(sharedPreferences.getString(FALL_THRESHOLD, "2.7"));
+    }
+
+    public static double getGetUpThreshold(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return Double.parseDouble(sharedPreferences.getString(STAND_UP_THRESHOLD, "0.55"));
     }
 }

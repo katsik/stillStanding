@@ -61,4 +61,13 @@
     <string name="noti_title">Ανίχνευση Πτώσεων</string>
     <string name="noti_body">Γίνεται ανάλυση των δεδομένων κίνησης...</string>
     <string name="graph_title">Επιτάχυνση του κινητού (m/s)</string>
+    <string name="pref_sensitivity_fall_title">Ευαισθησία Ανίχνευσης Πτώσης</string>
+    <string name="pref_sensitivity_fall_summary">Αυτή η ρύθμιση ελέγχει την ευκολία ανίχνευσης πτώσης. Αν είναι πιο ευαίσθητο, μπορεί να ανιχνευτούν πτώσεις, χωρίς να υπάρχουν.</string>
+    <string name="pref_sensitivity_getup_title">Ευαισθησία Ανίχνευσης Σηκώματος</string>
+    <string name="pref_sensitivity_getup_summary">Αυτή ρύθμιση ελέγχει την ευκολία ανίχνευσης σηκώματος. Αν είναι πιο ευαίσθητο μπορούν να καταχωρηθούν σηκώματα χωρίς να υπάρχουν.</string>
+    <string name="sensitivity_default">Κανονικό</string>
+    <string name="sensitivity_more">Πιο Ευαίσθητο</string>
+    <string name="sensitivity_less">Λιγότερο Ευαίσθητο</string>
+    <string name="contact_pref_category">ΕΠΙΛΟΓΕΣ ΕΙΔΟΠΟΙΗΣΗΣ ΕΠΑΦΗΣ</string>
+    <string name="sensor_pref_category">ΕΠΙΛΟΓΕΣ ΑΙΣΘΗΤΗΡΩΝ</string>
 </resources>

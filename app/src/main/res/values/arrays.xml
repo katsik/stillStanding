@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_fall_sensitivity_entries">
+        <item>@string/sensitivity_more</item>
+        <item>@string/sensitivity_default</item>
+        <item>@string/sensitivity_less</item>
+    </string-array>
+
+    <string-array name="pref_fall_sensitivity_values">
+        <item>2.5</item>
+        <item>2.8</item>
+        <item>3.5</item>
+    </string-array>
+
+    <string-array name="pref_getup_sensitivity_values">
+        <item>0.8</item>
+        <item>0.55</item>
+        <item>0.4</item>
+    </string-array>
+</resources>

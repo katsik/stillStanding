@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
@@ -67,8 +68,6 @@ public class MainActivity extends AppCompatActivity
     android.support.v7.widget.CardView incidentCard;
     String tempName;
     ProgressBar pvAnalysis;
-
-    private static double GETUP_THRESHOLD = 0.4;
 
     private SensorManager mSensorManager;
 
@@ -772,7 +771,7 @@ public class MainActivity extends AppCompatActivity
             Log.d("checkPosture","stoodup: "+stoodUp);
             if(!getStoodUp() && (currentTime - timeSinceFall < 5* MILLISECONDS_PER_SECOND)){
                 //check to see if he stood up
-                stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= GETUP_THRESHOLD * GRAVITY_ACCELERATION);
+                stoodUp = (samples[SAMPLES_BUFFER_SIZE-1] <= Preferences.getGetUpThreshold(this) * GRAVITY_ACCELERATION);
                 Log.d("CheckPosture", "Not stood up yet.");
             }else if(!getStoodUp() && (currentTime - timeSinceFall >= 15* MILLISECONDS_PER_SECOND)){
                 //user didn't stand up since fall and there's been 15 seconds => trigger action

@@ -17,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.sleepycookie.stillstanding.data.Preferences;
 import com.sleepycookie.stillstanding.ui.MainActivity;
 
 import java.util.Random;
@@ -32,7 +33,6 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
     //Binder to give to the clients.
     private final IBinder mBinder = new AnalyzeDataBinder();
 
-    private final Random mGenerator = new Random();
     public SensorManager mSensorManager;
 
     public double ax,ay,az;
@@ -46,8 +46,6 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
     private NotificationManager notificationManager;
 
     public static Boolean serviceRunning = false;
-
-    private static double FALL_THRESHOLD = 2.7;
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -171,7 +169,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
         //1. compare acceleration amplitude with lower threshold
         //2. if acceleration is less than low_threshold compare if next_acceleration_amplitude > high_threshold
         //3. if true fall detected!
-        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= FALL_THRESHOLD * GRAVITY_ACCELERATION){
+        if(samples[SAMPLES_BUFFER_SIZE-1] - samples[0] >= Preferences.getFallThreshold(this) * GRAVITY_ACCELERATION){
             Log.d("fallDetected","FALL DETECTED!");
             return true;
         }

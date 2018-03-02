@@ -47,6 +47,15 @@
     <string name="sms_location_text">"My location is: "</string>
     <string name="timer_title">Emergency Delay</string>
     <string name="timer_summary">After its duration (in seconds), your contact will be notified, if you haven\'t got up.</string>
+    <string name="pref_sensitivity_fall_title">Fall Detection Sensitivity</string>
+    <string name="pref_sensitivity_fall_summary">This determines how easy it is to detect falls. If it\'s more sensitive you might have more false positives.</string>
+    <string name="pref_sensitivity_getup_title">Stand Up Detection Sensitivity</string>
+    <string name="pref_sensitivity_getup_summary">This determines how easy it is to detect you standing up after a fall. If it\'s more sensitive you might miss some actual falls.</string>
+    <string name="sensitivity_default">Default</string>
+    <string name="sensitivity_more">More Sensitive</string>
+    <string name="sensitivity_less">Less Sensitive</string>
+    <string name="contact_pref_category">CONTACT OPTIONS</string>
+    <string name="sensor_pref_category">SENSOR OPTIONS</string>
 
     <!-- Activity labels -->
     <string name="label_read_data">Fall Detection</string>

@@ -1,30 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="sms_preference"
-        android:summary="@string/sms_notification_summary"
-        android:title="@string/send_sms_pref_title" />
+    <PreferenceCategory android:title="@string/contact_pref_category">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="sms_preference"
+            android:summary="@string/sms_notification_summary"
+            android:title="@string/send_sms_pref_title" />
 
-    <EditTextPreference
-        android:defaultValue="@string/sms_message_body"
-        android:key="sms_body_preference"
-        android:title="@string/sms_body_pref_title"
-        android:summary="@string/sms_pref_body_summary"
-        android:dependency="sms_preference"/>
+        <EditTextPreference
+            android:defaultValue="@string/sms_message_body"
+            android:key="sms_body_preference"
+            android:title="@string/sms_body_pref_title"
+            android:summary="@string/sms_pref_body_summary"
+            android:dependency="sms_preference"/>
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:title="@string/location_pref_title"
-        android:key="location_preference"
-        android:summary="@string/location_pref_summary"
-        android:dependency="sms_preference"/>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:title="@string/location_pref_title"
+            android:key="location_preference"
+            android:summary="@string/location_pref_summary"
+            android:dependency="sms_preference"/>
 
-    <com.sleepycookie.stillstanding.data.NumberPickerPreference
-        android:key="time_for_triggering_preference"
-        android:title="@string/timer_title"
-        android:summary = "@string/timer_summary"
-        android:defaultValue="15"/>
+        <com.sleepycookie.stillstanding.data.NumberPickerPreference
+            android:key="time_for_triggering_preference"
+            android:title="@string/timer_title"
+            android:summary = "@string/timer_summary"
+            android:defaultValue="15"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/sensor_pref_category">
+        <ListPreference
+            android:key="fall_sensitivity_preference"
+            android:title="@string/pref_sensitivity_fall_title"
+            android:summary="@string/pref_sensitivity_fall_summary"
+            android:entries="@array/pref_fall_sensitivity_entries"
+            android:entryValues="@array/pref_fall_sensitivity_values"
+            android:defaultValue="@string/sensitivity_default" />
+
+        <ListPreference
+            android:key="getup_sensitivity_preference"
+            android:title="@string/pref_sensitivity_getup_title"
+            android:summary="@string/pref_sensitivity_getup_summary"
+            android:entries="@array/pref_fall_sensitivity_entries"
+            android:entryValues="@array/pref_getup_sensitivity_values"
+            android:defaultValue="@string/sensitivity_default" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
