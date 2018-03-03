@@ -36,7 +36,7 @@
             android:summary="@string/pref_sensitivity_fall_summary"
             android:entries="@array/pref_fall_sensitivity_entries"
             android:entryValues="@array/pref_fall_sensitivity_values"
-            android:defaultValue="@string/sensitivity_default" />
+            android:defaultValue="@string/fall_sensitivity_default" />
 
         <ListPreference
             android:key="getup_sensitivity_preference"
@@ -44,7 +44,7 @@
             android:summary="@string/pref_sensitivity_getup_summary"
             android:entries="@array/pref_fall_sensitivity_entries"
             android:entryValues="@array/pref_getup_sensitivity_values"
-            android:defaultValue="@string/sensitivity_default" />
+            android:defaultValue="@string/stand_up_sensitivity_default" />
     </PreferenceCategory>
 
 </PreferenceScreen>
