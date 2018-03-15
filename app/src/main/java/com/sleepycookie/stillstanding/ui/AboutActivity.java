@@ -1,14 +1,19 @@
 package com.sleepycookie.stillstanding.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.sleepycookie.stillstanding.Person;
 import com.sleepycookie.stillstanding.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by geotsam on 23/01/2018.
@@ -16,8 +21,9 @@ import java.util.ArrayList;
  */
 
 public class AboutActivity extends AppCompatActivity {
+    public int pass;
     protected void onCreate(Bundle savedInstanceState) {
-
+        pass = 0;
         setTheme(R.style.AppTheme);
 
         super.onCreate(savedInstanceState);
@@ -48,5 +54,28 @@ public class AboutActivity extends AppCompatActivity {
         ListView listView = findViewById(R.id.list);
 
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                pass = (pass * 10) + position+1;
+                if (pass == 1312){
+                    Calendar rightNow = Calendar.getInstance();
+                    int month = rightNow.get(Calendar.MONTH);
+                    if ((month>8) && (month <12)){
+                        Toast.makeText(getApplicationContext(),
+                                getString(R.string.true_fall_detection_y), Toast.LENGTH_LONG)
+                                .show();
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(),
+                                getString(R.string.true_fall_detection_n), Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+            }
+        });
+
     }
 }

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/list_item_height"
-    tools:background="@color/white">
+    tools:background="@color/white"
+    android:descendantFocusability="blocksDescendants">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="@dimen/list_item_height"

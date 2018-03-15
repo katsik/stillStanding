@@ -70,4 +70,6 @@
     <string name="sensitivity_less">Λιγότερο Ευαίσθητο</string>
     <string name="contact_pref_category">ΕΠΙΛΟΓΕΣ ΕΙΔΟΠΟΙΗΣΗΣ ΕΠΑΦΗΣ</string>
     <string name="sensor_pref_category">ΕΠΙΛΟΓΕΣ ΑΙΣΘΗΤΗΡΩΝ</string>
+    <string name="true_fall_detection_y">Ναι, είναι Φθινόπωρο</string>
+    <string name="true_fall_detection_n">Δεν έχει έρθει το Φθινόπωρο ακόμα</string>
 </resources>

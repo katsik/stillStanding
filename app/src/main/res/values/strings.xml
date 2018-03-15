@@ -111,4 +111,8 @@
 
     <string name="fall_detected_key" translatable="false">FALL_DETECTED_TOKEN</string>
     <string name="fall_deteciton_time_key" translatable="false">TIME_OF_FALL</string>
+
+    <!-- About -->
+    <string name="true_fall_detection_y">Yeap, it is Fall</string>
+    <string name="true_fall_detection_n">It is not Fall yet</string>
 </resources>
