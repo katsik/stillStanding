@@ -6,7 +6,7 @@
     android:opacity="opaque">
 
     <!-- The background color -->
-    <item android:drawable="@color/colorPrimary"/>
+    <item android:drawable="@color/white"/>
 
     <!-- The foreground icon -->
     <item>

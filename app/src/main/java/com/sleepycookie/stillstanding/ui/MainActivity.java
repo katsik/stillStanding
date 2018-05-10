@@ -20,13 +20,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,18 +52,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import androidx.cardview.widget.CardView;
+
 
 //TODO clean & organize this activity
 public class MainActivity extends AppCompatActivity
                           implements PickContactFragment.PickContactListener, SensorEventListener {
 
-    FloatingActionButton startDetection;
+//    com.google.android.material.floatingactionbutton.FloatingActionButton startDetection;
+    com.google.android.material.button.MaterialButton startDetection;
     ImageButton phoneContactsButton;
     TextView emergencyNumber;
     TextView emergencyContact;
     ImageView emergencyPhoto;
-    android.support.v7.widget.CardView contactCard;
-    android.support.v7.widget.CardView incidentCard;
+    CardView contactCard;
+    CardView incidentCard;
     String tempName;
     ProgressBar pvAnalysis;
 
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity
 
     private Long timeOfFall;
 
-    public android.support.v7.widget.CardView warningCard;
+    public CardView warningCard;
     public Button warningOkButton;
     public Button warningEmergencyButton;
 
@@ -348,7 +349,7 @@ public class MainActivity extends AppCompatActivity
             phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
         }
         else{
-            contactCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
+            contactCard.setCardBackgroundColor(getResources().getColor(R.color.attentionColor));
             phoneContactsButton.setImageResource(R.drawable.ic_person_add_black_24dp);
         }
         if (mPhoto != null) {
@@ -374,7 +375,7 @@ public class MainActivity extends AppCompatActivity
         warningImage.setVisibility(View.VISIBLE);
         warningTimer.setVisibility(View.GONE);
         warningText.setText(getString(R.string.warning_card_text));
-        warningCard.setCardBackgroundColor(getResources().getColor(R.color.atterntionColor));
+        warningCard.setCardBackgroundColor(getResources().getColor(R.color.attentionColor));
         warningCard.setVisibility(View.VISIBLE);
         if(timer != null){
             timer.cancel();
@@ -400,10 +401,12 @@ public class MainActivity extends AppCompatActivity
 
     private void initFAB(){
         if(fabOn){
-            startDetection.setImageDrawable(getResources().getDrawable(R.drawable.ic_stop_white_24dp));
+            startDetection.setIcon(getResources().getDrawable(R.drawable.ic_stop_white_24dp));
+            startDetection.setText("Stop Detection");
         }
         else{
-            startDetection.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_arrow_white_24dp));
+            startDetection.setIcon(getResources().getDrawable(R.drawable.ic_play_arrow_white_24dp));
+            startDetection.setText("Start Detection");
         }
 
         startDetection.setOnClickListener(new View.OnClickListener() {
@@ -431,7 +434,7 @@ public class MainActivity extends AppCompatActivity
 
         bindService(serviceIntent, mConnection, BIND_AUTO_CREATE);
 
-        LocalBroadcastManager.getInstance(this)
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mMessageReceiver,
                         new IntentFilter("broadcastIntent"));
 
@@ -445,7 +448,7 @@ public class MainActivity extends AppCompatActivity
         if(mBound) { unbindService(mConnection); }
         mBound = false;
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
         setFabStatus(false);
 
@@ -454,9 +457,12 @@ public class MainActivity extends AppCompatActivity
 
     private void setFabIcon(Boolean fabOn){
         if(fabOn){
-            startDetection.setImageDrawable(getResources().getDrawable(R.drawable.ic_stop_white_24dp));
-        } else {
-            startDetection.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_arrow_white_24dp));
+            startDetection.setIcon(getResources().getDrawable(R.drawable.ic_stop_white_24dp));
+            startDetection.setText("Stop Detection");
+        }
+        else {
+            startDetection.setIcon(getResources().getDrawable(R.drawable.ic_play_arrow_white_24dp));
+            startDetection.setText("Start Detection");
         }
     }
 

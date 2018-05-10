@@ -12,9 +12,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.sleepycookie.stillstanding.data.Preferences;
@@ -72,7 +72,7 @@ public class AnalyzeDataFromAccelerometer extends Service implements SensorEvent
                     Intent broadcastIntent = new Intent("broadcastIntent");
                     broadcastIntent.putExtra(getString(R.string.fall_detected_key),true);
                     broadcastIntent.putExtra(getString(R.string.fall_deteciton_time_key),System.currentTimeMillis());
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
+                    androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
                 }else{
                     Intent readDataIntent = new Intent(AnalyzeDataFromAccelerometer.this, MainActivity.class);
                     readDataIntent.putExtra(getString(R.string.fall_detected_key),true);

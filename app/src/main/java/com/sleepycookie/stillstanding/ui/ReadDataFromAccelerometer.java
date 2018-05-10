@@ -13,9 +13,11 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.cardview.widget.CardView;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -70,7 +72,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
 
     private Long timeOfFall;
 
-    public android.support.v7.widget.CardView warningCard;
+    public CardView warningCard;
     public Button warningOkButton;
     public Button warningEmergencyButton;
 
@@ -297,7 +299,7 @@ public class ReadDataFromAccelerometer extends AppCompatActivity implements Sens
     @Override
     protected void onResume(){
         super.onResume();
-        LocalBroadcastManager.getInstance(this)
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mMessageReceiver,
                                 new IntentFilter("broadcastIntent"));
         mSensorManager.registerListener(this,mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_UI);

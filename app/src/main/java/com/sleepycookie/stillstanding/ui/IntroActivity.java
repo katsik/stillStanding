@@ -2,9 +2,9 @@ package com.sleepycookie.stillstanding.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.ActionBar;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.github.paolorotolo.appintro.AppIntroFragment;
@@ -44,7 +44,7 @@ public class IntroActivity extends AppIntro2 {
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_how_to),
                 getString(R.string.intro_desc_fall),
                 R.drawable.ic_stillstandingonboardxp_fall,
-                getResources().getColor(R.color.atterntionColor)));
+                getResources().getColor(R.color.attentionColor)));
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_how_to),
                 getString(R.string.intro_desc_action),
                 R.drawable.ic_stillstandingonboardxp_trigger,
@@ -65,7 +65,7 @@ public class IntroActivity extends AppIntro2 {
     }
 
     @Override
-    public void onSkipPressed(Fragment currentFragment) {
+    public void onSkipPressed(androidx.fragment.app.Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
         // Do something when users tap on Skip button.
     }
@@ -84,7 +84,7 @@ public class IntroActivity extends AppIntro2 {
     }
 
     @Override
-    public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
+    public void onSlideChanged(@Nullable androidx.fragment.app.Fragment oldFragment, @Nullable Fragment newFragment) {
         super.onSlideChanged(oldFragment, newFragment);
         // Do something when the slide changes.
     }
