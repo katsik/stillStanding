@@ -346,18 +346,18 @@ public class MainActivity extends AppCompatActivity
         if (mNumber != null) {
             emergencyNumber.setText(mNumber);
             contactCard.setCardBackgroundColor(getResources().getColor(R.color.white));
-            phoneContactsButton.setImageResource(R.drawable.ic_edit_black_24dp);
+            phoneContactsButton.setImageResource(R.drawable.ic_outline_create_24px);
         }
         else{
             contactCard.setCardBackgroundColor(getResources().getColor(R.color.attentionColor));
-            phoneContactsButton.setImageResource(R.drawable.ic_person_add_black_24dp);
+            phoneContactsButton.setImageResource(R.drawable.ic_outline_person_add_24px);
         }
         if (mPhoto != null) {
             emergencyPhoto.setVisibility(View.VISIBLE);
             emergencyPhoto.setImageURI(Uri.parse(mPhoto));
         }
         else {
-            emergencyPhoto.setVisibility(View.GONE);
+            emergencyPhoto.setVisibility(View.INVISIBLE);
         }
     }
 

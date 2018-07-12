@@ -78,9 +78,9 @@ public class Incident {
 
     public int getIcon() {
         if (type == 1) {
-            return R.drawable.ic_phone_white_24dp;
+            return R.drawable.ic_outline_call_24px;
         } else if (type == 2) {
-            return R.drawable.ic_message_white_24dp;
+            return R.drawable.ic_outline_message_24px;
         } else {
             return R.drawable.ic_siren_white_24dp;
         }

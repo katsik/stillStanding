@@ -6,14 +6,14 @@
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="1"
-        android:icon="@drawable/ic_settings_white_24dp"
+        android:icon="@drawable/ic_outline_settings_24px"
         android:title="@string/action_settings"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_history"
         android:orderInCategory="2"
-        android:icon="@drawable/ic_history_white_24dp"
+        android:icon="@drawable/ic_outline_history_24px"
         android:title="@string/action_history"
         app:showAsAction="ifRoom"/>
 
@@ -22,12 +22,12 @@
         android:orderInCategory="3"
         android:title="@string/action_graph"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_graph_white_24dp"/>
+        android:icon="@drawable/ic_outline_bar_chart_24px"/>
 
     <item
         android:id="@+id/action_about"
         android:orderInCategory="4"
-        android:icon="@drawable/ic_info_white_24dp"
+        android:icon="@drawable/ic_outline_info_24px"
         android:title="@string/action_about"
         app:showAsAction="ifRoom"/>
 
@@ -36,5 +36,5 @@
         android:orderInCategory="5"
         android:title="@string/action_feedback"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_feedback_white_24dp"/>
+        android:icon="@drawable/ic_outline_feedback_24px"/>
 </menu>
