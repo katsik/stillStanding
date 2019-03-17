@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
     </style>
 
     <!-- Theme for splash screen. -->
@@ -16,10 +17,10 @@
     <!-- Optional, on Android 5+ you can modify the colorPrimaryDark color to match the windowBackground color for further branding-->
     <!-- <item name="colorPrimaryDark">@android:color/white</item> -->
     </style>
-    
-    <style name="AlertDialogStyle" parent="Theme.MaterialComponents.Dialog.Alert">
+
+    <style name="AlertDialogStyle" parent="android:Theme.Material.Light.Dialog.Alert">
         <item name="android:textColor">@color/black</item>
-        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button.TextButton</item>
+        <item name="android:actionButtonStyle">@style/Widget.AppCompat.ActionButton</item>
     </style>
 
 </resources>
